@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* Design tokens Mastrosimini Street Shop */
+:root {
+  --nero: #0c0c0c;
+  --oro: #d4a85c;
+  --crema: #f0ebe1;
+  --bianco: #ffffff;
+}
+
+@theme inline {
+  --color-nero: var(--nero);
+  --color-oro: var(--oro);
+  --color-crema: var(--crema);
+  --color-bianco: var(--bianco);
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --radius-tag: 4px;
+}
+
+html {
+  background: var(--nero);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--nero);
+  color: var(--bianco);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Titoli grandi: Poppins 800 maiuscolo, tracking stretto */
+.titolo {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+/* Focus visibile ovunque (oro su nero) */
+:focus-visible {
+  outline: 3px solid var(--oro);
+  outline-offset: 3px;
+}
+
+/* Separatore a strada: linea tratteggiata oro */
+.strada {
+  height: 14px;
+  background:
+    repeating-linear-gradient(90deg, var(--oro) 0 28px, transparent 28px 52px) center / 100% 3px no-repeat,
+    #161616;
+  border-block: 1px solid #2a2a2a;
+}
+
+/* Animazione "stampa" del tondo prezzo */
+@keyframes stampa {
+  0% { transform: scale(1.6) rotate(-12deg); opacity: 0; }
+  60% { transform: scale(0.95) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+.stampa { animation: stampa 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
