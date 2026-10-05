@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { MARKETS, SUNDAY_NOTE } from "@/data/markets";
 import { PlateBadge } from "@/components/ui/PlateBadge";
 import { useCan3D } from "@/lib/webgl";
+import { SceneBoundary } from "@/components/3d/SceneBoundary";
 import { WheelLoader } from "@/components/3d/WheelLoader";
 
 const RouteScene = dynamic(() => import("@/components/3d/RouteScene"), {
@@ -59,18 +60,14 @@ function Journey3D() {
   );
   return (
     <section ref={ref} className="relative" style={{ height: `${MARKETS.length * 70}svh` }}>
-      <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
-        <div className="absolute inset-0">
+      {/* tre fasce che non si sovrappongono: titolo, strada con il furgone, scheda del paese */}
+      <div className="sticky top-14 flex h-[calc(100svh-3.5rem-4rem)] flex-col overflow-hidden md:h-[calc(100svh-3.5rem)]">
+        <h2 className="titolo mx-auto w-full max-w-5xl px-4 pt-4 text-3xl sm:text-6xl">Il giro della settimana</h2>
+        <div className="relative min-h-0 flex-1">
           <RouteScene progress={scrollYProgress} />
         </div>
-        <div className="relative z-10 mx-auto flex h-full max-w-5xl flex-col justify-between p-4">
-          <h2 className="titolo text-4xl sm:text-6xl">Il giro della settimana</h2>
-          <motion.div
-            key={stop}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-sm self-end pb-6"
-          >
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-4">
+          <motion.div key={stop} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="md:ml-auto md:max-w-sm">
             <MarketCard i={stop} />
           </motion.div>
         </div>
@@ -81,5 +78,10 @@ function Journey3D() {
 
 export function MarketRoute() {
   const can3D = useCan3D();
-  return can3D ? <Journey3D /> : <MarketList />;
+  if (!can3D) return <MarketList />;
+  return (
+    <SceneBoundary fallback={<MarketList />}>
+      <Journey3D />
+    </SceneBoundary>
+  );
 }

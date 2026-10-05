@@ -18,7 +18,7 @@ function EnteringVan() {
     const g = ref.current;
     if (!g) return;
     // su schermi larghi il furgone si ferma a destra, lasciando spazio al titolo
-    const stopX = state.size.width / state.size.height > 1.15 ? 2.4 : 0;
+    const stopX = state.size.width > 760 ? 2.4 : 0;
     g.position.x = MathUtils.damp(g.position.x, stopX, 1.6, dt);
     g.position.y = Math.sin(state.clock.elapsedTime * 1.6) * 0.012;
     // più è vicino alla sosta, più si gira di 3/4

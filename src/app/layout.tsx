@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { StickyBar } from "@/components/layout/StickyBar";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -36,6 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <div id="main" className="flex-1">{children}</div>
         <Footer />
+        <StickyBar />
+        {/* spazio per non far coprire il fondo pagina dalla barra fissa (solo telefono) */}
+        <div className="h-16 md:hidden" aria-hidden="true" />
       </body>
     </html>
   );

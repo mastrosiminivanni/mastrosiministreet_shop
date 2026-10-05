@@ -11,6 +11,7 @@ import { asset } from "@/lib/asset";
 import { downloadCalendarImage } from "@/lib/calendarImage";
 import { marketForDate } from "@/lib/market";
 import { useToday } from "@/lib/useToday";
+import { statusLabel, useTodayStop } from "@/components/sections/TodayBanner";
 
 const MarketMap = dynamic(() => import("@/components/map/MarketMap"), {
   ssr: false,
@@ -26,6 +27,8 @@ const btn = "rounded-tag px-5 py-3 text-center text-sm font-extrabold uppercase 
 /** Pagina "Dove siamo": mercato di oggi, calendario settimanale, mappa, salva/condividi. */
 export function WhereWeAre() {
   const today = useToday();
+  const stop = useTodayStop();
+  const chiuso = stop?.status === "chiuso";
   const todayMarket = today ? marketForDate(today) : null;
   const [picked, setPicked] = useState("");
   const selected = picked || todayMarket?.slug || MARKETS[0].slug;
@@ -42,13 +45,20 @@ export function WhereWeAre() {
   return (
     <div>
       <div className="rounded-tag bg-oro p-5 text-nero">
-        <PlateBadge>Oggi</PlateBadge>
+        <div className="flex flex-wrap items-center gap-2">
+          <PlateBadge>Oggi</PlateBadge>
+          {stop?.status && (
+            <span className="rounded-tag bg-nero px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-oro">
+              {statusLabel(stop.status, stop.hours?.start)}
+            </span>
+          )}
+        </div>
         <p className="titolo mt-3 text-3xl sm:text-5xl" aria-live="polite">
-          {today ? (todayMarket ? `Siamo a ${todayMarket.town}` : "Domenica: tappa speciale") : "Dove siamo oggi"}
+          {today ? (todayMarket ? `${chiuso ? "Eravamo" : "Siamo"} a ${todayMarket.town}` : "Domenica: tappa speciale") : "Dove siamo oggi"}
         </p>
         {todayMarket && <p className="mt-1 font-semibold">{todayMarket.spot}</p>}
         {today && !todayMarket && <p className="mt-1 font-semibold">La tappa è su Instagram. Ti aspettiamo al furgone.</p>}
-        {todayMarket && (
+        {todayMarket && !chiuso && (
           <a href={mapsUrl(todayMarket)} rel="noopener" className={clsx(btn, "mt-4 inline-block bg-nero text-oro")}>
             Portami al furgone
           </a>

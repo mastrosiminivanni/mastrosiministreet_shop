@@ -256,11 +256,16 @@ const MODEL_CENTER_X = 0.075; // centro del furgone lungo X nel modello
  * Le ruote sono nodi "Ruota_*" con l'origine al centro: girano in proporzione allo spazio percorso,
  * quindi si fermano quando il furgone si ferma.
  */
-function GltfVan() {
+function GltfVan({ onReady }: { onReady?: () => void }) {
   const { scene } = useGLTF(asset("/models/van.glb"));
   const model = useMemo(() => scene.clone(true), [scene]);
   const ref = useRef<THREE.Group>(null);
   const prev = useRef<number | null>(null);
+
+  // il modello è caricato e montato: avvisa chi sta mostrando la foto di riserva
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
 
   useFrame(() => {
     const g = ref.current;
@@ -290,6 +295,8 @@ function GltfVan() {
 export function Van({ procedural = false }: { procedural?: boolean }) {
   // null = sto ancora controllando: non mostro nulla per evitare il cambio di furgone a metà animazione
   const [hasModel, setHasModel] = useState<boolean | null>(null);
+  const [glbReady, setGlbReady] = useState(false);
+  const [late, setLate] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch(asset("/models/van.glb"), { method: "HEAD" })
@@ -299,12 +306,27 @@ export function Van({ procedural = false }: { procedural?: boolean }) {
       alive = false;
     };
   }, []);
+  // Se il modello 3D non arriva (rete lenta, file bloccato da un'estensione o dalla rete) non si resta con la scena vuota:
+  // dopo qualche secondo compare la foto del furgone, e il 3D la sostituisce se arriva più tardi.
+  useEffect(() => {
+    if (hasModel !== true) return;
+    const t = setTimeout(() => setLate(true), 3500);
+    return () => clearTimeout(t);
+  }, [hasModel]);
+
   if (hasModel === null) return null;
   if (hasModel)
     return (
-      <Suspense fallback={null}>
-        <GltfVan />
-      </Suspense>
+      <>
+        {late && !glbReady && (
+          <Suspense fallback={null}>
+            <VanBillboard />
+          </Suspense>
+        )}
+        <Suspense fallback={null}>
+          <GltfVan onReady={() => setGlbReady(true)} />
+        </Suspense>
+      </>
     );
   return procedural ? <ProceduralVan /> : <VanBillboard />;
 }

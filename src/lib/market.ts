@@ -20,3 +20,16 @@ export function nextMarket(from: Date): Market {
 export function romeNow(): Date {
   return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Rome" }));
 }
+
+export type Status = "prima" | "aperto" | "chiuso";
+
+const minutes = (hhmm: string) => {
+  const [h, m] = hhmm.split(":").map(Number);
+  return h * 60 + m;
+};
+
+/** Il banco è ancora da aprire, aperto o già chiuso, rispetto all'ora italiana `now`. */
+export function statusAt(now: Date, start: string, end: string): Status {
+  const t = now.getHours() * 60 + now.getMinutes();
+  return t < minutes(start) ? "prima" : t < minutes(end) ? "aperto" : "chiuso";
+}
