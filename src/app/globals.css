@@ -68,3 +68,10 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Mappa Leaflet in tema scuro (filtro sulle tile OSM) */
+.mappa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6); }
+.mappa .leaflet-container { background: #0c0c0c; font-family: var(--font-poppins), sans-serif; }
+.mappa .leaflet-popup-content-wrapper, .mappa .leaflet-popup-tip { background: #0c0c0c; color: #fff; border: 1px solid #d4a85c; border-radius: 4px; }
+.mappa a { color: #d4a85c; }
+.pin-furgone { background: none; border: 0; }

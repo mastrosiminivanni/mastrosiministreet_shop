@@ -20,7 +20,8 @@ function MarketCard({ i }: { i: number }) {
     <div className="rounded-tag border-2 border-oro bg-nero/90 p-5">
       <PlateBadge>{m.dayName}</PlateBadge>
       <h3 className="titolo mt-3 text-3xl">{m.town}</h3>
-      <p className="mt-2 text-sm text-bianco/80">{m.hours}</p>
+      <p className="mt-2 text-sm font-semibold text-oro">{m.spot}</p>
+      <p className="text-sm text-bianco/70">{m.hours}</p>
       <Link
         href={`/shop?mercato=${m.slug}`}
         className="mt-4 inline-block text-sm font-extrabold uppercase tracking-wide text-oro underline underline-offset-4"
