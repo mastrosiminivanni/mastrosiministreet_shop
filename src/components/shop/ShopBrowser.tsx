@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CATEGORY_LABEL, PRODUCTS, isSoldOut, type Category } from "@/data/products";
+import { CATEGORY_LABEL, isSoldOut, type Category, type Product } from "@/data/products";
 import { MARKETS } from "@/data/markets";
 import { ProductCard } from "./ProductCard";
 
@@ -11,7 +11,7 @@ const selectCls =
   "w-full rounded-tag border border-white/20 bg-nero px-3 py-2 text-sm font-semibold text-bianco";
 
 /** Catalogo con filtri (categoria, taglia, prezzo, mercato) e ordinamento. */
-export function ShopBrowser({ initialMarket = "" }: { initialMarket?: string }) {
+export function ShopBrowser({ products, initialMarket = "" }: { products: Product[]; initialMarket?: string }) {
   const [category, setCategory] = useState<Category | "">("");
   const [size, setSize] = useState("");
   const [maxPrice, setMaxPrice] = useState(0);
@@ -19,10 +19,10 @@ export function ShopBrowser({ initialMarket = "" }: { initialMarket?: string }) 
   const [sort, setSort] = useState<Sort>("novita");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
 
-  const sizes = useMemo(() => [...new Set(PRODUCTS.flatMap((p) => p.sizes))].sort(), []);
+  const sizes = useMemo(() => [...new Set(products.flatMap((p) => p.sizes))].sort(), [products]);
 
   const list = useMemo(() => {
-    const out = PRODUCTS.filter(
+    const out = products.filter(
       (p) =>
         (!category || p.category === category) &&
         (!size || p.sizes.includes(size)) &&
@@ -38,7 +38,7 @@ export function ShopBrowser({ initialMarket = "" }: { initialMarket?: string }) 
       return b.createdAt.localeCompare(a.createdAt);
     });
     return out;
-  }, [category, size, maxPrice, market, sort, onlyAvailable]);
+  }, [products, category, size, maxPrice, market, sort, onlyAvailable]);
 
   return (
     <div>

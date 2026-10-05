@@ -6,17 +6,18 @@ import { PriceBadge } from "@/components/ui/PriceBadge";
 import { ProductActions } from "@/components/shop/ProductActions";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ProductGallery } from "@/components/shop/ProductGallery";
-import { CATEGORY_LABEL, PRODUCTS, getProduct, isLastPiece, isSoldOut, isUnique } from "@/data/products";
+import { CATEGORY_LABEL, isLastPiece, isSoldOut, isUnique } from "@/data/products";
+import { getProductBySlug, getProducts } from "@/lib/catalog";
 import { SITE_NAME, SITE_URL } from "@/data/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await getProducts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const p = getProduct((await params).slug);
+  const p = await getProductBySlug((await params).slug);
   if (!p) return {};
   const descrizione = p.description ?? `${p.title} a ${p.price}€. ${CATEGORY_LABEL[p.category]}, taglia ${p.sizes.join(" / ")}. Disponibile al furgone.`;
   const foto = p.images.filter((i) => !i.startsWith("placeholder:"));
@@ -28,13 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const p = getProduct((await params).slug);
+  const p = await getProductBySlug((await params).slug);
   if (!p) notFound();
 
   // Abbinamenti: felpe/camicie suggeriscono pantaloni e viceversa.
   const wantPants = p.category !== "pantaloni";
-  const matches = PRODUCTS.filter(
-    (x) => x.slug !== p.slug && !isSoldOut(x) && (wantPants ? x.category === "pantaloni" : ["felpa", "felpa-strass", "camicia-righe", "camicia-quadri"].includes(x.category)),
+  const tutti = await getProducts();
+  const matches = tutti.filter(
+    (x) => x.slug !== p.slug && !isSoldOut(x) && (wantPants ? x.category === "pantaloni" : ["felpa", "camicia"].includes(x.category)),
   ).slice(0, 4);
 
   // Dati strutturati "Prodotto" solo per i capi veri (con foto vere): niente dati finti per Google.

@@ -30,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
       className="group relative block overflow-hidden rounded-tag border border-white/10 bg-nero transition-transform duration-150"
     >
       <ProductImage
-        src={product.images[0]}
+        src={product.thumbs?.[0] ?? product.images[0]}
         alt={`${product.title}${sold ? " (venduto)" : ""}`}
         category={product.category}
         showTag={false}

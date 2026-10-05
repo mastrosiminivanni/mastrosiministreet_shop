@@ -26,8 +26,8 @@ export function ProductImage({
       </div>
     );
   }
-  const stripes = category === "camicia-righe";
-  const checks = category === "camicia-quadri";
+  const stripes = category === "camicia";
+  const checks = false;
   return (
     <div
       role="img"

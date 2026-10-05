@@ -2,7 +2,7 @@
  * Catalogo prodotti. Oggi è un file tipizzato (seed di ESEMPIO); la forma di `Product`
  * è pensata per mappare 1:1 una tabella Supabase o un documento Sanity (vedi README).
  */
-export type Category = "camicia-righe" | "camicia-quadri" | "felpa" | "felpa-strass" | "pantaloni";
+export type Category = "camicia" | "felpa" | "pantaloni" | "altro";
 
 export type Product = {
   id: string;
@@ -18,6 +18,8 @@ export type Product = {
   measurements: Record<string, number>;
   /** URL reali, oppure "placeholder:<nome>" finché non ci sono le foto vere (9:16). */
   images: string[];
+  /** Miniature (stesso ordine di `images`), per le card dell'elenco. */
+  thumbs?: string[];
   /** 1 per i pezzi unici; 0 = venduto. */
   stock: number;
   /** Pezzi iniziali, se più di uno: con stock 1 il capo diventa "Ultimo pezzo" (altrimenti "Pezzo unico"). */
@@ -31,11 +33,10 @@ export type Product = {
 };
 
 export const CATEGORY_LABEL: Record<Category, string> = {
-  "camicia-righe": "Camicie a righe",
-  "camicia-quadri": "Camicie a quadri",
+  camicia: "Camicie",
   felpa: "Felpe",
-  "felpa-strass": "Felpe con strass",
   pantaloni: "Pantaloni",
+  altro: "Altro",
 };
 
 const base = { isExample: true } as const;
@@ -65,20 +66,20 @@ function p(
   };
 }
 
-export const PRODUCTS: Product[] = [
-  p(1, "camicia-righe-1", "Camicia a righe", "camicia-righe", 25, { sizes: ["L"], marketPickup: ["rutigliano", "noci"] }),
-  p(2, "camicia-righe-2", "Camicia a righe beige", "camicia-righe", 25, { sizes: ["M"], marketPickup: ["putignano"] }),
-  p(3, "camicia-righe-3", "Camicia a righe oversize", "camicia-righe", 25, { sizes: ["XL"], marketPickup: ["polignano", "conversano"] }),
-  p(4, "camicia-quadri-1", "Camicia a quadri blu", "camicia-quadri", 25, { sizes: ["L"], marketPickup: ["rutigliano"] }),
-  p(5, "camicia-quadri-2", "Camicia a quadri rossa", "camicia-quadri", 25, { sizes: ["M"], stock: 1, initialStock: 3, marketPickup: ["castellana-grotte"] }),
-  p(6, "felpa-oversize-strass-1", "Felpa oversize nera con strass", "felpa-strass", 30, { sizes: ["L"], marketPickup: ["noci", "putignano"] }),
-  p(7, "felpa-oversize-strass-2", "Felpa mimetica con strass", "felpa-strass", 30, { sizes: ["XL"], marketPickup: ["conversano"] }),
+/** Capi di ESEMPIO: si vedono solo finché non c'è almeno un capo vero pubblicato dal pannello. */
+export const SAMPLE_PRODUCTS: Product[] = [
+  p(1, "camicia-righe-1", "Camicia a righe", "camicia", 25, { sizes: ["L"], marketPickup: ["rutigliano", "noci"] }),
+  p(2, "camicia-righe-2", "Camicia a righe beige", "camicia", 25, { sizes: ["M"], marketPickup: ["putignano"] }),
+  p(3, "camicia-righe-3", "Camicia a righe oversize", "camicia", 25, { sizes: ["XL"], marketPickup: ["polignano", "conversano"] }),
+  p(4, "camicia-quadri-1", "Camicia a quadri blu", "camicia", 25, { sizes: ["L"], marketPickup: ["rutigliano"] }),
+  p(5, "camicia-quadri-2", "Camicia a quadri rossa", "camicia", 25, { sizes: ["M"], stock: 1, initialStock: 3, marketPickup: ["castellana-grotte"] }),
+  p(6, "felpa-oversize-strass-1", "Felpa oversize nera con strass", "felpa", 30, { sizes: ["L"], marketPickup: ["noci", "putignano"] }),
+  p(7, "felpa-oversize-strass-2", "Felpa mimetica con strass", "felpa", 30, { sizes: ["XL"], marketPickup: ["conversano"] }),
   p(8, "felpa-oversize-1", "Felpa oversize grigia", "felpa", 30, { sizes: ["L", "XL"], stock: 2, marketPickup: ["polignano"] }),
   p(9, "pantaloni-1", "Pantaloni larghi marrone", "pantaloni", 20, { sizes: ["M"], measurements: { vita: 40, lunghezza: 104 }, marketPickup: ["putignano", "castellana-grotte"] }),
   p(10, "pantaloni-2", "Pantaloni street neri", "pantaloni", 20, { sizes: ["L"], measurements: { vita: 42, lunghezza: 106 }, stock: 0 }),
 ];
 
-export const getProduct = (slug: string) => PRODUCTS.find((x) => x.slug === slug);
 export const isSoldOut = (x: Product) => x.stock <= 0;
 export const isUnique = (x: Product) => x.stock === 1 && (x.initialStock ?? 1) === 1;
 export const isLastPiece = (x: Product) => x.stock === 1 && (x.initialStock ?? 1) > 1;
