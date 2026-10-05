@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const NERO = "#0c0c0c";
@@ -180,23 +180,64 @@ export function VanBillboard() {
   );
 }
 
+const WHEEL_R = 0.362; // raggio ruota nel modello Blender (m)
+const MODEL_SCALE = 1.12;
+const MODEL_LENGTH = 5.92; // il modello parte dal retro (x = 0): lo centro
+const _pos = new THREE.Vector3();
+
+/**
+ * Furgone 3D da Blender (blender/build_van.py). Le ruote sono nodi "Ruota_*":
+ * girano in proporzione allo spazio percorso, quindi si fermano quando il furgone si ferma.
+ */
 function GltfVan() {
   const { scene } = useGLTF("/models/van.glb");
-  return <primitive object={scene} />;
+  const model = useMemo(() => scene.clone(true), [scene]);
+  const ref = useRef<THREE.Group>(null);
+  const prev = useRef<number | null>(null);
+
+  useFrame(() => {
+    const g = ref.current;
+    if (!g) return;
+    // ruote cercate una volta e tenute sul gruppo
+    if (!g.userData.wheels) {
+      const list: THREE.Object3D[] = [];
+      g.traverse((o) => o.name.startsWith("Ruota_") && list.push(o));
+      g.userData.wheels = list;
+    }
+    const x = g.getWorldPosition(_pos).x;
+    if (prev.current !== null) {
+      const angle = (x - prev.current) / (WHEEL_R * MODEL_SCALE);
+      for (const w of g.userData.wheels as THREE.Object3D[]) w.rotation.z -= angle;
+    }
+    prev.current = x;
+  });
+
+  return (
+    <group ref={ref} scale={MODEL_SCALE}>
+      <primitive object={model} position={[-MODEL_LENGTH / 2, 0, 0]} />
+    </group>
+  );
 }
 
 /** Usa /models/van.glb se esiste; altrimenti la foto del furgone vero (cartellone). `procedural` forza il modello in codice. */
 export function Van({ procedural = false }: { procedural?: boolean }) {
-  const [hasModel, setHasModel] = useState(false);
+  // null = sto ancora controllando: non mostro nulla per evitare il cambio di furgone a metà animazione
+  const [hasModel, setHasModel] = useState<boolean | null>(null);
   useEffect(() => {
     let alive = true;
     fetch("/models/van.glb", { method: "HEAD" })
       .then((r) => alive && setHasModel(r.ok && !(r.headers.get("content-type") ?? "").includes("html")))
-      .catch(() => {});
+      .catch(() => alive && setHasModel(false));
     return () => {
       alive = false;
     };
   }, []);
-  if (hasModel) return <GltfVan />;
+  if (hasModel === null) return null;
+  if (hasModel)
+    return (
+      <Suspense fallback={null}>
+        <GltfVan />
+      </Suspense>
+    );
   return procedural ? <ProceduralVan /> : <VanBillboard />;
 }
