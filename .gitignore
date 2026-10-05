@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archivio scaricato da Sketchfab (resta la versione estratta in reference/sprinter)
+reference/*.zip
+
+# file di Blender rigenerabili con blender/build_van.py
+blender/furgone.blend
+*.blend1

@@ -53,6 +53,7 @@ function Journey({ progress }: { progress: MotionValue<number> }) {
     const g = van.current;
     if (!g) return;
     g.position.x = THREE.MathUtils.damp(g.position.x, target, 4, dt);
+    g.rotation.y = 0.14; // quasi di profilo: guida dritto lungo la strada
     
     camera.position.x = g.position.x + 0.3;
     camera.position.y = 2.4;

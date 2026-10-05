@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // File di terze parti o generati: non sono nostro codice
+    "public/**",
+    "blender/**",
+    "scripts/**",
   ]),
 ]);
 

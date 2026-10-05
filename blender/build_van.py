@@ -1,21 +1,25 @@
 """
-Furgone Mastrosimini Street Shop: modello 3D generato in Blender da script.
+Furgone Mastrosimini Street Shop: parte da un modello Sprinter tetto alto (CC-BY 4.0, vedi CREDITS) e lo prepara per il sito.
 
-Esegui dalla cartella del progetto:
-  node blender/livery/render-livery.mjs            # texture della livrea (solo se le hai cambiate)
-  ~/Applications/Blender.app/Contents/MacOS/Blender -b --python blender/build_van.py -- --render
+  1. misura la geometria e scrive blender/livery/geometry.json
+       Blender -b --python blender/build_van.py -- --measure
+  2. genera le texture della livrea (usa geometry.json)
+       node blender/livery/render-livery.mjs
+  3. costruisce il modello finale
+       Blender -b --python blender/build_van.py -- --render        (--render = anche il render fotografico)
 
-Produce:
-  public/models/van.glb              -> caricato dal sito (le ruote sono nodi "Ruota_*" che il sito fa girare)
-  blender/furgone.blend              -> da aprire in Blender per modificarlo a mano
-  blender/render/furgone-render.png  -> (con --render) render fotografico, sfondo trasparente
+Cosa fa: da pollici a metri, muso verso +X, toglie le stelle del costruttore (nessun marchio di terzi),
+fonde ogni ruota in un solo oggetto "Ruota_*" con l'origine al centro (il sito la fa girare),
+copre il finestrino laterale destro (nella vostra foto il furgone è cieco), applica la livrea.
 
-Unità: metri. X = lunghezza (muso verso +X), Y = larghezza (lato passeggero verso -Y), Z = altezza.
-Forme ispirate a un furgone tetto alto generico; nessun marchio di terzi.
+Esce: public/models/van.glb, blender/furgone.blend, (con --render) blender/render/furgone-render.png.
+Unità: metri. X = lunghezza (muso verso +X), Y = larghezza (lato destro del furgone = -Y), Z = altezza.
 """
 
+import json
 import math
 import os
+import re
 import sys
 
 import bmesh
@@ -24,38 +28,43 @@ from mathutils import Matrix, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
+SRC = os.path.join(REPO, "reference", "sprinter", "source", "Mercedes-Benz Sprinter.blend")
 LIVERY = os.path.join(HERE, "livery")
+GEOMETRY = os.path.join(LIVERY, "geometry.json")
 OUT_GLB = os.path.join(REPO, "public", "models", "van.glb")
 OUT_BLEND = os.path.join(HERE, "furgone.blend")
 OUT_RENDER = os.path.join(HERE, "render", "furgone-render.png")
 
 ARGS = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+MEASURE = "--measure" in ARGS
 DO_RENDER = "--render" in ARGS
 
-# --- Dimensioni (le stesse di blender/livery/render-livery.mjs) ---
-L = 5.92
-HW = 1.0  # metà larghezza alla base
-TOP = 2.70
-BOTTOM = 0.38
-# Sagoma laterale (x, z): retro, tetto alto, cappello sopra la cabina, parabrezza, cofano, frontale.
-PROFILE = [
-    (0.00, 0.40), (0.00, 2.62), (0.08, 2.70), (4.05, 2.70), (4.32, 2.62), (4.45, 2.45), (4.48, 2.20),
-    (5.18, 1.32), (5.82, 1.08), (5.92, 0.95), (5.92, 0.40),
-]
-AXLES = (1.30, 4.95)
-WHEEL_R = 0.36
-WHEEL_Y = 0.86
-ARCH_R = 0.47
-ARCH_Z = 0.40
-TUMBLE_FROM = 1.45  # sopra questa quota le fiancate rientrano verso il tetto
-TUMBLE = 0.075      # rientro massimo (frazione della larghezza)
+INCH = 0.0254
+# pollici -> metri, poi ruota di 90° attorno a Z: il muso (-Y nel modello originale) va su +X.
+M_FIX = Matrix.Rotation(math.radians(90), 4, "Z") @ Matrix.Scale(INCH, 4)
 
-bpy.ops.wm.read_factory_settings(use_empty=True)
+bpy.ops.wm.open_mainfile(filepath=SRC)
 scene = bpy.context.scene
 
 
 # ---------- utilità ----------
-def material(name, color, rough=0.5, metal=0.0, emission=None, strength=0.0, coat=0.0):
+def key_of(o):
+    m = re.match(r"Mesh\d+ AM98_001_ambulance_eu_(.+?) (?:Group\d+ )?Model", o.name)
+    return m.group(1) if m else o.name
+
+
+def bounds(objs):
+    mn = Vector((1e9,) * 3)
+    mx = Vector((-1e9,) * 3)
+    for o in objs:
+        for v in o.data.vertices:
+            for i in range(3):
+                mn[i] = min(mn[i], v.co[i])
+                mx[i] = max(mx[i], v.co[i])
+    return mn, mx
+
+
+def material(name, color, rough=0.5, metal=0.0, emission=None, strength=0.0, coat=0.0, alpha=1.0):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     p = m.node_tree.nodes["Principled BSDF"]
@@ -63,6 +72,7 @@ def material(name, color, rough=0.5, metal=0.0, emission=None, strength=0.0, coa
     p.inputs["Roughness"].default_value = rough
     p.inputs["Metallic"].default_value = metal
     p.inputs["Coat Weight"].default_value = coat
+    p.inputs["Alpha"].default_value = alpha
     if emission:
         p.inputs["Emission Color"].default_value = (*emission, 1.0)
         p.inputs["Emission Strength"].default_value = strength
@@ -73,6 +83,8 @@ def livery_material(name, prefix):
     """Albedo + mappa ORM (G = ruvidità, B = metallo): l'oro esce metallico, il nero opaco."""
     m = bpy.data.materials.new(name)
     m.use_nodes = True
+    if MEASURE:
+        return m
     nt = m.node_tree
     p = nt.nodes["Principled BSDF"]
     col = nt.nodes.new("ShaderNodeTexImage")
@@ -89,209 +101,230 @@ def livery_material(name, prefix):
     return m
 
 
-def link(ob, parent=None):
-    scene.collection.objects.link(ob)
-    if parent:
-        ob.parent = parent
+def select_only(objs):
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objs:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+
+
+def join(objs, name):
+    select_only(objs)
+    bpy.ops.object.join()
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.data.name = name
     return ob
 
 
-def mesh_object(name, bm, mats, parent=None, location=(0, 0, 0)):
-    me = bpy.data.meshes.new(name)
-    bm.to_mesh(me)
-    bm.free()
-    for m in mats:
-        me.materials.append(m)
-    ob = bpy.data.objects.new(name, me)
-    ob.location = location
-    return link(ob, parent)
+# ---------- 1. normalizza: metri, muso a +X, tolgo le stelle ----------
+meshes = [o for o in bpy.data.objects if o.type == "MESH"]
+for o in list(meshes):
+    if o.name.startswith(("Mesh319 ", "Mesh320 ")):  # stella Mercedes: griglia e portellone
+        bpy.data.objects.remove(o, do_unlink=True)
+        meshes.remove(o)
+for o in meshes:
+    if o.data.users > 1:
+        o.data = o.data.copy()
+    o.data.transform(M_FIX @ o.matrix_world)
+    o.parent = None
+    o.matrix_world = Matrix.Identity(4)
 
+by_key = {}
+for o in meshes:
+    by_key.setdefault(key_of(o), []).append(o)
 
-def box(name, center, size, mat, parent, bevel=0.0):
-    bm = bmesh.new()
-    bmesh.ops.create_cube(bm, size=1.0)
-    bmesh.ops.scale(bm, vec=Vector(size), verts=bm.verts)
-    ob = mesh_object(name, bm, [mat], parent, center)
-    if bevel:
-        mod = ob.modifiers.new("Bevel", "BEVEL")
-        mod.width = bevel
-        mod.segments = 3
-    return ob
+# ---------- ruote: gomma + cerchio + coprimozzo + freno, per posizione ----------
+tires = [o for k, v in by_key.items() if k.startswith("tire_fr") for o in v]
+wheel_parts = [o for k, v in by_key.items() if re.match(r"(tire|rim|rim_cap|brake)_fr\d*$", k) for o in v]
+centers = []
+for t in tires:
+    mn, mx = bounds([t])
+    centers.append(((mn + mx) / 2, (mx.z - mn.z) / 2))
+centers.sort(key=lambda c: (c[0].y, -c[0].x))  # lato destro (-Y) prima; muso (+X) prima
+wheel_names = ["Ruota_AD", "Ruota_PD", "Ruota_AS", "Ruota_PS"]  # A anteriore, P posteriore, D destra, S sinistra
+groups = {n: [] for n in wheel_names}
+for o in wheel_parts:
+    mn, mx = bounds([o])
+    c = (mn + mx) / 2
+    best = min(range(4), key=lambda i: (centers[i][0].x - c.x) ** 2 + (centers[i][0].y - c.y) ** 2)
+    groups[wheel_names[best]].append(o)
 
+wheel_info = {}
+for i, name in enumerate(wheel_names):
+    center, radius = centers[i]
+    wheel_info[name] = {"x": center.x, "y": center.y, "z": center.z, "r": radius}
 
-def apply_modifiers(ob):
-    bpy.context.view_layer.objects.active = ob
-    for mod in list(ob.modifiers):
-        bpy.ops.object.modifier_apply(modifier=mod.name)
-
-
-def lathe(name, profile_ry, mat, parent, segments=48):
-    """Solido di rotazione attorno all'asse Y (profilo in coppie raggio, y)."""
-    bm = bmesh.new()
-    verts = [bm.verts.new((r, y, 0.0)) for r, y in profile_ry]
-    edges = [bm.edges.new((verts[i], verts[i + 1])) for i in range(len(verts) - 1)]
-    bmesh.ops.spin(bm, geom=verts + edges, cent=(0, 0, 0), axis=(0, 1, 0),
-                   angle=2 * math.pi, steps=segments, use_merge=True)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    ob = mesh_object(name, bm, [mat], parent)
-    ob.data.shade_smooth()
-    return ob
-
+# ---------- carrozzeria ----------
+paint = [o for k in ("carpaint_frontback", "carpaint_sides") for o in by_key.get(k, [])]
+pmn, pmx = bounds(paint)
+win = by_key["side_window"][0]
+wmn, wmx = bounds([win])
+cabwin = bounds(by_key["windows"])
+rear_windows = []
+for o in by_key["back_window"]:
+    rmn, rmx = bounds([o])
+    rear_windows.append({"x": rmn.x, "ymin": rmn.y, "ymax": rmx.y, "zmin": rmn.z, "zmax": rmx.z})
+geometry = {
+    "body": {"xmin": pmn.x, "xmax": pmx.x, "zmin": pmn.z, "zmax": pmx.z, "ymin": pmn.y, "ymax": pmx.y},
+    "wheels": wheel_info,
+    "cabWindow": {"xmin": cabwin[0].x, "xmax": cabwin[1].x, "zmin": cabwin[0].z, "zmax": cabwin[1].z},
+    "rearWindows": rear_windows,
+    "slidingWindow": {"xmin": wmn.x, "xmax": wmx.x, "zmin": wmn.z, "zmax": wmx.z, "y": wmn.y},
+    "windshield": dict(zip(("min", "max"), [list(v) for v in bounds(by_key["windshield"])])),
+}
+with open(GEOMETRY, "w") as f:
+    json.dump(geometry, f, indent=2)
+print("GEOMETRY:", GEOMETRY)
+print(json.dumps(geometry, indent=1))
+if MEASURE:
+    sys.exit(0)
 
 # ---------- materiali ----------
-M_BODY = material("Carrozzeria", (0.006, 0.006, 0.006), rough=0.55)
+M_PAINT = material("Vernice", (0.006, 0.006, 0.006), rough=0.55)
 M_PLASTIC = material("Plastica", (0.03, 0.03, 0.032), rough=0.8)
-M_GLASS = material("Vetro", (0.008, 0.01, 0.013), rough=0.04, metal=0.3, coat=1.0)
+M_DARK = material("Griglia", (0.012, 0.012, 0.014), rough=0.6)
+M_GLASS = material("Vetro", (0.006, 0.008, 0.011), rough=0.04, metal=0.2, coat=1.0)
 M_CHROME = material("Cromo", (0.75, 0.75, 0.78), rough=0.18, metal=1.0)
-M_HEAD = material("Fari", (0.85, 0.85, 0.8), rough=0.1, emission=(1.0, 0.95, 0.85), strength=2.0)
-M_TAIL = material("Stop", (0.55, 0.02, 0.02), rough=0.25, emission=(0.9, 0.05, 0.03), strength=0.6)
-M_TAIL_W = material("Retromarcia", (0.8, 0.8, 0.8), rough=0.2)
+M_HEAD = material("Fari", (0.85, 0.85, 0.8), rough=0.1, emission=(1.0, 0.95, 0.85), strength=1.2)
+M_TAIL = material("Stop", (0.32, 0.008, 0.008), rough=0.25, emission=(0.8, 0.03, 0.02), strength=0.2)
 M_TYRE = material("Gomma", (0.018, 0.018, 0.018), rough=0.9)
-M_RIM = material("Cerchio", (0.62, 0.63, 0.65), rough=0.35, metal=0.9)
-M_HOLE = material("Foro", (0.01, 0.01, 0.01), rough=0.9)
+M_RIM = material("Cerchio", (0.62, 0.63, 0.65), rough=0.38, metal=0.9)
+M_BRAKE = material("Freno", (0.18, 0.18, 0.19), rough=0.5, metal=0.8)
 M_LIV_R = livery_material("Livrea_destra", "lato-destro")
 M_LIV_L = livery_material("Livrea_sinistra", "lato-sinistro")
 M_LIV_B = livery_material("Livrea_retro", "retro")
 
-root = link(bpy.data.objects.new("Furgone", None))
+MAT_BY_KEY = {
+    "black_plastic": M_PLASTIC, "black_metal": M_PLASTIC, "glass_black": M_DARK,
+    "chrome": M_CHROME, "chrome_stripes": M_CHROME, "chrome_stripes3": M_CHROME,
+    "chrome_squares": M_CHROME, "chrome_squares1": M_CHROME,
+    "windows": M_GLASS, "windshield": M_GLASS, "mirror_blinker_glass": M_GLASS,
+    "mirror_blinker": M_PLASTIC,
+    "headlights_glass": M_HEAD, "headlights_glass1": M_HEAD,
+    "taillight_glass": M_TAIL, "taillight_glass1": M_TAIL, "light_red": M_TAIL,
+}
 
-# ---------- carrozzeria: sagoma estrusa ----------
-bm = bmesh.new()
-a = [bm.verts.new((x, -HW, z)) for x, z in PROFILE]
-b = [bm.verts.new((x, HW, z)) for x, z in PROFILE]
-bm.faces.new(a)
-bm.faces.new(list(reversed(b)))
-for i in range(len(PROFILE)):
-    j = (i + 1) % len(PROFILE)
-    bm.faces.new((a[i], a[j], b[j], b[i]))
-bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+root = bpy.data.objects.new("Furgone", None)
+scene.collection.objects.link(root)
 
-# Tagli orizzontali, poi le fiancate rientrano dolcemente verso il tetto.
-for zc in (TUMBLE_FROM, 1.75, 2.0, 2.2, 2.4, 2.55):
-    geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
-    bmesh.ops.bisect_plane(bm, geom=geom, plane_co=(0, 0, zc), plane_no=(0, 0, 1))
-for v in bm.verts:
-    if v.co.z > TUMBLE_FROM:
-        t = (v.co.z - TUMBLE_FROM) / (TOP - TUMBLE_FROM)
-        v.co.y *= 1 - TUMBLE * t ** 1.6
-body = mesh_object("Carrozzeria", bm, [M_BODY, M_LIV_R, M_LIV_L, M_LIV_B, M_GLASS], root)
+# ---------- 2. pezzi fissi -> un solo oggetto "Dettagli" ----------
+for o in by_key.get("interior", []) + by_key.get("side_window", []) + by_key.get("back_window", []):
+    bpy.data.objects.remove(o, do_unlink=True)  # finestrini cancellati: si chiudono con una toppa verniciata
+by_key.pop("back_window", None)
+fixed = []
+for k, v in by_key.items():
+    if k in ("carpaint_frontback", "carpaint_sides", "interior", "side_window") or re.match(r"(tire|rim|rim_cap|brake)_fr\d*$", k):
+        continue
+    for o in v:
+        o.data.materials.clear()
+        o.data.materials.append(MAT_BY_KEY.get(k, M_PLASTIC))
+        fixed.append(o)
+details = join(fixed, "Dettagli")
+details.parent = root
+bpy.ops.object.shade_smooth()
+details.data.set_sharp_from_angle(angle=math.radians(35))
 
-# Passaruota: tagli solo verso l'esterno (all'interno resta la parete del vano ruota).
-for x in AXLES:
-    for side in (-1, 1):
-        bpy.ops.mesh.primitive_cylinder_add(
-            radius=ARCH_R, depth=0.6, vertices=64,
-            location=(x, side * (HW - 0.12), ARCH_Z), rotation=(math.pi / 2, 0, 0),
-        )
-        cutter = bpy.context.active_object
-        mod = body.modifiers.new("Arco", "BOOLEAN")
-        mod.operation = "DIFFERENCE"
-        mod.solver = "EXACT"
-        mod.object = cutter
-        apply_modifiers(body)
-        bpy.data.objects.remove(cutter, do_unlink=True)
+# ---------- 3. ruote: un oggetto per ruota, origine al centro ----------
+WHEEL_MATS = {"tire": M_TYRE, "rim": M_RIM, "rim_cap": M_RIM, "brake": M_BRAKE}
+for name, parts in groups.items():
+    for o in parts:
+        o.data.materials.clear()
+        o.data.materials.append(WHEEL_MATS[re.match(r"(tire|rim_cap|rim|brake)", key_of(o)).group(1)])
+    w = join(parts, name)
+    w.parent = root
+    c = wheel_info[name]
+    scene.cursor.location = (c["x"], c["y"], c["z"])
+    select_only([w])
+    bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
+    bpy.ops.object.shade_smooth()
+    w.data.set_sharp_from_angle(angle=math.radians(35))
 
-bev = body.modifiers.new("Bevel", "BEVEL")
-bev.width = 0.09
-bev.segments = 5
-bev.limit_method = "ANGLE"
-bev.angle_limit = math.radians(40)
-apply_modifiers(body)
+# ---------- 4. carrozzeria con livrea (UV piane per fiancata) ----------
+def quad_patch(name, pts):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    bm.faces.new([bm.verts.new(v) for v in pts])
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    scene.collection.objects.link(ob)
+    return ob
 
-# Materiali e UV per faccia: fiancate e retro prendono la livrea (proiezione piana), il parabrezza è vetro.
+
+# Il vetro del portellone scorrevole (lato destro) e i due finestrini posteriori non ci sono nella vostra foto:
+# li chiudo con una toppa sul piano del vetro, che prende la livrea.
+sw = geometry["slidingWindow"]
+patches = [quad_patch("Toppa_scorrevole", (
+    (sw["xmin"], sw["y"], sw["zmin"]), (sw["xmax"], sw["y"], sw["zmin"]),
+    (sw["xmax"], sw["y"], sw["zmax"]), (sw["xmin"], sw["y"], sw["zmax"]),
+))]
+for i, rw in enumerate(geometry["rearWindows"]):
+    patches.append(quad_patch(f"Toppa_retro_{i}", (
+        (rw["x"], rw["ymax"], rw["zmin"]), (rw["x"], rw["ymin"], rw["zmin"]),
+        (rw["x"], rw["ymin"], rw["zmax"]), (rw["x"], rw["ymax"], rw["zmax"]),
+    )))
+
+body = join(paint + patches, "Carrozzeria")
+body.parent = root
+body.data.materials.clear()
+for m in (M_PAINT, M_LIV_R, M_LIV_L, M_LIV_B):
+    body.data.materials.append(m)
+
+b = geometry["body"]
 bm = bmesh.new()
 bm.from_mesh(body.data)
+bm.normal_update()
 uv = bm.loops.layers.uv.verify()
+L = b["xmax"] - b["xmin"]
+H = b["zmax"] - b["zmin"]
 for f in bm.faces:
     n = f.normal
-    c = f.calc_center_median()
-    if n.y < -0.6:
-        idx = 1
-    elif n.y > 0.6:
-        idx = 2
-    elif n.x < -0.6:
-        idx = 3
-    elif n.x > 0.6 and n.z > 0.4 and c.z > 1.36 and c.x > 4.5:
-        idx = 4
+    if n.y < -0.55:
+        slot = 1
+    elif n.y > 0.55:
+        slot = 2
+    elif n.x < -0.55:
+        slot = 3
     else:
-        idx = 0
-    f.material_index = idx
+        slot = 0
+    f.material_index = slot
     for loop in f.loops:
-        x, y, z = loop.vert.co
-        v = (z - BOTTOM) / (TOP - BOTTOM)
-        u = {1: x / L, 2: 1 - x / L, 3: (HW - y) / (2 * HW)}.get(idx, x / L)
+        p = loop.vert.co
+        v = (p.z - b["zmin"]) / H
+        if slot == 1:
+            u = (p.x - b["xmin"]) / L  # lato destro: muso a destra
+        elif slot == 2:
+            u = 1 - (p.x - b["xmin"]) / L  # lato sinistro visto da fuori: muso a sinistra
+        elif slot == 3:
+            u = (b["ymax"] - p.y) / (b["ymax"] - b["ymin"])  # retro visto da dietro
+        else:
+            u = 0.0
         loop[uv].uv = (u, v)
 bm.to_mesh(body.data)
 bm.free()
-body.data.shade_smooth()
+select_only([body])
+bpy.ops.object.shade_smooth()
 body.data.set_sharp_from_angle(angle=math.radians(30))
-
-# ---------- frontale ----------
-box("Paraurti_ant", (5.95, 0, 0.50), (0.18, 2.04, 0.26), M_PLASTIC, root, bevel=0.04)
-box("Griglia", (5.935, 0, 0.80), (0.03, 0.95, 0.24), M_PLASTIC, root)
-for i, z in enumerate((0.73, 0.80, 0.87)):
-    box(f"Griglia_lista_{i}", (5.955, 0, z), (0.015, 0.92, 0.018), M_CHROME, root)
-for s in (-1, 1):
-    box(f"Faro_{s}", (5.86, s * 0.70, 1.0), (0.14, 0.40, 0.15), M_HEAD, root, bevel=0.02)
-    box(f"Specchio_braccio_{s}", (4.85, s * 1.05, 1.72), (0.05, 0.16, 0.04), M_PLASTIC, root)
-    box(f"Specchio_{s}", (4.85, s * 1.17, 1.70), (0.09, 0.09, 0.30), M_PLASTIC, root, bevel=0.025)
-    box(f"Maniglia_{s}", (4.12, s * (HW + 0.004), 1.36), (0.18, 0.02, 0.04), M_PLASTIC, root)
-
-# ---------- retro ----------
-box("Paraurti_post", (-0.06, 0, 0.47), (0.16, 2.04, 0.18), M_PLASTIC, root, bevel=0.03)
-box("Pedana", (-0.17, 0, 0.42), (0.22, 1.4, 0.06), M_PLASTIC, root, bevel=0.01)
-for s in (-1, 1):
-    box(f"Stop_{s}", (-0.012, s * 0.88, 1.12), (0.04, 0.15, 0.56), M_TAIL, root, bevel=0.01)
-    box(f"Retro_{s}", (-0.013, s * 0.88, 0.80), (0.042, 0.15, 0.10), M_TAIL_W, root)
-
-# porta scorrevole (lato passeggero): binario dietro la porta e maniglia
-box("Binario_porta", (2.25, -HW - 0.004, 1.05), (0.95, 0.014, 0.025), M_CHROME, root)
-box("Maniglia_scorrevole", (2.9, -HW - 0.004, 1.36), (0.18, 0.02, 0.04), M_PLASTIC, root)
-
-# ---------- ruote: nodi "Ruota_*" con l'origine al centro; il sito le fa girare sul loro asse ----------
-TYRE = [(0.235, -0.115), (0.30, -0.12), (0.34, -0.11), (0.358, -0.08), (0.362, 0.0),
-        (0.358, 0.08), (0.34, 0.11), (0.30, 0.12), (0.235, 0.115)]
-
-
-def wheel(name, x, s):
-    """s = -1 lato destro (-Y), +1 lato sinistro."""
-    w = link(bpy.data.objects.new(name, None), root)
-    w.location = (x, s * WHEEL_Y, WHEEL_R)
-    lathe(f"{name}_gomma", TYRE, M_TYRE, w)
-    rim = [(0.236, -s * 0.10), (0.236, s * 0.095), (0.205, s * 0.105), (0.13, s * 0.08),
-           (0.10, s * 0.11), (0.05, s * 0.118), (0.0, s * 0.118)]
-    lathe(f"{name}_cerchio", rim, M_RIM, w)
-    # fori del cerchio: rendono visibile la rotazione
-    bm = bmesh.new()
-    for k in range(6):
-        ang = k * math.pi / 3
-        ret = bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=0.028, radius2=0.028, depth=0.02)
-        vs = ret["verts"]
-        bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi / 2, 3, "X"))
-        bmesh.ops.translate(bm, verts=vs, vec=(0.165 * math.cos(ang), s * 0.088, 0.165 * math.sin(ang)))
-    mesh_object(f"{name}_fori", bm, [M_HOLE], w)
-
-
-for x, tag in ((AXLES[0], "P"), (AXLES[1], "A")):
-    wheel(f"Ruota_{tag}D", x, -1)
-    wheel(f"Ruota_{tag}S", x, 1)
 
 # ---------- export GLB ----------
 bpy.ops.object.select_all(action="DESELECT")
 for ob in [root, *root.children_recursive]:
     ob.select_set(True)
 os.makedirs(os.path.dirname(OUT_GLB), exist_ok=True)
-gltf = dict(filepath=OUT_GLB, export_format="GLB", use_selection=True, export_apply=True, export_yup=True)
-try:
-    bpy.ops.export_scene.gltf(**gltf, export_image_format="WEBP", export_image_quality=82)
-except TypeError:
-    bpy.ops.export_scene.gltf(**gltf)
+gltf = dict(
+    filepath=OUT_GLB, export_format="GLB", use_selection=True, export_apply=True, export_yup=True,
+    export_draco_mesh_compression_enable=True, export_draco_mesh_compression_level=7,
+    export_draco_position_quantization=14, export_draco_normal_quantization=10, export_draco_texcoord_quantization=12,
+    export_image_format="WEBP", export_image_quality=80,
+)
+bpy.ops.export_scene.gltf(**gltf)
 print("GLB:", OUT_GLB, os.path.getsize(OUT_GLB) // 1024, "KB")
 
 # ---------- set per il render (non esportato) ----------
-target = link(bpy.data.objects.new("Mira", None))
-target.location = (2.9, 0, 1.25)
+target = bpy.data.objects.new("Mira", None)
+scene.collection.objects.link(target)
+target.location = (0.0, 0.0, 1.2)
 
 
 def aim(ob):
@@ -301,8 +334,9 @@ def aim(ob):
     c.up_axis = "UP_Y"
 
 
-cam = link(bpy.data.objects.new("Camera", bpy.data.cameras.new("Camera")))
-cam.location = (-3.2, -8.4, 2.3)
+cam = bpy.data.objects.new("Camera", bpy.data.cameras.new("Camera"))
+scene.collection.objects.link(cam)
+cam.location = (-8.0, -8.5, 2.3)
 cam.data.lens = 42
 aim(cam)
 scene.camera = cam
@@ -313,15 +347,16 @@ def area(name, loc, energy, size, color=(1, 1, 1)):
     lt.energy = energy
     lt.size = size
     lt.color = color
-    ob = link(bpy.data.objects.new(name, lt))
+    ob = bpy.data.objects.new(name, lt)
+    scene.collection.objects.link(ob)
     ob.location = loc
     aim(ob)
 
 
-area("Chiave", (1.0, -7.0, 6.0), 2200, 6, (1.0, 0.95, 0.88))
-area("Contorno_oro", (7.5, 4.0, 3.5), 1500, 4, (1.0, 0.72, 0.36))
-area("Riempimento", (-6.0, -1.5, 3.0), 600, 4)
-area("Cielo", (3.0, 0.0, 8.0), 900, 9)
+area("Chiave", (-3.0, -8.0, 6.0), 2200, 6, (1.0, 0.95, 0.88))
+area("Contorno_oro", (8.0, 5.0, 3.5), 1500, 4, (1.0, 0.72, 0.36))
+area("Riempimento", (-9.0, 1.0, 3.0), 600, 4)
+area("Cielo", (0.0, 0.0, 8.0), 900, 9)
 
 bpy.ops.mesh.primitive_plane_add(size=60, location=(0, 0, 0))
 floor = bpy.context.active_object

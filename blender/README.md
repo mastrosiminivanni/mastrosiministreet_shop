@@ -1,33 +1,30 @@
 # Il furgone 3D (Blender)
 
-> Oggi il sito usa la **foto vera** del furgone con le ruote che girano (`scripts/prepare-van-photo.mjs`,
-> `scripts/make-wheels.mjs`). Il modello qui sotto è solo uno strumento: se in `public/models/van.glb`
-> c'è un modello 3D, il sito lo usa al posto della foto (es. un modello professionale con la livrea applicata).
-
-Il modello in `public/models/van.glb` è generato da script, quindi si può rigenerare e modificare.
+`public/models/van.glb` è un modello **Mercedes-Benz Sprinter tetto alto** (CC BY 4.0, vedi `../CREDITS.md`)
+preparato da script: scala e orientamento giusti, marchi del costruttore tolti, ruote separate che girano,
+livrea Mastrosimini applicata. Se il file manca, il sito mostra la foto del furgone.
 
 ## Rigenerare
 
 ```bash
 export PATH=$HOME/.local/node/bin:$PATH
-node blender/livery/render-livery.mjs        # texture della livrea (logo, pennellate oro, scritta)
-~/Applications/Blender.app/Contents/MacOS/Blender -b --python blender/build_van.py -- --render
+B=~/Applications/Blender.app/Contents/MacOS/Blender
+$B -b --python blender/build_van.py -- --measure     # 1. misure -> blender/livery/geometry.json
+node blender/livery/render-livery.mjs                 # 2. texture della livrea (logo, pennellate oro, scritta)
+$B -b --python blender/build_van.py -- --render       # 3. modello finale + render fotografico
 ```
 
-Escono: `public/models/van.glb` (usato dal sito), `blender/furgone.blend` (da aprire in Blender) e
-`blender/render/furgone-render.png` (render fotografico con sfondo trasparente).
+Escono: `public/models/van.glb` (compresso Draco; il decodificatore è in `public/draco/`), `blender/furgone.blend`
+(da aprire in Blender per ritoccare a mano) e `blender/render/furgone-render.png` (sfondo trasparente).
 
-## Cosa modificare e dove
+## Cosa cambiare e dove
 
-- **Forma del furgone**: `PROFILE` in `build_van.py` (sagoma laterale in metri) e, con gli stessi numeri,
-  in `livery/render-livery.mjs`. Ruote: `AXLES`, `WHEEL_R`.
-- **Livrea**: posizione di logo, scritta e pennellate in `livery/render-livery.mjs` (coordinate in metri).
-- **A mano in Blender**: apri `furgone.blend`, modifica, poi *File → Export → glTF 2.0 (.glb)* su
-  `public/models/van.glb`, selezionando solo l'oggetto "Furgone" e i suoi figli.
+- **Livrea** (posizione di logo, scritta, pennellate oro): `livery/render-livery.mjs`, coordinate in metri sul furgone.
+- **Quali parti** si tolgono o si coprono, **materiali**, ruote: `build_van.py`.
+- **Modello di partenza**: `reference/sprinter/source/Mercedes-Benz Sprinter.blend`. Per usarne un altro, cambia `SRC` e
+  adatta i nomi dei pezzi (gomme, cerchi, vernice) nello script.
 
 ## Regole per il sito
 
-- Le ruote devono restare oggetti separati con nome che inizia per `Ruota_` e l'origine al centro:
-  il sito le fa girare in base allo spazio percorso.
-- Il muso punta verso +X, le ruote poggiano a quota 0, il retro è a x = 0.
-- Se `van.glb` manca, il sito mostra la foto del furgone (`public/brand/furgone.webp`).
+- Le ruote sono oggetti separati chiamati `Ruota_*` con l'origine al centro: il sito le fa girare in base allo spazio percorso.
+- Muso verso +X, ruote che poggiano a quota 0, unità in metri.

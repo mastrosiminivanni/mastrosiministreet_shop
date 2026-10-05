@@ -17,6 +17,17 @@ export function Footer() {
           <li><Link href="/legal/recesso" className="hover:text-oro">Diritto di recesso</Link></li>
         </ul>
       </div>
+      <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/50">
+        Modello 3D del furgone: &quot;Mercedes-Benz Sprinter&quot; di{" "}
+        <a href="https://sketchfab.com/3d-models/mercedes-benz-sprinter-152f62800be34652af0545487129ca2e" rel="noopener" className="underline hover:text-oro">
+          Savelliy 07
+        </a>
+        , licenza{" "}
+        <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener" className="underline hover:text-oro">
+          CC BY 4.0
+        </a>
+        . Adattato: livrea Mastrosimini, marchi del costruttore rimossi, ruote separate.
+      </p>
     </footer>
   );
 }

@@ -243,13 +243,17 @@ export function VanBillboard() {
   );
 }
 
-const WHEEL_R = 0.362; // raggio ruota nel modello Blender (m)
-const MODEL_SCALE = 1.12;
-const MODEL_LENGTH = 5.92; // il modello parte dal retro (x = 0): lo centro
+// Il decodificatore Draco sta in /public/draco: nessuna richiesta a server esterni.
+useGLTF.setDecoderPath("/draco/");
+
+const WHEEL_R = 0.387; // raggio ruota nel modello Blender (m)
+const MODEL_SCALE = 1.1;
+const MODEL_CENTER_X = 0.075; // centro del furgone lungo X nel modello
 
 /**
- * Furgone 3D da Blender (blender/build_van.py). Le ruote sono nodi "Ruota_*":
- * girano in proporzione allo spazio percorso, quindi si fermano quando il furgone si ferma.
+ * Furgone 3D (blender/build_van.py): Sprinter tetto alto con la livrea Mastrosimini, muso a +X.
+ * Le ruote sono nodi "Ruota_*" con l'origine al centro: girano in proporzione allo spazio percorso,
+ * quindi si fermano quando il furgone si ferma.
  */
 function GltfVan() {
   const { scene } = useGLTF("/models/van.glb");
@@ -276,7 +280,7 @@ function GltfVan() {
 
   return (
     <group ref={ref} scale={MODEL_SCALE}>
-      <primitive object={model} position={[-MODEL_LENGTH / 2, 0, 0]} />
+      <primitive object={model} position={[-MODEL_CENTER_X, 0.01, 0]} />
     </group>
   );
 }

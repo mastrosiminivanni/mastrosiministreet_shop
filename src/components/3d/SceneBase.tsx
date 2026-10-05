@@ -14,7 +14,7 @@ export function Road({ length = 80 }: { length?: number }) {
     <group position={[0, 0, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.001, 0]} receiveShadow>
         <planeGeometry args={[length, 7]} />
-        <meshStandardMaterial color="#121212" roughness={1} envMapIntensity={0.08} />
+        <meshStandardMaterial color="#121212" roughness={1} envMapIntensity={0.05} />
       </mesh>
       {Array.from({ length: dashes }).map((_, i) => (
         <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[-length / 2 + i * 2.4 + 1, 0.004, 1.9]}>
@@ -43,7 +43,7 @@ function StudioReflections() {
 function FitCamera({ base }: { base: number }) {
   useFrame(({ camera, size }) => {
     const fov = ((camera as { fov?: number }).fov ?? 38) * (Math.PI / 180);
-    const needed = 8.2 / (2 * Math.tan(fov / 2) * (size.width / size.height));
+    const needed = 9.6 / (2 * Math.tan(fov / 2) * (size.width / size.height));
     camera.position.z = Math.max(base, needed);
   });
   return null;
@@ -64,11 +64,11 @@ export function SceneCanvas({
       shadows={!low}
       camera={{ position: camera, fov: 38 }}
       gl={{ antialias: !low, powerPreference: "high-performance" }}
-      scene={{ environmentIntensity: 0.45 }}
+      scene={{ environmentIntensity: 0.9 }}
       aria-hidden="true"
     >
       <color attach="background" args={["#0c0c0c"]} />
-      <hemisphereLight args={["#ffffff", "#1a1208", 1.1]} />
+      <hemisphereLight args={["#ffffff", "#1a1208", 0.5]} />
       <directionalLight position={[4, 6, 5]} intensity={2.4} color="#fff3e0" castShadow={!low} />
       <directionalLight position={[-5, 3, -4]} intensity={1.6} color="#d4a85c" />
       <FitCamera base={camera[2]} />
