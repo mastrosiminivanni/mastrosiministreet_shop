@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { INSTAGRAM_DM_URL } from "@/data/markets";
 import { statusLabel, useTodayStop } from "@/components/sections/TodayBanner";
 
 /** Barra fissa in basso, solo su telefono: dove siamo oggi e contatto Instagram sempre a portata di pollice. */
 export function StickyBar() {
   const stop = useTodayStop();
+  // Nel pannello riservato la barra non serve e coprirebbe il modulo.
+  if (usePathname().startsWith("/admin")) return null;
   const label = stop
     ? stop.town
       ? `${stop.town}${stop.status ? ` · ${statusLabel(stop.status, stop.hours?.start).toLowerCase()}` : ""}`
