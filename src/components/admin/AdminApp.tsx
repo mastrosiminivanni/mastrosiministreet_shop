@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { creaStore } from "@/lib/admin/store";
 import type { AdminProduct } from "@/lib/admin/types";
@@ -12,12 +12,20 @@ type Accesso = "carico" | "fuori" | "non-abilitato" | "dentro";
 
 const btn = "min-h-12 rounded-tag px-5 text-sm font-extrabold uppercase tracking-wide";
 
+// "?prova" nell'indirizzo forza la modalità prova (serve ai test e per provare senza toccare l'archivio vero).
+const subscribeNiente = () => () => {};
+const leggiProva = () => new URLSearchParams(window.location.search).has("prova");
+const useModoProva = () => useSyncExternalStore(subscribeNiente, leggiProva, () => false);
+
 /** Pagina riservata: entra solo chi è abilitato; senza Supabase collegato lavora in "modalità prova". */
 export function AdminApp() {
   const sb = getSupabase();
-  const store = useMemo(() => creaStore(), []);
-  const [accesso, setAccesso] = useState<Accesso>(supabaseConfigurato ? "carico" : "dentro");
+  const modoProva = useModoProva();
+  const store = useMemo(() => creaStore(modoProva), [modoProva]);
+  const [accessoVero, setAccesso] = useState<Accesso>(supabaseConfigurato ? "carico" : "dentro");
+  const accesso: Accesso = modoProva ? "dentro" : accessoVero;
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
   const [msg, setMsg] = useState("");
   const [capi, setCapi] = useState<AdminProduct[]>([]);
@@ -66,9 +74,16 @@ export function AdminApp() {
     };
   }, [accesso, store]);
 
-  async function inviaLink(e: React.FormEvent) {
+  async function entra(e: React.FormEvent) {
     e.preventDefault();
-    if (!sb || !email.trim()) return;
+    if (!sb || !email.trim() || !password) return;
+    setMsg("Controllo…");
+    const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
+    setMsg(error ? "Email o password non corrette." : "");
+  }
+
+  async function inviaLink() {
+    if (!sb || !email.trim()) return setMsg("Scrivi prima la tua email.");
     setMsg("Invio il link…");
     const { error } = await sb.auth.signInWithOtp({
       email: email.trim(),
@@ -88,10 +103,8 @@ export function AdminApp() {
 
   if (accesso === "fuori")
     return (
-      <form onSubmit={inviaLink} className="mt-8 max-w-md space-y-4">
-        <p className="text-bianco/80">
-          Inserisci la tua email: ti mando un link per entrare, senza password.
-        </p>
+      <form onSubmit={entra} className="mt-8 max-w-md space-y-4">
+        <p className="text-bianco/80">Entra con la tua email e la tua password.</p>
         <label htmlFor="email" className="sr-only">
           Email
         </label>
@@ -99,14 +112,34 @@ export function AdminApp() {
           id="email"
           type="email"
           required
-          autoComplete="email"
+          autoComplete="username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="la-tua-email@esempio.it"
           className="min-h-12 w-full rounded-tag border border-white/25 bg-nero px-3 text-base"
         />
+        <label htmlFor="password" className="sr-only">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          className="min-h-12 w-full rounded-tag border border-white/25 bg-nero px-3 text-base"
+        />
         <button type="submit" className={`${btn} w-full bg-oro text-nero`}>
-          Mandami il link
+          Entra
+        </button>
+        <button
+          type="button"
+          onClick={inviaLink}
+          className="w-full text-sm text-bianco/70 underline"
+        >
+          Preferisco un link via email
         </button>
         <p role="status" aria-live="polite" className="text-sm text-bianco/80">
           {msg}

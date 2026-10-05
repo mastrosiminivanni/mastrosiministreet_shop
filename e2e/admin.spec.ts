@@ -16,7 +16,7 @@ test.describe("pannello admin (modalità prova)", () => {
   test("aggiungi un capo: foto, taglia, prezzo → bozza → pubblica → venduto → elimina", async ({
     page,
   }) => {
-    await page.goto("/admin");
+    await page.goto("/admin?prova=1");
     await expect(page.getByText("Modalità prova")).toBeVisible();
     const salva = page.getByRole("button", { name: "Salva come bozza" });
     await expect(salva).toBeDisabled();
@@ -77,7 +77,7 @@ test.describe("pannello admin (modalità prova)", () => {
   });
 
   test("accessibilità del pannello", async ({ page }) => {
-    await page.goto("/admin");
+    await page.goto("/admin?prova=1");
     const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     const gravi = r.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
     expect(

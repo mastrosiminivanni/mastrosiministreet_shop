@@ -5,7 +5,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  * a proteggere i dati sono le regole di accesso in supabase/schema.sql.
  */
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+// Supabase la chiama "publishable key" (le vecchie "anon key" funzionano uguale).
+export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 export const supabaseConfigurato = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 let client: SupabaseClient | null = null;
