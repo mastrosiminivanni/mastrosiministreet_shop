@@ -1,0 +1,90 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Mastrosimini Street Shop//Il furgone//IT
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Il furgone di Mastrosimini
+X-WR-TIMEZONE:Europe/Rome
+BEGIN:VTIMEZONE
+TZID:Europe/Rome
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:rutigliano@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261005T070000
+DTEND;TZID=Europe/Rome:20261005T130000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Il furgone a Rutigliano
+LOCATION:Via Dante (zona Via Paisiello)\, Rutigliano
+GEO:41.0082;17.0095
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=41.0082\,17.0095
+END:VEVENT
+BEGIN:VEVENT
+UID:noci@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261006T070000
+DTEND;TZID=Europe/Rome:20261006T130000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Il furgone a Noci
+LOCATION:Centro storico\, zona Via De Pretis\, Noci
+GEO:40.7965;17.1222
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=40.7965\,17.1222
+END:VEVENT
+BEGIN:VEVENT
+UID:putignano@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261007T070000
+DTEND;TZID=Europe/Rome:20261007T130000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Il furgone a Putignano
+LOCATION:Via Rosata Romanazzi (da confermare)\, Putignano
+GEO:40.8486;17.1226
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=40.8486\,17.1226
+END:VEVENT
+BEGIN:VEVENT
+UID:polignano@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261008T070000
+DTEND;TZID=Europe/Rome:20261008T130000
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:Il furgone a Polignano
+LOCATION:Via Vito Cosimo Basile\, Polignano
+GEO:40.9884;17.2267
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=40.9884\,17.2267
+END:VEVENT
+BEGIN:VEVENT
+UID:conversano@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261009T070000
+DTEND;TZID=Europe/Rome:20261009T130000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Il furgone a Conversano
+LOCATION:Via Padre Michele Accolti Gil\, vicino al campo sportivo\, Conversano
+GEO:40.964;17.108
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=40.964\,17.108
+END:VEVENT
+BEGIN:VEVENT
+UID:castellana-grotte@mastrosiministreet.shop
+DTSTAMP:20261005T133003Z
+DTSTART;TZID=Europe/Rome:20261010T070000
+DTEND;TZID=Europe/Rome:20261010T130000
+RRULE:FREQ=WEEKLY;BYDAY=SA
+SUMMARY:Il furgone a Castellana Grotte
+LOCATION:Piazza Garibaldi\, Castellana Grotte
+GEO:40.885;17.1671
+DESCRIPTION:Mastrosimini Street Shop: un mercato diverso ogni giorno. https://www.google.com/maps/search/?api=1&query=40.885\,17.1671
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /diagnostica/
+Disallow: /admin/
+
+Sitemap: https://mastrosiminivanni.github.io/mastrosiministreet_shop/sitemap.xml

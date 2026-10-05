@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,93209,s=>{"use strict";s.i(47167),s.s(["asset",0,s=>`/mastrosiministreet_shop${s}`])}]);
