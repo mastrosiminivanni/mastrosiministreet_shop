@@ -7,6 +7,7 @@ import { PlateBadge } from "@/components/ui/PlateBadge";
 import { WheelLoader } from "@/components/3d/WheelLoader";
 import { MARKETS, SUNDAY_NOTE, mapsUrl } from "@/data/markets";
 import { SPECIAL_STOPS } from "@/data/special-stops";
+import { asset } from "@/lib/asset";
 import { downloadCalendarImage } from "@/lib/calendarImage";
 import { marketForDate } from "@/lib/market";
 import { useToday } from "@/lib/useToday";
@@ -109,7 +110,7 @@ export function WhereWeAre() {
         <h2 id="salva" className="titolo text-2xl">Tieni il furgone con te</h2>
         <p className="mt-1 text-sm text-bianco/75">Salva il calendario, così sai sempre dove siamo.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <a href="/calendario.ics" download className={clsx(btn, "bg-oro text-nero hover:brightness-110")}>
+          <a href={asset("/calendario.ics")} download className={clsx(btn, "bg-oro text-nero hover:brightness-110")}>
             Aggiungi al calendario
           </a>
           <button type="button" onClick={downloadCalendarImage} className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-nero")}>

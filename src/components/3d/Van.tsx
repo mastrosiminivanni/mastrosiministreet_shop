@@ -2,6 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
+import { asset } from "@/lib/asset";
 import { CAP_TO_RIM, PHOTO_H, PHOTO_W, PHOTO_WHEELS, TYRE_TO_RIM, type PhotoWheel } from "@/data/van-photo";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -165,7 +166,7 @@ const px = (x: number, y: number): [number, number] => [
 
 /** Cerchio che gira: disco ruotato nella texture, schiacciato dalla prospettiva del piano. */
 function PhotoWheelOverlay({ wheel, cap, angle }: { wheel: PhotoWheel; cap: THREE.Texture; angle: React.RefObject<number> }) {
-  const disc = useTexture(wheel.texture);
+  const disc = useTexture(asset(wheel.texture));
   const ref = useRef<THREE.Mesh>(null);
   useFrame(() => {
     const map = (ref.current?.material as THREE.MeshBasicMaterial | undefined)?.map;
@@ -196,8 +197,8 @@ function PhotoWheelOverlay({ wheel, cap, angle }: { wheel: PhotoWheel; cap: THRE
  * in proporzione allo spazio percorso. Vista 3/4 posteriore, muso a destra: avanza verso destra.
  */
 export function VanBillboard() {
-  const tex = useTexture("/brand/furgone.webp");
-  const cap = useTexture("/brand/mozzo.webp");
+  const tex = useTexture(asset("/brand/furgone.webp"));
+  const cap = useTexture(asset("/brand/mozzo.webp"));
   const shadow = useRadial("0,0,0", 0.75);
   const glow = useRadial("212,168,92", 0.28);
   const group = useRef<THREE.Group>(null);
@@ -244,7 +245,7 @@ export function VanBillboard() {
 }
 
 // Il decodificatore Draco sta in /public/draco: nessuna richiesta a server esterni.
-useGLTF.setDecoderPath("/draco/");
+useGLTF.setDecoderPath(asset("/draco/"));
 
 const WHEEL_R = 0.387; // raggio ruota nel modello Blender (m)
 const MODEL_SCALE = 1.1;
@@ -256,7 +257,7 @@ const MODEL_CENTER_X = 0.075; // centro del furgone lungo X nel modello
  * quindi si fermano quando il furgone si ferma.
  */
 function GltfVan() {
-  const { scene } = useGLTF("/models/van.glb");
+  const { scene } = useGLTF(asset("/models/van.glb"));
   const model = useMemo(() => scene.clone(true), [scene]);
   const ref = useRef<THREE.Group>(null);
   const prev = useRef<number | null>(null);
@@ -291,7 +292,7 @@ export function Van({ procedural = false }: { procedural?: boolean }) {
   const [hasModel, setHasModel] = useState<boolean | null>(null);
   useEffect(() => {
     let alive = true;
-    fetch("/models/van.glb", { method: "HEAD" })
+    fetch(asset("/models/van.glb"), { method: "HEAD" })
       .then((r) => alive && setHasModel(r.ok && !(r.headers.get("content-type") ?? "").includes("html")))
       .catch(() => alive && setHasModel(false));
     return () => {

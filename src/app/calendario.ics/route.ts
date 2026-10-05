@@ -1,6 +1,9 @@
 import { MARKETS, MARKET_HOURS, mapsUrl } from "@/data/markets";
 import { SPECIAL_STOPS } from "@/data/special-stops";
 
+// Sito statico (GitHub Pages): il file si genera una volta in fase di build.
+export const dynamic = "force-static";
+
 const DAY_CODE = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 const esc = (s: string) => s.replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");

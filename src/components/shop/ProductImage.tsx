@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import clsx from "clsx";
 import type { Category } from "@/data/products";
 
@@ -21,7 +22,7 @@ export function ProductImage({
   if (!src.startsWith("placeholder:")) {
     return (
       <div className={clsx("relative aspect-[9/16] overflow-hidden bg-[#161616]", className)}>
-        <Image src={src} alt={alt} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" priority={priority} />
+        <Image src={src.startsWith("/") ? asset(src) : src} alt={alt} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" priority={priority} />
       </div>
     );
   }

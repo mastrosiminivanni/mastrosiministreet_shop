@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import clsx from "clsx";
 
 /** Foto della pagina Chi siamo: se `src` manca mostra un riquadro che dice quale foto metterci. */
@@ -18,7 +19,7 @@ export function Foto({
   if (src) {
     return (
       <div className={clsx("relative overflow-hidden rounded-tag border border-white/10", ratio, className)}>
-        <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+        <Image src={src.startsWith("/") ? asset(src) : src} alt={alt} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
       </div>
     );
   }

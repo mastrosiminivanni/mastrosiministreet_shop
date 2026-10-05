@@ -46,3 +46,4 @@ reference/*.zip
 # file di Blender rigenerabili con blender/build_van.py
 blender/furgone.blend
 *.blend1
+out/
