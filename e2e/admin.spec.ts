@@ -68,6 +68,18 @@ test.describe("pannello admin (modalità prova)", () => {
     await expect(page.getByText("Nessun capo ancora")).toBeVisible();
   });
 
+  test("il link Vinted si modifica dal pannello", async ({ page }) => {
+    await page.goto("/admin?prova=1");
+    const campo = page.locator("#vinted");
+    await expect(campo).toHaveValue(/vinted\.it\/member\/261904496/);
+    await campo.fill("https://example.com/x");
+    await page.getByRole("button", { name: "Salva il link" }).click();
+    await expect(page.getByText(/inizia con https:\/\/www\.vinted\.it/)).toBeVisible();
+    await campo.fill("https://www.vinted.it/member/1-prova");
+    await page.getByRole("button", { name: "Salva il link" }).click();
+    await expect(page.getByText("Salvato (solo in prova).")).toBeVisible();
+  });
+
   test("la pagina non è indicizzabile e non è nel menu", async ({ page }) => {
     await page.goto("/admin");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);

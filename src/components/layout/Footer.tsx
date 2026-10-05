@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { AZIENDA, dato } from "@/data/azienda";
-import { INSTAGRAM_URL, VINTED_URL } from "@/data/markets";
+import { INSTAGRAM_URL } from "@/data/markets";
+import { getVintedUrl } from "@/lib/catalog";
 
-export function Footer() {
+export async function Footer() {
+  const vinted = await getVintedUrl();
   return (
     <footer className="mt-16 border-t border-white/10 bg-nero px-4 py-10 text-sm text-bianco/70">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:justify-between">
@@ -17,12 +19,7 @@ export function Footer() {
             </a>
           </li>
           <li>
-            <a
-              href={VINTED_URL}
-              className="hover:text-oro"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a href={vinted} className="hover:text-oro" rel="noopener noreferrer" target="_blank">
               Il nostro profilo Vinted
             </a>
           </li>

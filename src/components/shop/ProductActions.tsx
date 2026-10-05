@@ -1,8 +1,10 @@
-import { INSTAGRAM_DM_URL, VINTED_URL } from "@/data/markets";
+import { INSTAGRAM_DM_URL } from "@/data/markets";
+import { getVintedUrl } from "@/lib/catalog";
 import { isSoldOut, type Product } from "@/data/products";
 
 /** Per ora non si compra online: si scrive su Instagram. */
-export function ProductActions({ product }: { product: Product }) {
+export async function ProductActions({ product }: { product: Product }) {
+  const vinted = await getVintedUrl();
   if (isSoldOut(product)) {
     return (
       <p className="rounded-tag border border-white/20 p-4 font-semibold">
@@ -23,7 +25,7 @@ export function ProductActions({ product }: { product: Product }) {
         Scrivici in chat con il nome del capo: {product.title}.
       </p>
       <a
-        href={VINTED_URL}
+        href={vinted}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-2 rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro/10"

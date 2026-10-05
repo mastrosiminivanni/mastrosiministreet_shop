@@ -65,8 +65,9 @@ test("pagine di contatto e informative si aprono", async ({ page }) => {
   }
   await page.goto("/contatti");
   await expect(page.getByRole("heading", { name: "Domande frequenti" })).toBeVisible();
-  await page.getByText("Come si compra un capo?").click();
+  await page.getByText("Come compro?").click();
   await expect(page.getByText(/Dal sito non si acquista/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "profilo Vinted", exact: true })).toHaveAttribute("href", /vinted\.it\/member\//);
 });
 
 test("la sezione Look non esiste più e non compare 'vintage'", async ({ page }) => {

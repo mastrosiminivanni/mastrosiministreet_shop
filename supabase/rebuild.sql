@@ -56,3 +56,8 @@ create trigger rebuild_on_update after update on public.products
 drop trigger if exists rebuild_on_delete on public.products;
 create trigger rebuild_on_delete after delete on public.products
   for each row when (old.status <> 'draft') execute function public.rebuild_site();
+
+-- Se cambia il link Vinted nel pannello, anche il sito si ripubblica
+drop trigger if exists rebuild_on_settings on public.settings;
+create trigger rebuild_on_settings after insert or update or delete on public.settings
+  for each row execute function public.rebuild_site();

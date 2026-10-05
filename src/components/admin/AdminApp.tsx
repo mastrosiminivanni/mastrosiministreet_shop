@@ -6,6 +6,7 @@ import { creaStore } from "@/lib/admin/store";
 import type { AdminProduct } from "@/lib/admin/types";
 import { getSupabase, supabaseConfigurato } from "@/lib/supabase";
 import { ElencoCapi } from "./ElencoCapi";
+import { ImpostazioniSito } from "./ImpostazioniSito";
 import { NuovoCapoForm } from "./NuovoCapoForm";
 
 type Accesso = "carico" | "fuori" | "non-abilitato" | "dentro";
@@ -201,6 +202,11 @@ export function AdminApp() {
         </p>
       )}
       <ElencoCapi store={store} capi={capi} onCambio={carica} />
+
+      <h2 className="titolo mt-14 text-3xl">Impostazioni</h2>
+      <div className="mt-4">
+        <ImpostazioniSito store={store} />
+      </div>
     </div>
   );
 }

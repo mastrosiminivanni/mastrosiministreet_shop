@@ -1,5 +1,6 @@
 import { get } from "node:https";
 import { cache } from "react";
+import { VINTED_URL } from "@/data/markets";
 import { SAMPLE_PRODUCTS, type Category, type Product } from "@/data/products";
 import { BUCKET_FOTO, SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigurato } from "@/lib/supabase";
 
@@ -47,10 +48,10 @@ function daRiga(r: Riga): Product {
   };
 }
 
-/** GET con parsing JSON, senza passare dalla cache di Next: ogni costruzione del sito legge i capi del momento. */
-function leggiJson<T>(indirizzo: string, intestazioni: Record<string, string>): Promise<T> {
+/** GET con parsing JSON, senza la cache di Next. Ha un limite di tempo: una richiesta appesa non deve bloccare pagine o pubblicazione. */
+function leggiJsonUnaVolta<T>(indirizzo: string, intestazioni: Record<string, string>): Promise<T> {
   return new Promise((ok, no) => {
-    get(indirizzo, { headers: intestazioni }, (res) => {
+    const req = get(indirizzo, { headers: intestazioni, agent: false, timeout: 8000 }, (res) => {
       let testo = "";
       res.setEncoding("utf8");
       res.on("data", (pezzo) => (testo += pezzo));
@@ -63,8 +64,18 @@ function leggiJson<T>(indirizzo: string, intestazioni: Record<string, string>): 
           no(new Error("Risposta di Supabase non leggibile."));
         }
       });
-    }).on("error", no);
+    });
+    req.on("timeout", () => req.destroy(new Error("Supabase non risponde (tempo scaduto).")));
+    req.on("error", no);
   });
+}
+
+async function leggiJson<T>(indirizzo: string, intestazioni: Record<string, string>): Promise<T> {
+  try {
+    return await leggiJsonUnaVolta<T>(indirizzo, intestazioni);
+  } catch {
+    return leggiJsonUnaVolta<T>(indirizzo, intestazioni); // un secondo tentativo, poi l'errore vero
+  }
 }
 
 /**
@@ -87,3 +98,21 @@ export const getProducts = cache(async (): Promise<Product[]> => {
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   return (await getProducts()).find((p) => p.slug === slug);
 }
+
+/** Link al profilo Vinted: quello scritto nel pannello, altrimenti quello di partenza. */
+export const getVintedUrl = cache(async (): Promise<string> => {
+  if (!supabaseConfigurato) return VINTED_URL;
+  try {
+    const righe = await leggiJson<{ value: string }[]>(
+      `${SUPABASE_URL}/rest/v1/settings?select=value&key=eq.vinted_url`,
+      {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    );
+    const v = righe[0]?.value?.trim();
+    return v && /^https:\/\/([\w-]+\.)?vinted\.[a-z.]+\//i.test(v) ? v : VINTED_URL;
+  } catch {
+    return VINTED_URL; // tabella non ancora creata: il sito resta com'è
+  }
+});

@@ -1,4 +1,5 @@
 import { BUCKET_FOTO, getSupabase, supabaseConfigurato } from "@/lib/supabase";
+import { VINTED_URL } from "@/data/markets";
 import { aDataUrl } from "./image";
 import type { AdminProduct, FotoPronta, NuovoCapo, Stato } from "./types";
 
@@ -13,6 +14,9 @@ export interface AdminStore {
   ): Promise<AdminProduct>;
   cambiaStato(id: string, stato: Stato): Promise<void>;
   elimina(capo: AdminProduct): Promise<void>;
+  /** link al profilo Vinted (impostazione del sito) */
+  leggiVinted(): Promise<string>;
+  salvaVinted(url: string): Promise<void>;
   /** indirizzo di una foto (grande o miniatura) */
   urlFoto(percorso: string, piccola?: boolean): string;
 }
@@ -84,6 +88,16 @@ const storeProva: AdminStore = {
   async elimina(capo) {
     scriviProva(leggiProva().filter((p) => p.id !== capo.id));
   },
+  async leggiVinted() {
+    try {
+      return localStorage.getItem("ms-admin-prova-vinted") ?? VINTED_URL;
+    } catch {
+      return VINTED_URL;
+    }
+  },
+  async salvaVinted(url) {
+    localStorage.setItem("ms-admin-prova-vinted", url);
+  },
   urlFoto: (percorso) => percorso,
 };
 
@@ -142,6 +156,19 @@ function storeSupabase(): AdminStore {
       const file = capo.images.flatMap((p) => [p, conSuffissoPiccolo(p)]);
       if (file.length) await sb.storage.from(BUCKET_FOTO).remove(file);
       const { error } = await sb.from("products").delete().eq("id", capo.id);
+      if (error) throw new Error(error.message);
+    },
+    async leggiVinted() {
+      const { data, error } = await sb
+        .from("settings")
+        .select("value")
+        .eq("key", "vinted_url")
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return data?.value ?? VINTED_URL;
+    },
+    async salvaVinted(url) {
+      const { error } = await sb.from("settings").upsert({ key: "vinted_url", value: url });
       if (error) throw new Error(error.message);
     },
     urlFoto: (percorso, piccola) =>
