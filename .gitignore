@@ -47,3 +47,8 @@ reference/*.zip
 blender/furgone.blend
 *.blend1
 out/
+
+# risultati dei test
+test-results/
+playwright-report/
+.lighthouse/

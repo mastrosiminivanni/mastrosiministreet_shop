@@ -4,7 +4,6 @@ import { asset } from "@/lib/asset";
 
 const links = [
   { href: "/shop", label: "Shop" },
-  { href: "/look", label: "Look" },
   { href: "/dove-siamo", label: "Dove siamo" },
   { href: "/chi-siamo", label: "Chi siamo" },
 ];

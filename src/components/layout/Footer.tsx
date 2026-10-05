@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AZIENDA, dato } from "@/data/azienda";
 import { INSTAGRAM_URL } from "@/data/markets";
 
 export function Footer() {
@@ -13,10 +14,17 @@ export function Footer() {
           <li><a href={INSTAGRAM_URL} className="hover:text-oro" rel="noopener">@mastrosiministreet_shop</a></li>
           <li><Link href="/contatti" className="hover:text-oro">Contatti e FAQ</Link></li>
           <li><Link href="/legal/privacy" className="hover:text-oro">Privacy</Link></li>
-          <li><Link href="/legal/termini" className="hover:text-oro">Termini di vendita</Link></li>
-          <li><Link href="/legal/recesso" className="hover:text-oro">Diritto di recesso</Link></li>
+          <li><Link href="/legal/cookie" className="hover:text-oro">Cookie</Link></li>
+          <li><Link href="/legal/note-legali" className="hover:text-oro">Note legali</Link></li>
         </ul>
       </div>
+      {dato(AZIENDA.ragioneSociale) && (
+        <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/60">
+          © {new Date().getFullYear()} {AZIENDA.ragioneSociale}
+          {dato(AZIENDA.partitaIva) && ` · P.IVA ${AZIENDA.partitaIva}`}
+          {dato(AZIENDA.sedeLegale) && ` · ${AZIENDA.sedeLegale}`}
+        </p>
+      )}
       <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/50">
         Modello 3D del furgone: &quot;Mercedes-Benz Sprinter&quot; di{" "}
         <a href="https://sketchfab.com/3d-models/mercedes-benz-sprinter-152f62800be34652af0545487129ca2e" rel="noopener" className="underline hover:text-oro">

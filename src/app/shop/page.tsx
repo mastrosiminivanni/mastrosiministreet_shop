@@ -5,7 +5,7 @@ import { ShopFromQuery } from "@/components/shop/ShopFromQuery";
 
 export const metadata: Metadata = {
   title: "Cosa c'è nel furgone",
-  description: "Camicie 25€, felpe 30€, pantaloni 20€, look completi 50€. Pezzi unici: quando è andato, è andato.",
+  description: "Camicie 25€, felpe 30€, pantaloni 20€. Pezzi unici: quando è andato, è andato.",
 };
 
 export default function ShopPage() {

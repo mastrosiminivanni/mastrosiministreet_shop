@@ -2,12 +2,14 @@
  * Catalogo prodotti. Oggi è un file tipizzato (seed di ESEMPIO); la forma di `Product`
  * è pensata per mappare 1:1 una tabella Supabase o un documento Sanity (vedi README).
  */
-export type Category = "camicia-righe" | "camicia-quadri" | "felpa" | "felpa-strass" | "pantaloni" | "look";
+export type Category = "camicia-righe" | "camicia-quadri" | "felpa" | "felpa-strass" | "pantaloni";
 
 export type Product = {
   id: string;
   slug: string;
   title: string;
+  /** Descrizione dell'annuncio (per scheda, Google e anteprime). Il pannello admin la genera da solo. */
+  description?: string;
   category: Category;
   /** Prezzo in euro, intero. */
   price: number;
@@ -22,7 +24,6 @@ export type Product = {
   initialStock?: number;
   /** Slug dei mercati dove il pezzo è sul furgone. */
   marketPickup: string[];
-  isBundle: boolean;
   /** Dato di esempio: da togliere quando si caricano i capi veri. */
   isExample: boolean;
   /** ISO date, per ordinare per novità. */
@@ -35,7 +36,6 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   felpa: "Felpe",
   "felpa-strass": "Felpe con strass",
   pantaloni: "Pantaloni",
-  look: "Look completi",
 };
 
 const base = { isExample: true } as const;
@@ -60,7 +60,6 @@ function p(
     images: [`placeholder:${category}-${n}`],
     stock: 1,
     marketPickup: [],
-    isBundle: category === "look",
     createdAt: `2026-09-${String(30 - n).padStart(2, "0")}`,
     ...extra,
   };
@@ -77,8 +76,6 @@ export const PRODUCTS: Product[] = [
   p(8, "felpa-oversize-1", "Felpa oversize grigia", "felpa", 30, { sizes: ["L", "XL"], stock: 2, marketPickup: ["polignano"] }),
   p(9, "pantaloni-1", "Pantaloni larghi marrone", "pantaloni", 20, { sizes: ["M"], measurements: { vita: 40, lunghezza: 104 }, marketPickup: ["putignano", "castellana-grotte"] }),
   p(10, "pantaloni-2", "Pantaloni street neri", "pantaloni", 20, { sizes: ["L"], measurements: { vita: 42, lunghezza: 106 }, stock: 0 }),
-  p(11, "look-completo-1", "Look completo oversize: felpa + pantalone", "look", 50, { sizes: ["L"], marketPickup: ["rutigliano", "noci"] }),
-  p(12, "look-completo-2", "Look completo street: felpa strass + pantalone", "look", 50, { sizes: ["M"], marketPickup: ["conversano", "castellana-grotte"] }),
 ];
 
 export const getProduct = (slug: string) => PRODUCTS.find((x) => x.slug === slug);
