@@ -53,10 +53,10 @@ function Journey({ progress }: { progress: MotionValue<number> }) {
     const g = van.current;
     if (!g) return;
     g.position.x = THREE.MathUtils.damp(g.position.x, target, 4, dt);
-    g.rotation.y = -0.15;
+    
     camera.position.x = g.position.x + 0.3;
-    camera.position.y = 2.2;
-    camera.lookAt(g.position.x + 0.3, 1.2, 0);
+    camera.position.y = 2.4;
+    camera.lookAt(g.position.x + 0.3, 1.7, 0);
   });
   return (
     <>
@@ -72,7 +72,7 @@ function Journey({ progress }: { progress: MotionValue<number> }) {
 
 export default function RouteScene({ progress }: { progress: MotionValue<number> }) {
   return (
-    <SceneCanvas camera={[1.5, 2.2, 8]}>
+    <SceneCanvas camera={[0.3, 2.6, 13]}>
       <group position={[(MARKETS.length * SPACING) / 2 - 10, 0, 0]}>
         <Road length={MARKETS.length * SPACING + 60} />
       </group>

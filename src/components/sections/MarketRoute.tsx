@@ -59,7 +59,7 @@ function Journey3D() {
   );
   return (
     <section ref={ref} className="relative" style={{ height: `${MARKETS.length * 70}svh` }}>
-      <div className="sticky top-0 h-svh overflow-hidden">
+      <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
         <div className="absolute inset-0">
           <RouteScene progress={scrollYProgress} />
         </div>

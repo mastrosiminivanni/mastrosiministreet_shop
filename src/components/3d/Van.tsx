@@ -1,13 +1,14 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const NERO = "#0c0c0c";
 const ORO = "#d4a85c";
 const BIANCO = "#f4f4f2";
+const CORPO = "#141414";
 
 /** Texture con la scritta MASTROSIMINI per la fiancata (niente font esterni). */
 function useSideTexture() {
@@ -16,9 +17,9 @@ function useSideTexture() {
     c.width = 1024;
     c.height = 256;
     const g = c.getContext("2d")!;
-    g.fillStyle = BIANCO;
+    g.fillStyle = CORPO;
     g.fillRect(0, 0, 1024, 256);
-    g.fillStyle = NERO;
+    g.fillStyle = BIANCO;
     g.font = "800 150px Poppins, Arial Black, sans-serif";
     g.textAlign = "center";
     g.textBaseline = "middle";
@@ -73,7 +74,7 @@ function Hanger({ x }: { x: number }) {
 /** Furgone procedurale low-poly: funziona subito, senza file esterni. */
 export function ProceduralVan() {
   const side = useSideTexture();
-  const white = <meshStandardMaterial color={BIANCO} roughness={0.55} metalness={0.1} />;
+  const white = <meshStandardMaterial color={CORPO} roughness={0.7} metalness={0.15} />;
   return (
     <group>
       {/* cassone */}
@@ -135,13 +136,57 @@ export function ProceduralVan() {
   );
 }
 
+/** Texture radiale (ombra a terra / alone oro) generata da canvas. */
+function useRadial(rgb: string, alpha: number) {
+  return useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = c.height = 256;
+    const g = c.getContext("2d")!;
+    const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grad.addColorStop(0, `rgba(${rgb},${alpha})`);
+    grad.addColorStop(1, `rgba(${rgb},0)`);
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 256, 256);
+    return new THREE.CanvasTexture(c);
+  }, [rgb, alpha]);
+}
+
+const VAN_W = 6.6;
+const VAN_H = (VAN_W * 1086) / 1448;
+
+/**
+ * Il furgone reale (PNG ritagliato) come "cartellone" nella scena 3D: foto vera con le pennellate oro,
+ * alone oro dietro e ombra a terra. La vista è 3/4 posteriore con il muso a destra, quindi avanza verso destra.
+ */
+export function VanBillboard() {
+  const tex = useTexture("/brand/furgone.webp");
+  const shadow = useRadial("0,0,0", 0.75);
+  const glow = useRadial("212,168,92", 0.28);
+  return (
+    <group>
+      <mesh position={[0.3, VAN_H * 0.45, -0.6]}>
+        <planeGeometry args={[VAN_W * 1.7, VAN_H * 1.5]} />
+        <meshBasicMaterial map={glow} transparent depthWrite={false} toneMapped={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.2, 0.012, 0.15]}>
+        <planeGeometry args={[VAN_W * 1.05, 2.1]} />
+        <meshBasicMaterial map={shadow} transparent depthWrite={false} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, VAN_H * 0.41, 0]}>
+        <planeGeometry args={[VAN_W, VAN_H]} />
+        <meshBasicMaterial map={tex} transparent alphaTest={0.02} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
 function GltfVan() {
   const { scene } = useGLTF("/models/van.glb");
   return <primitive object={scene} />;
 }
 
-/** Usa /models/van.glb se esiste, altrimenti il furgone procedurale. */
-export function Van() {
+/** Usa /models/van.glb se esiste; altrimenti la foto del furgone vero (cartellone). `procedural` forza il modello in codice. */
+export function Van({ procedural = false }: { procedural?: boolean }) {
   const [hasModel, setHasModel] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -152,5 +197,6 @@ export function Van() {
       alive = false;
     };
   }, []);
-  return hasModel ? <GltfVan /> : <ProceduralVan />;
+  if (hasModel) return <GltfVan />;
+  return procedural ? <ProceduralVan /> : <VanBillboard />;
 }

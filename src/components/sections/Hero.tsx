@@ -11,7 +11,7 @@ export function Hero() {
       <div className="mx-auto flex min-h-[88svh] max-w-5xl flex-col justify-between px-4 pb-8 pt-8">
         <div>
           <PlateBadge>Un mercato diverso ogni giorno</PlateBadge>
-          <h1 className="titolo mt-4 text-[clamp(2.6rem,11vw,6.5rem)]">
+          <h1 className="titolo mt-4 text-[clamp(2.6rem,11vw,4.5rem)] lg:text-6xl">
             Mastrosimini
             <span className="block text-oro">Street Shop</span>
           </h1>

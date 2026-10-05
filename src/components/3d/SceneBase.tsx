@@ -28,7 +28,7 @@ export function Road({ length = 80 }: { length?: number }) {
 function FitCamera({ base }: { base: number }) {
   useFrame(({ camera, size }) => {
     const fov = ((camera as { fov?: number }).fov ?? 38) * (Math.PI / 180);
-    const needed = 7.5 / (2 * Math.tan(fov / 2) * (size.width / size.height));
+    const needed = 8.2 / (2 * Math.tan(fov / 2) * (size.width / size.height));
     camera.position.z = Math.max(base, needed);
   });
   return null;
@@ -37,7 +37,7 @@ function FitCamera({ base }: { base: number }) {
 /** Canvas con le regole di performance del progetto + luci calde e rim-light oro. */
 export function SceneCanvas({
   children,
-  camera = [0, 2.4, 7.5],
+  camera = [0, 2.6, 11.5],
 }: {
   children: React.ReactNode;
   camera?: [number, number, number];
