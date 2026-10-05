@@ -1,4 +1,4 @@
-import { INSTAGRAM_URL, MARKETS, SUNDAY_NOTE } from "@/data/markets";
+import { INSTAGRAM_URL, MARKETS, MARKET_HOURS, SUNDAY_NOTE } from "@/data/markets";
 
 /** Disegna "Il giro della settimana" in verticale 1080x1920 (storie/WhatsApp) e lo scarica come PNG. */
 export function downloadCalendarImage() {
@@ -24,7 +24,7 @@ export function downloadCalendarImage() {
   g.font = f(800, 118);
   g.fillText("DOVE SIAMO", W / 2, 290);
   g.font = f(500, 40);
-  g.fillText("Salva la settimana del furgone", W / 2, 360);
+  g.fillText(`Ogni mercato dalle ${MARKET_HOURS.label.replace(" – ", " alle ")}`, W / 2, 360);
 
   g.textAlign = "left";
   MARKETS.forEach((m, i) => {

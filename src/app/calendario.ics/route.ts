@@ -1,9 +1,10 @@
-import { MARKETS, mapsUrl } from "@/data/markets";
+import { MARKETS, MARKET_HOURS, mapsUrl } from "@/data/markets";
 import { SPECIAL_STOPS } from "@/data/special-stops";
 
 const DAY_CODE = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 const esc = (s: string) => s.replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
+const hhmmss = (t: string) => t.replace(":", "") + "00";
 const ymd = (d: Date) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 
 /** Prima data utile (da oggi) per il giorno della settimana indicato. */
@@ -13,7 +14,7 @@ function firstOccurrence(day: number): Date {
   return d;
 }
 
-/** Calendario .ics: un evento settimanale ricorrente per mercato (tutto il giorno: gli orari non sono ancora definiti) + tappe speciali. */
+/** Calendario .ics: un evento settimanale ricorrente per mercato (7:00-13:00, ora italiana) + tappe speciali (tutto il giorno). */
 export function GET() {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const lines = [
@@ -22,17 +23,34 @@ export function GET() {
     "PRODID:-//Mastrosimini Street Shop//Il furgone//IT",
     "CALSCALE:GREGORIAN",
     "X-WR-CALNAME:Il furgone di Mastrosimini",
+    "X-WR-TIMEZONE:Europe/Rome",
+    // fuso Europa/Roma con ora legale: serve perché gli eventi hanno un orario
+    "BEGIN:VTIMEZONE",
+    "TZID:Europe/Rome",
+    "BEGIN:DAYLIGHT",
+    "TZOFFSETFROM:+0100",
+    "TZOFFSETTO:+0200",
+    "TZNAME:CEST",
+    "DTSTART:19700329T020000",
+    "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+    "END:DAYLIGHT",
+    "BEGIN:STANDARD",
+    "TZOFFSETFROM:+0200",
+    "TZOFFSETTO:+0100",
+    "TZNAME:CET",
+    "DTSTART:19701025T030000",
+    "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+    "END:STANDARD",
+    "END:VTIMEZONE",
   ];
   for (const m of MARKETS) {
     const start = firstOccurrence(m.day);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
     lines.push(
       "BEGIN:VEVENT",
       `UID:${m.slug}@mastrosiministreet.shop`,
       `DTSTAMP:${stamp}`,
-      `DTSTART;VALUE=DATE:${ymd(start)}`,
-      `DTEND;VALUE=DATE:${ymd(end)}`,
+      `DTSTART;TZID=Europe/Rome:${ymd(start)}T${hhmmss(MARKET_HOURS.start)}`,
+      `DTEND;TZID=Europe/Rome:${ymd(start)}T${hhmmss(MARKET_HOURS.end)}`,
       `RRULE:FREQ=WEEKLY;BYDAY=${DAY_CODE[m.day]}`,
       `SUMMARY:${esc(`Il furgone a ${m.town}`)}`,
       `LOCATION:${esc(`${m.spot}, ${m.town}`)}`,
