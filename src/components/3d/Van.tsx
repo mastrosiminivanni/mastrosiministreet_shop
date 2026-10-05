@@ -2,6 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
+import { CAP_TO_RIM, PHOTO_H, PHOTO_W, PHOTO_WHEELS, TYRE_TO_RIM, type PhotoWheel } from "@/data/van-photo";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -152,18 +153,76 @@ function useRadial(rgb: string, alpha: number) {
 }
 
 const VAN_W = 6.6;
-const VAN_H = (VAN_W * 1086) / 1448;
+const _pos = new THREE.Vector3();
+const VAN_H = (VAN_W * PHOTO_H) / PHOTO_W;
+const VAN_Y = VAN_H * 0.41; // centro della foto: le gomme poggiano a quota 0
+
+/** Pixel della foto -> coordinate locali della scena. */
+const px = (x: number, y: number): [number, number] => [
+  (x / PHOTO_W - 0.5) * VAN_W,
+  VAN_Y + (0.5 - y / PHOTO_H) * VAN_H,
+];
+
+/** Cerchio che gira: disco ruotato nella texture, schiacciato dalla prospettiva del piano. */
+function PhotoWheelOverlay({ wheel, cap, angle }: { wheel: PhotoWheel; cap: THREE.Texture; angle: React.RefObject<number> }) {
+  const disc = useTexture(wheel.texture);
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame(() => {
+    const map = (ref.current?.material as THREE.MeshBasicMaterial | undefined)?.map;
+    if (!map) return;
+    map.center.set(0.5, 0.5);
+    map.rotation = angle.current;
+  });
+  const [x, y] = px(wheel.cx, wheel.cy);
+  const [hx, hy] = px(wheel.hx, wheel.hy);
+  const w = (2 * wheel.rx * VAN_W) / PHOTO_W;
+  const h = (2 * wheel.ry * VAN_H) / PHOTO_H;
+  return (
+    <>
+      <mesh ref={ref} position={[x, y, 0.002]} renderOrder={2}>
+        <planeGeometry args={[w, h]} />
+        <meshBasicMaterial map={disc} transparent depthWrite={false} toneMapped={false} />
+      </mesh>
+      <mesh position={[hx, hy, 0.004]} renderOrder={3}>
+        <planeGeometry args={[w * CAP_TO_RIM, h * CAP_TO_RIM]} />
+        <meshBasicMaterial map={cap} transparent depthWrite={false} toneMapped={false} />
+      </mesh>
+    </>
+  );
+}
 
 /**
- * Il furgone reale (PNG ritagliato) come "cartellone" nella scena 3D: foto vera con le pennellate oro,
- * alone oro dietro e ombra a terra. La vista è 3/4 posteriore con il muso a destra, quindi avanza verso destra.
+ * Il furgone vero (foto ritagliata) nella scena 3D, con alone oro, ombra a terra e ruote che girano
+ * in proporzione allo spazio percorso. Vista 3/4 posteriore, muso a destra: avanza verso destra.
  */
 export function VanBillboard() {
   const tex = useTexture("/brand/furgone.webp");
+  const cap = useTexture("/brand/mozzo.webp");
   const shadow = useRadial("0,0,0", 0.75);
   const glow = useRadial("212,168,92", 0.28);
+  const group = useRef<THREE.Group>(null);
+  const angle = useRef(0);
+  const prev = useRef<number | null>(null);
+  // raggio reale della gomma in unità di scena (dalla ruota posteriore)
+  const tyreR = ((PHOTO_WHEELS[0].ry * TYRE_TO_RIM) / PHOTO_H) * VAN_H;
+
+  useFrame((_, dt) => {
+    const g = group.current;
+    if (!g) return;
+    const x = g.getWorldPosition(_pos).x;
+    const dx = prev.current === null ? 0 : x - prev.current;
+    prev.current = x;
+    if (Math.abs(dx) > 1e-4) {
+      angle.current -= dx / tyreR;
+    } else {
+      // da fermo completa il giro: il cerchio torna identico alla foto (luci comprese)
+      const turn = Math.PI * 2;
+      angle.current = THREE.MathUtils.damp(angle.current, Math.round(angle.current / turn) * turn, 3, dt);
+    }
+  });
+
   return (
-    <group>
+    <group ref={group}>
       <mesh position={[0.3, VAN_H * 0.45, -0.6]}>
         <planeGeometry args={[VAN_W * 1.7, VAN_H * 1.5]} />
         <meshBasicMaterial map={glow} transparent depthWrite={false} toneMapped={false} />
@@ -172,10 +231,14 @@ export function VanBillboard() {
         <planeGeometry args={[VAN_W * 1.05, 2.1]} />
         <meshBasicMaterial map={shadow} transparent depthWrite={false} toneMapped={false} />
       </mesh>
-      <mesh position={[0, VAN_H * 0.41, 0]}>
+      {/* ordine di disegno esplicito: foto, poi cerchi che girano, poi coprimozzi */}
+      <mesh position={[0, VAN_Y, 0]} renderOrder={1}>
         <planeGeometry args={[VAN_W, VAN_H]} />
         <meshBasicMaterial map={tex} transparent alphaTest={0.02} toneMapped={false} />
       </mesh>
+      {PHOTO_WHEELS.map((w) => (
+        <PhotoWheelOverlay key={w.texture} wheel={w} cap={cap} angle={angle} />
+      ))}
     </group>
   );
 }
@@ -183,7 +246,6 @@ export function VanBillboard() {
 const WHEEL_R = 0.362; // raggio ruota nel modello Blender (m)
 const MODEL_SCALE = 1.12;
 const MODEL_LENGTH = 5.92; // il modello parte dal retro (x = 0): lo centro
-const _pos = new THREE.Vector3();
 
 /**
  * Furgone 3D da Blender (blender/build_van.py). Le ruote sono nodi "Ruota_*":

@@ -1,4 +1,8 @@
-# Il furgone 3D
+# Il furgone 3D (Blender)
+
+> Oggi il sito usa la **foto vera** del furgone con le ruote che girano (`scripts/prepare-van-photo.mjs`,
+> `scripts/make-wheels.mjs`). Il modello qui sotto è solo uno strumento: se in `public/models/van.glb`
+> c'è un modello 3D, il sito lo usa al posto della foto (es. un modello professionale con la livrea applicata).
 
 Il modello in `public/models/van.glb` è generato da script, quindi si può rigenerare e modificare.
 

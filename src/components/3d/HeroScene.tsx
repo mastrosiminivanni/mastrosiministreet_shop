@@ -18,8 +18,8 @@ function EnteringVan() {
     const stopX = state.size.width / state.size.height > 1.15 ? 2.4 : 0;
     g.position.x = MathUtils.damp(g.position.x, stopX, 1.6, dt);
     g.position.y = Math.sin(state.clock.elapsedTime * 1.6) * 0.015;
-    // vista di 3/4 anteriore; segue un poco il puntatore
-    g.rotation.y = MathUtils.damp(g.rotation.y, -0.42 + state.pointer.x * 0.25, 3, dt);
+    // segue un poco il puntatore (la foto regge solo piccole rotazioni)
+    g.rotation.y = MathUtils.damp(g.rotation.y, state.pointer.x * 0.12, 3, dt);
   });
   return (
     <group ref={ref} position={[-14, 0, 0]}>
