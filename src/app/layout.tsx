@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -27,7 +29,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it" className={`${poppins.variable} h-full`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-oro focus:p-3 focus:text-nero">
+          Vai al contenuto
+        </a>
+        <Header />
+        <div id="main" className="flex-1">{children}</div>
+        <Footer />
+      </body>
     </html>
   );
 }
