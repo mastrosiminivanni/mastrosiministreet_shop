@@ -8,15 +8,12 @@ export function Foto({
   segnaposto,
   className,
   ratio = "aspect-[4/5]",
-  suOro = false,
 }: {
   src?: string;
   alt: string;
   segnaposto: string;
   className?: string;
   ratio?: string;
-  /** true quando il riquadro sta su sfondo oro: testo scuro, per il contrasto */
-  suOro?: boolean;
 }) {
   if (src) {
     return (
@@ -31,13 +28,13 @@ export function Foto({
       aria-label={alt}
       className={clsx(
         "flex flex-col items-center justify-center gap-2 rounded-tag border-2 border-dashed p-6 text-center",
-        suOro ? "border-nero/50 bg-nero/10 text-nero" : "border-oro/50 bg-[#141414]",
+        "border-oro/50 bg-[#141414]",
         ratio,
         className,
       )}
     >
-      <span className={clsx("text-xs font-extrabold uppercase tracking-widest", suOro ? "text-nero" : "text-oro")}>Foto in arrivo</span>
-      <span className={clsx("text-sm", suOro ? "text-nero/80" : "text-bianco/70")}>{segnaposto}</span>
+      <span className="text-xs font-extrabold uppercase tracking-widest text-oro">Foto in arrivo</span>
+      <span className="text-sm text-bianco/70">{segnaposto}</span>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Foto } from "@/components/ui/FotoSegnaposto";
@@ -11,14 +13,16 @@ export const metadata: Metadata = {
     "Mastrosimini Street Shop: azienda italiana di famiglia, al mercato da più di 70 anni. Da nonno Giovanni a papà Gianfranco e Vanni, un mercato diverso ogni giorno.",
 };
 
-// Per mettere le foto vere: copia i file in public/foto/ e scrivi qui il percorso, es. src: "/foto/banco.jpg".
-const FOTO = {
-  giovanni: { src: undefined as string | undefined, alt: "Nonno Giovanni al mercato", segnaposto: "Nonno Giovanni, una foto d'epoca del banco" },
-  gianfranco: { src: undefined as string | undefined, alt: "Gianfranco carica il furgone", segnaposto: "Gianfranco al furgone, la mattina presto" },
-  vanni: { src: undefined as string | undefined, alt: "Vanni al banco", segnaposto: "Vanni al banco, con i capi appesi" },
-  banco: { src: undefined as string | undefined, alt: "Il banco diviso in due: ragazzi e adulti", segnaposto: "Il banco intero, con le due parti: ragazzi e adulti" },
-  sorriso: { src: undefined as string | undefined, alt: "Il banco con i clienti", segnaposto: "Una foto spontanea al banco, con i clienti" },
-};
+/**
+ * Una sola foto: Vanni e Gianfranco dietro il banco.
+ * Per metterla basta copiare il file in public/foto/ con il nome "banco" (banco.jpg, banco.jpeg, banco.png o banco.webp).
+ */
+function fotoBanco() {
+  for (const ext of ["jpg", "jpeg", "png", "webp"]) {
+    if (existsSync(join(process.cwd(), "public", "foto", `banco.${ext}`))) return `/foto/banco.${ext}`;
+  }
+  return undefined;
+}
 
 const NUMERI = [
   { n: "+70", t: "anni di mercato" },
@@ -27,29 +31,17 @@ const NUMERI = [
   { n: "6", t: "mercati a settimana" },
 ];
 
-function Capitolo({
-  titolo,
-  children,
-  foto,
-  inverti,
-}: {
-  titolo: string;
-  children: React.ReactNode;
-  foto: React.ReactNode;
-  inverti?: boolean;
-}) {
+function Capitolo({ titolo, children }: { titolo: string; children: React.ReactNode }) {
   return (
-    <section className="grid items-center gap-6 py-10 md:grid-cols-2 md:gap-12">
-      <div className={inverti ? "md:order-2" : undefined}>
-        <h2 className="titolo text-3xl sm:text-5xl">{titolo}</h2>
-        <div className="mt-4 space-y-4 text-lg leading-relaxed text-bianco/90">{children}</div>
-      </div>
-      <div className={inverti ? "md:order-1" : undefined}>{foto}</div>
+    <section className="grid gap-4 py-8 md:grid-cols-[2fr_3fr] md:gap-12 md:py-10">
+      <h2 className="titolo text-3xl sm:text-5xl">{titolo}</h2>
+      <div className="space-y-4 text-lg leading-relaxed text-bianco/90">{children}</div>
     </section>
   );
 }
 
 export default function ChiSiamoPage() {
+  const banco = fotoBanco();
   return (
     <main>
       <div className="mx-auto max-w-5xl px-4 pt-8">
@@ -70,10 +62,20 @@ export default function ChiSiamoPage() {
             </li>
           ))}
         </ul>
+
+        <figure className="mt-8">
+          <Foto
+            src={banco}
+            alt="Gianfranco e Vanni dietro il banco del mercato"
+            segnaposto="Vanni e Gianfranco dietro il banco"
+            ratio="aspect-[4/3] sm:aspect-[16/9]"
+          />
+          <figcaption className="mt-2 text-sm text-bianco/60">Gianfranco e Vanni, dietro il banco.</figcaption>
+        </figure>
       </div>
 
-      <div className="mx-auto mt-6 max-w-5xl px-4">
-        <Capitolo titolo="Tutto è partito da nonno Giovanni" foto={<Foto {...FOTO.giovanni} />}>
+      <div className="mx-auto mt-2 max-w-5xl px-4">
+        <Capitolo titolo="Tutto è partito da nonno Giovanni">
           <p>
             Ha cominciato questo lavoro da giovanissimo e, con gli anni, si è costruito una reputazione che ancora oggi si
             sostiene.
@@ -81,7 +83,7 @@ export default function ChiSiamoPage() {
           <p>Da lì siamo partiti, e da lì continuiamo.</p>
         </Capitolo>
 
-        <Capitolo titolo="Papà Gianfranco: sveglia alle 6" foto={<Foto {...FOTO.gianfranco} />} inverti>
+        <Capitolo titolo="Papà Gianfranco: sveglia alle 6">
           <p>
             Oggi il banco lo porta avanti mio padre Gianfranco. Ogni giorno parte di casa alle 6 per andare ai mercati, e si dedica a
             questo lavoro con tutto sé stesso.
@@ -91,7 +93,7 @@ export default function ChiSiamoPage() {
           </p>
         </Capitolo>
 
-        <Capitolo titolo="Poi ci sono io, Vanni" foto={<Foto {...FOTO.vanni} />}>
+        <Capitolo titolo="Poi ci sono io, Vanni">
           <p>Nel mercato ci sono cresciuto: ci sono dentro fin da bambino.</p>
           <p>
             Ora voglio portarlo anche online, con i social e con questo sito. Il banco resta il banco: il sito serve a farti sapere
@@ -103,7 +105,7 @@ export default function ChiSiamoPage() {
       <RoadDivider />
 
       <div className="mx-auto max-w-5xl px-4">
-        <Capitolo titolo="Cosa trovi al banco" foto={<Foto {...FOTO.banco} ratio="aspect-[4/3]" />} inverti>
+        <Capitolo titolo="Cosa trovi al banco">
           <p>Da generazioni ci impegniamo a portare sempre le ultime mode.</p>
           <p>
             Il banco è diviso in due: da una parte la roba per i ragazzi, dall&apos;altra quella per gli adulti. Qui sul sito mostriamo
@@ -116,7 +118,7 @@ export default function ChiSiamoPage() {
       </div>
 
       <section className="bg-oro text-nero">
-        <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 py-12 md:grid-cols-2">
+        <div className="mx-auto max-w-5xl px-4 py-12">
           <div>
             <h2 className="titolo text-4xl sm:text-6xl">Un sorriso in più</h2>
             <p className="mt-4 text-xl font-semibold">
@@ -138,7 +140,6 @@ export default function ChiSiamoPage() {
               </a>
             </div>
           </div>
-          <Foto {...FOTO.sorriso} ratio="aspect-[4/3]" suOro />
         </div>
       </section>
     </main>
