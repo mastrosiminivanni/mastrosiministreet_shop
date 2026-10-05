@@ -39,6 +39,10 @@ export default function Privacy() {
           <strong>Contatti su Instagram.</strong> Se ci scrivi su Instagram, i tuoi messaggi sono gestiti da Meta secondo la sua informativa;
           noi li usiamo solo per risponderti.
         </li>
+        <li>
+          <strong>Link a Vinted.</strong> Dal sito puoi aprire il nostro profilo su Vinted: da quel momento i tuoi dati sono trattati da Vinted
+          secondo la sua informativa. Il sito non invia a Vinted alcun dato su di te.
+        </li>
       </ul>
       <p>Il sito non ha moduli, registrazioni né pagamenti: non raccogliamo altri dati.</p>
 

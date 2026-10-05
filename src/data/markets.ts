@@ -29,6 +29,8 @@ export const MARKETS: Market[] = [
 export const SUNDAY_NOTE = "Domenica: tappe speciali annunciate su Instagram.";
 export const INSTAGRAM_URL = "https://www.instagram.com/mastrosiministreet_shop/";
 /** Apre direttamente la chat (DM) con il profilo. */
+/** Profilo Vinted: un canale in più, non l'unico. Le taglie che mancano si caricano su richiesta. */
+export const VINTED_URL = "https://www.vinted.it/member/261904496-mastrosiminishop";
 export const INSTAGRAM_DM_URL = "https://ig.me/m/mastrosiministreet_shop";
 
 /** Link che apre il punto esatto in Google Maps (indicazioni stradali). */

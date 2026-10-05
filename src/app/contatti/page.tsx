@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Dato } from "@/components/legal/Segnaposto";
 import { PlateBadge } from "@/components/ui/PlateBadge";
 import { AZIENDA, dato } from "@/data/azienda";
-import { INSTAGRAM_DM_URL, INSTAGRAM_URL, MARKET_HOURS, SUNDAY_NOTE } from "@/data/markets";
+import { INSTAGRAM_DM_URL, INSTAGRAM_URL, MARKET_HOURS, SUNDAY_NOTE, VINTED_URL } from "@/data/markets";
 
 export const metadata: Metadata = {
   title: "Contatti e domande frequenti",
@@ -16,7 +16,9 @@ const FAQ = [
     r: (
       <>
         Vieni al furgone nel mercato del giorno oppure scrivici su Instagram. Dal sito non si acquista: il sito serve a farti vedere cosa
-        c&apos;è e dove siamo.
+        c&apos;è e dove siamo. Siamo anche su{" "}
+        <a href={VINTED_URL} target="_blank" rel="noopener noreferrer" className="text-oro underline">Vinted</a>: se non trovi la taglia
+        che cerchi, scrivici su Instagram e la carichiamo noi per te.
       </>
     ),
   },
