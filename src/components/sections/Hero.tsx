@@ -18,7 +18,7 @@ export function Hero() {
             <span className="block text-oro">Street Shop</span>
           </h1>
           <p className="mt-4 max-w-sm text-base font-medium text-bianco/90">
-            Vintage, street, oversize. Pezzi unici a prezzi chiari. Quando è andato, è andato.
+            Le ultime mode, street e oversize, a prezzi da mercato. Quando è andato, è andato.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">

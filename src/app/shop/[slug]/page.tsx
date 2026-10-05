@@ -56,8 +56,6 @@ export default async function ProductPage({ params }: Props) {
                 <dd className="font-semibold">{v} cm</dd>
               </div>
             ))}
-            <dt className="text-bianco/60">Condizioni</dt>
-            <dd className="font-semibold">{p.condition}</dd>
           </dl>
           <div className="mt-6">
             <ProductActions product={p} />

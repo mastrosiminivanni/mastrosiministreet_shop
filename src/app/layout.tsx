@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s · Mastrosimini Street Shop",
   },
   description:
-    "Abbigliamento uomo vintage, street e oversize. Pezzi unici a prezzi dichiarati: camicie 25€, felpe 30€, pantaloni 20€, look completo 50€. Il furgone gira un mercato diverso ogni giorno.",
+    "Abbigliamento uomo street e oversize, le ultime mode a prezzi da mercato: camicie 25€, felpe 30€, pantaloni 20€, look completo 50€. Il furgone gira un mercato diverso ogni giorno.",
 };
 
 export const viewport: Viewport = {

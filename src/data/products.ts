@@ -14,7 +14,6 @@ export type Product = {
   sizes: string[];
   /** Misure reali in cm. */
   measurements: Record<string, number>;
-  condition: string;
   /** URL reali, oppure "placeholder:<nome>" finché non ci sono le foto vere (9:16). */
   images: string[];
   /** 1 per i pezzi unici; 0 = venduto. */
@@ -39,7 +38,7 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   look: "Look completi",
 };
 
-const base = { isExample: true, condition: "Esempio: condizioni da descrivere" } as const;
+const base = { isExample: true } as const;
 
 function p(
   n: number,
@@ -68,11 +67,11 @@ function p(
 }
 
 export const PRODUCTS: Product[] = [
-  p(1, "camicia-righe-vintage-1", "Camicia a righe vintage", "camicia-righe", 25, { sizes: ["L"], marketPickup: ["rutigliano", "noci"] }),
-  p(2, "camicia-righe-vintage-2", "Camicia a righe beige", "camicia-righe", 25, { sizes: ["M"], marketPickup: ["putignano"] }),
-  p(3, "camicia-righe-vintage-3", "Camicia a righe oversize", "camicia-righe", 25, { sizes: ["XL"], marketPickup: ["polignano", "conversano"] }),
-  p(4, "camicia-quadri-vintage-1", "Camicia a quadri blu", "camicia-quadri", 25, { sizes: ["L"], marketPickup: ["rutigliano"] }),
-  p(5, "camicia-quadri-vintage-2", "Camicia a quadri rossa", "camicia-quadri", 25, { sizes: ["M"], stock: 1, initialStock: 3, marketPickup: ["castellana-grotte"] }),
+  p(1, "camicia-righe-1", "Camicia a righe", "camicia-righe", 25, { sizes: ["L"], marketPickup: ["rutigliano", "noci"] }),
+  p(2, "camicia-righe-2", "Camicia a righe beige", "camicia-righe", 25, { sizes: ["M"], marketPickup: ["putignano"] }),
+  p(3, "camicia-righe-3", "Camicia a righe oversize", "camicia-righe", 25, { sizes: ["XL"], marketPickup: ["polignano", "conversano"] }),
+  p(4, "camicia-quadri-1", "Camicia a quadri blu", "camicia-quadri", 25, { sizes: ["L"], marketPickup: ["rutigliano"] }),
+  p(5, "camicia-quadri-2", "Camicia a quadri rossa", "camicia-quadri", 25, { sizes: ["M"], stock: 1, initialStock: 3, marketPickup: ["castellana-grotte"] }),
   p(6, "felpa-oversize-strass-1", "Felpa oversize nera con strass", "felpa-strass", 30, { sizes: ["L"], marketPickup: ["noci", "putignano"] }),
   p(7, "felpa-oversize-strass-2", "Felpa mimetica con strass", "felpa-strass", 30, { sizes: ["XL"], marketPickup: ["conversano"] }),
   p(8, "felpa-oversize-1", "Felpa oversize grigia", "felpa", 30, { sizes: ["L", "XL"], stock: 2, marketPickup: ["polignano"] }),
