@@ -209,12 +209,11 @@ root = bpy.data.objects.new("Furgone", None)
 scene.collection.objects.link(root)
 
 # ---------- 2. pezzi fissi -> un solo oggetto "Dettagli" ----------
-for o in by_key.get("interior", []) + by_key.get("side_window", []) + by_key.get("back_window", []):
-    bpy.data.objects.remove(o, do_unlink=True)  # finestrini cancellati: si chiudono con una toppa verniciata
-by_key.pop("back_window", None)
+for o in by_key.get("interior", []):
+    bpy.data.objects.remove(o, do_unlink=True)  # l'interno non si vede (vetri scuri e chiusi)
 fixed = []
 for k, v in by_key.items():
-    if k in ("carpaint_frontback", "carpaint_sides", "interior", "side_window") or re.match(r"(tire|rim|rim_cap|brake)_fr\d*$", k):
+    if k in ("carpaint_frontback", "carpaint_sides", "interior", "side_window", "back_window") or re.match(r"(tire|rim|rim_cap|brake)_fr\d*$", k):
         continue
     for o in v:
         o.data.materials.clear()
@@ -241,31 +240,11 @@ for name, parts in groups.items():
     w.data.set_sharp_from_angle(angle=math.radians(35))
 
 # ---------- 4. carrozzeria con livrea (UV piane per fiancata) ----------
-def quad_patch(name, pts):
-    me = bpy.data.meshes.new(name)
-    bm = bmesh.new()
-    bm.faces.new([bm.verts.new(v) for v in pts])
-    bm.to_mesh(me)
-    bm.free()
-    ob = bpy.data.objects.new(name, me)
-    scene.collection.objects.link(ob)
-    return ob
+# Nella vostra foto il furgone è cieco: il vetro del portellone scorrevole (lato destro) e i due finestrini
+# posteriori diventano pannelli verniciati. Riuso i vetri originali (forma esatta, a filo) dentro la carrozzeria.
+panels = by_key.get("side_window", []) + by_key.get("back_window", [])
 
-
-# Il vetro del portellone scorrevole (lato destro) e i due finestrini posteriori non ci sono nella vostra foto:
-# li chiudo con una toppa sul piano del vetro, che prende la livrea.
-sw = geometry["slidingWindow"]
-patches = [quad_patch("Toppa_scorrevole", (
-    (sw["xmin"], sw["y"], sw["zmin"]), (sw["xmax"], sw["y"], sw["zmin"]),
-    (sw["xmax"], sw["y"], sw["zmax"]), (sw["xmin"], sw["y"], sw["zmax"]),
-))]
-for i, rw in enumerate(geometry["rearWindows"]):
-    patches.append(quad_patch(f"Toppa_retro_{i}", (
-        (rw["x"], rw["ymax"], rw["zmin"]), (rw["x"], rw["ymin"], rw["zmin"]),
-        (rw["x"], rw["ymin"], rw["zmax"]), (rw["x"], rw["ymax"], rw["zmax"]),
-    )))
-
-body = join(paint + patches, "Carrozzeria")
+body = join(paint + panels, "Carrozzeria")
 body.parent = root
 body.data.materials.clear()
 for m in (M_PAINT, M_LIV_R, M_LIV_L, M_LIV_B):
