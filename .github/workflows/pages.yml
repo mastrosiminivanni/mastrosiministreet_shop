@@ -1,0 +1,50 @@
+# Ricostruisce e pubblica il sito su GitHub Pages.
+# Parte da sola: a ogni push su main, e quando il pannello (Supabase) pubblica o cambia un capo (vedi supabase/rebuild.sql).
+# Si può avviare anche a mano: GitHub -> Actions -> "Pubblica il sito" -> Run workflow.
+name: Pubblica il sito
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Una pubblicazione alla volta; se ne arrivano altre mentre ne gira una, resta in coda solo l'ultima.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAGES: "1"
+      # Valori PUBBLICI del progetto Supabase (le regole di sicurezza stanno in supabase/schema.sql)
+      NEXT_PUBLIC_SUPABASE_URL: https://jultjlqudfzbrahrzpvv.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_jQPlvUYRkqE14wUdKDRiCg_kD54WwEZ
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: touch out/.nojekyll
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
