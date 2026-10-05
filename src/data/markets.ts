@@ -28,6 +28,8 @@ export const MARKETS: Market[] = [
 
 export const SUNDAY_NOTE = "Domenica: tappe speciali annunciate su Instagram.";
 export const INSTAGRAM_URL = "https://www.instagram.com/mastrosiministreet_shop/";
+/** Apre direttamente la chat (DM) con il profilo. */
+export const INSTAGRAM_DM_URL = "https://ig.me/m/mastrosiministreet_shop";
 
 /** Link che apre il punto esatto in Google Maps (indicazioni stradali). */
 export const mapsUrl = (m: Pick<Market, "lat" | "lng">) =>

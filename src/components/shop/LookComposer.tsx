@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { BUNDLE_RULES } from "@/data/bundles";
+import { INSTAGRAM_DM_URL } from "@/data/markets";
 import { PRODUCTS, isSoldOut, type Product } from "@/data/products";
 import { eur } from "@/lib/format";
-import { useCart } from "@/store/cart";
 
 const TOPS = PRODUCTS.filter((p) => !isSoldOut(p) && ["felpa", "felpa-strass", "camicia-righe", "camicia-quadri"].includes(p.category));
 const BOTTOMS = PRODUCTS.filter((p) => !isSoldOut(p) && p.category === "pantaloni");
@@ -13,7 +13,6 @@ const sel = "mt-1 w-full rounded-tag border border-white/20 bg-nero px-3 py-3 te
 
 /** Compone un look (capo sopra + pantalone) e mostra prezzo e risparmio rispetto ai pezzi singoli. */
 export function LookComposer() {
-  const add = useCart((s) => s.add);
   const [top, setTop] = useState("");
   const [bottom, setBottom] = useState("");
   const t: Product | undefined = TOPS.find((p) => p.slug === top);
@@ -57,16 +56,14 @@ export function LookComposer() {
             <p className="text-sm text-bianco/70">
               {saving > 0 ? `Risparmi ${eur(saving)} rispetto ai pezzi singoli (${eur(singles)}).` : `Pezzi singoli: ${eur(singles)}.`}
             </p>
-            <button
-              type="button"
-              className="mt-3 rounded-tag bg-oro px-6 py-4 text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
-              onClick={() => {
-                add({ slug: t.slug });
-                add({ slug: b.slug });
-              }}
+            <a
+              href={INSTAGRAM_DM_URL}
+              rel="noopener"
+              className="mt-3 inline-block rounded-tag bg-oro px-6 py-4 text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
             >
-              Metti il look nel carrello
-            </button>
+              Contattaci su Instagram per questo look
+            </a>
+            <p className="mt-2 text-sm text-bianco/70">Scrivici: {t.title} + {b.title}.</p>
           </>
         ) : (
           <p className="text-sm text-bianco/70">Scegli un capo sopra e un pantalone: vedi subito il prezzo.</p>
