@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { StickyBar } from "@/components/layout/StickyBar";
+import { WebMcp } from "@/components/WebMcp";
 import { SCRIPT_TEMA } from "@/lib/theme";
 
 const poppins = Poppins({
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <StickyBar />
         <CookieBanner />
+        <WebMcp />
         {/* spazio per non far coprire il fondo pagina dalla barra fissa (solo telefono) */}
         <div className="h-16 md:hidden" aria-hidden="true" />
       </body>

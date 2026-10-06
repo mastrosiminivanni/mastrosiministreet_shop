@@ -44,6 +44,15 @@ circa 3 secondi dopo il caricamento (o al primo tocco/scorrimento). Senza 3D (br
 modello non arriva, resta l'immagine. **Se cambi il modello o la livrea, rigenera le immagini**: avvia il sito (`npm run dev -- -p 3400`) e
 lancia `node scripts/genera-poster.mjs http://localhost:3400`.
 
+## Per gli agenti (AI)
+
+- `llms.txt` (indice del sito in Markdown) e `catalogo.json` (capi con prezzo, taglie, disponibilità) si generano a ogni pubblicazione
+  da `src/app/llms.txt/route.ts` e `src/app/catalogo.json/route.ts`.
+- Strumenti WebMCP (`src/lib/agent-tools.ts`, registrati da `src/components/WebMcp.tsx`): `get_todays_market`, `get_weekly_markets`,
+  `search_products`, `get_how_to_buy`. Sono di sola lettura e funzionano nei browser che supportano WebMCP (in Chrome: `chrome://flags/#enable-webmcp-testing`).
+- Lighthouse (categoria "Agentic Browsing") cerca `llms.txt` **alla radice del dominio**: su GitHub Pages sotto `/mastrosiministreet_shop/` non è
+  alla radice. Con un dominio proprio (Aruba) il file sarà trovato da solo.
+
 ## Pubblicare
 
 Il sito è statico su **GitHub Pages**:
