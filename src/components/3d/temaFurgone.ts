@@ -1,8 +1,8 @@
 import {
   Mesh,
+  MeshPhysicalMaterial,
   SRGBColorSpace,
   TextureLoader,
-  type Material,
   type MeshStandardMaterial,
   type Object3D,
   type Texture,
@@ -16,7 +16,7 @@ const LIVREE: Record<string, string> = {
   Livrea_sinistra: "lato-sinistro-colore",
   Livrea_retro: "retro-colore",
 };
-const VERNICE_CHIARA = "#d8d2c1";
+const VERNICE_CHIARA = "#cdc7b6";
 
 let chiare: Promise<Record<string, Texture>> | null = null;
 function caricaChiare() {
@@ -32,46 +32,58 @@ function caricaChiare() {
   return chiare;
 }
 
-function materialiDi(radice: Object3D) {
-  const trovati = new Set<MeshStandardMaterial>();
-  radice.traverse((o) => {
-    const m = (o as Mesh).material as Material | Material[] | undefined;
-    for (const x of Array.isArray(m) ? m : m ? [m] : []) trovati.add(x as MeshStandardMaterial);
-  });
-  return trovati;
+const èCarrozzeria = (m: { name: string }) => m.name === "Vernice" || m.name in LIVREE;
+
+/**
+ * Materiale "gemello" lucido per il tema chiaro: vernice crema con trasparente sopra (come una vera carrozzeria) e le pennellate oro
+ * che riflettono l'ambiente. L'originale non si tocca: tornando al tema scuro si rimette lui.
+ */
+function gemelloChiaro(m: MeshStandardMaterial, texture: Record<string, Texture>) {
+  const esistente = m.userData.gemelloChiaro as MeshPhysicalMaterial | undefined;
+  if (esistente) return esistente;
+  const g = new MeshPhysicalMaterial({ name: m.name });
+  g.roughnessMap = m.roughnessMap;
+  g.metalnessMap = m.metalnessMap;
+  g.metalness = m.metalness;
+  g.clearcoat = 1;
+  g.clearcoatRoughness = 0.05;
+  g.ior = 2; // più riflettente della vernice base: i riflessi si vedono anche su un fondo chiaro
+  if (m.name === "Vernice") {
+    g.color.set(VERNICE_CHIARA);
+    g.roughness = 0.25;
+  } else {
+    const t = texture[m.name];
+    const originale = m.map as Texture;
+    t.flipY = originale.flipY;
+    t.colorSpace = SRGBColorSpace;
+    t.wrapS = originale.wrapS;
+    t.wrapT = originale.wrapT;
+    t.anisotropy = originale.anisotropy;
+    g.map = t;
+    g.roughness = 0.6; // si moltiplica per la ruvidità della mappa: un po' più liscio del nero opaco
+  }
+  m.userData.gemelloChiaro = g;
+  return g;
 }
 
 /**
- * Furgone chiaro nel tema chiaro: carrozzeria crema con le stesse pennellate oro. Le texture chiare si scaricano solo la prima volta
- * che serve; i materiali sono condivisi tra le scene, quindi il cambio vale per tutte. Tornando al tema scuro si ripristina l'originale.
+ * Furgone chiaro nel tema chiaro: carrozzeria crema lucida con le stesse pennellate oro. Le texture chiare si scaricano solo la prima volta
+ * che serve; i materiali sono condivisi tra le scene, quindi il cambio vale per tutte.
  */
 export async function applicaTemaFurgone(radice: Object3D, tema: Tema) {
-  if (tema === "light") {
-    const texture = await caricaChiare();
-    if (leggiTema() !== "light") return; // nel frattempo è tornato scuro
-    for (const m of materialiDi(radice)) {
-      const nome = m.name;
-      if (nome === "Vernice") {
-        m.userData.coloreScuro ??= m.color.clone();
-        m.color.set(VERNICE_CHIARA);
-        m.needsUpdate = true;
-      } else if (LIVREE[nome]) {
-        const originale = (m.userData.mappaScura ??= m.map) as Texture;
-        const t = texture[nome];
-        t.flipY = originale.flipY;
-        t.colorSpace = SRGBColorSpace;
-        t.wrapS = originale.wrapS;
-        t.wrapT = originale.wrapT;
-        t.anisotropy = originale.anisotropy;
-        m.map = t;
-        m.needsUpdate = true;
+  const texture = tema === "light" ? await caricaChiare() : null;
+  if (tema === "light" && leggiTema() !== "light") return; // nel frattempo è tornato scuro
+  radice.traverse((o) => {
+    const mesh = o as Mesh;
+    const m = mesh.material as MeshStandardMaterial | undefined;
+    if (texture) {
+      if (m && !Array.isArray(m) && èCarrozzeria(m)) {
+        mesh.userData.originale = m;
+        mesh.material = gemelloChiaro(m, texture);
       }
+    } else if (mesh.userData.originale) {
+      mesh.material = mesh.userData.originale as MeshStandardMaterial;
+      delete mesh.userData.originale;
     }
-    return;
-  }
-  for (const m of materialiDi(radice)) {
-    if (m.userData.coloreScuro) m.color.copy(m.userData.coloreScuro);
-    if (m.userData.mappaScura) m.map = m.userData.mappaScura;
-    m.needsUpdate = true;
-  }
+  });
 }
