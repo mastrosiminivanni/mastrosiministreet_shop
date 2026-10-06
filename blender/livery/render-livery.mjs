@@ -31,6 +31,8 @@ const TEXT = "UN MERCATO DIVERSO OGNI GIORNO";
 const PALETTE = {
   colore: { bg: "#121212", gold: "url(#oro)", text: "#d9ad5f" },
   orm: { bg: "rgb(255,140,0)", gold: "rgb(255,70,255)", text: "rgb(255,70,255)" },
+  // Tema chiaro: carrozzeria crema con le stesse pennellate oro (si usa con la stessa mappa ORM)
+  "colore-chiaro": { bg: "#ddd7c7", gold: "url(#oro)", text: "#7a5410" },
 };
 
 const DEFS = `
@@ -55,7 +57,7 @@ const stroke = (p, pts, w) =>
 
 /** Logo tondo (solo nella texture colore: nella mappa materiale resta nero opaco). */
 const logoBlock = (mode, id, cx, cz, r) =>
-  mode === "colore"
+  mode.startsWith("colore")
     ? `<clipPath id="${id}"><circle cx="${cx}" cy="${zy(cz)}" r="${r * 0.985}"/></clipPath>
        <image href="${logo}" x="${cx - r}" y="${zy(cz) - r}" width="${2 * r}" height="${2 * r}" clip-path="url(#${id})"/>`
     : "";
@@ -111,7 +113,9 @@ function rear(mode) {
 }
 
 const jobs = [];
-for (const mode of ["colore", "orm"]) {
+// "node render-livery.mjs chiaro" rifà solo le texture del tema chiaro
+const soloChiaro = process.argv[2] === "chiaro";
+for (const mode of soloChiaro ? ["colore-chiaro"] : ["colore", "orm", "colore-chiaro"]) {
   jobs.push([`lato-destro-${mode}.png`, { vb: [xmin, 0, L, H], svg: side(mode, false) }]);
   jobs.push([`lato-sinistro-${mode}.png`, { vb: [xmin, 0, L, H], svg: side(mode, true) }]);
   jobs.push([`retro-${mode}.png`, { vb: [0, 0, W, H], svg: rear(mode) }]);
