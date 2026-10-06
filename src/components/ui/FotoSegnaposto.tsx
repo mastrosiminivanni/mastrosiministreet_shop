@@ -29,7 +29,7 @@ export function Foto({
       aria-label={alt}
       className={clsx(
         "flex flex-col items-center justify-center gap-2 rounded-tag border-2 border-dashed p-6 text-center",
-        "border-oro/50 bg-[#141414]",
+        "border-oro/50 bg-nero",
         ratio,
         className,
       )}

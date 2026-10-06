@@ -122,7 +122,7 @@ export default function ChiSiamoPage() {
         </Capitolo>
       </div>
 
-      <section className="bg-oro text-nero">
+      <section className="bg-oro text-tinta">
         <div className="mx-auto max-w-5xl px-4 py-12">
           <div>
             <h2 className="titolo text-4xl sm:text-6xl">Un sorriso in più</h2>
@@ -133,14 +133,14 @@ export default function ChiSiamoPage() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/dove-siamo"
-                className="rounded-tag bg-nero px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:brightness-125"
+                className="rounded-tag bg-tinta px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:brightness-125"
               >
                 Dove siamo oggi
               </Link>
               <a
                 href={INSTAGRAM_DM_URL}
                 rel="noopener"
-                className="rounded-tag border-2 border-nero px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide hover:bg-nero hover:text-oro"
+                className="rounded-tag border-2 border-tinta px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide hover:bg-tinta hover:text-oro"
               >
                 {CTA_INSTAGRAM}
               </a>

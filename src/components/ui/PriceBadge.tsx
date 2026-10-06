@@ -18,7 +18,7 @@ export function PriceBadge({ price, label, size = "md", className }: Props) {
   return (
     <div
       className={clsx(
-        "stampa flex flex-col items-center justify-center rounded-full bg-oro text-nero font-extrabold ring-2 ring-nero/80 ring-offset-2 ring-offset-oro/60",
+        "stampa flex flex-col items-center justify-center rounded-full bg-oro text-tinta font-extrabold ring-2 ring-tinta/80 ring-offset-2 ring-offset-oro/60",
         sizes[size],
         className,
       )}

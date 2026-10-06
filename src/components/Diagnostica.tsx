@@ -79,7 +79,7 @@ export function Diagnostica() {
 
   return (
     <div className="mt-6">
-      <p className="rounded-tag bg-oro p-3 font-extrabold text-nero">
+      <p className="rounded-tag bg-oro p-3 font-extrabold text-tinta">
         Il sito sceglie:{" "}
         {sito3D ? "furgone 3D" : "foto fissa del furgone (3D non adatto a questo dispositivo)"}
       </p>

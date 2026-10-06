@@ -76,7 +76,7 @@ export function ElencoCapi({
                 className={clsx(
                   "mt-2 inline-block rounded-tag px-2 py-0.5 text-[11px] font-extrabold uppercase",
                   c.status === "published"
-                    ? "bg-oro text-nero"
+                    ? "bg-oro text-tinta"
                     : c.status === "sold"
                       ? "bg-bianco text-nero"
                       : "bg-white/15 text-bianco",
@@ -90,7 +90,7 @@ export function ElencoCapi({
                     type="button"
                     disabled={occupato === c.id}
                     onClick={() => esegui(c.id, () => store.cambiaStato(c.id, "published"))}
-                    className={clsx(azione, "border-oro bg-oro text-nero")}
+                    className={clsx(azione, "border-oro bg-oro text-tinta")}
                   >
                     Pubblica
                   </button>
@@ -101,7 +101,7 @@ export function ElencoCapi({
                       type="button"
                       disabled={occupato === c.id}
                       onClick={() => esegui(c.id, () => store.cambiaStato(c.id, "sold"))}
-                      className={clsx(azione, "border-oro bg-oro text-nero")}
+                      className={clsx(azione, "border-oro bg-oro text-tinta")}
                     >
                       Venduto
                     </button>

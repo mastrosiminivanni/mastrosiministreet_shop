@@ -20,7 +20,7 @@ const CATEGORIE = [
 const chip = (attivo: boolean) =>
   clsx(
     "min-h-12 min-w-12 rounded-tag border-2 px-4 text-sm font-extrabold uppercase",
-    attivo ? "border-oro bg-oro text-nero" : "border-white/25 text-bianco hover:border-oro",
+    attivo ? "border-oro bg-oro text-tinta" : "border-white/25 text-bianco hover:border-oro",
   );
 
 /** Modulo "nuovo capo": foto, taglia, prezzo. Il resto lo scrive il sistema. */
@@ -144,7 +144,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
                   className="aspect-[9/16] w-full rounded-tag object-cover"
                 />
                 {i === 0 && (
-                  <span className="absolute left-1 top-1 rounded-tag bg-oro px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-nero">
+                  <span className="absolute left-1 top-1 rounded-tag bg-oro px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-tinta">
                     Copertina
                   </span>
                 )}
@@ -307,7 +307,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
         <button
           type="submit"
           disabled={salvataggio || mancano.length > 0 || inElaborazione > 0}
-          className="min-h-14 w-full rounded-tag bg-oro px-6 text-base font-extrabold uppercase tracking-wide text-nero disabled:cursor-not-allowed disabled:opacity-40"
+          className="min-h-14 w-full rounded-tag bg-oro px-6 text-base font-extrabold uppercase tracking-wide text-tinta disabled:cursor-not-allowed disabled:opacity-40"
         >
           {salvataggio ? "Salvo…" : "Salva come bozza"}
         </button>

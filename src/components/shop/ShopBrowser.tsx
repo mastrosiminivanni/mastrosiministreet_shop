@@ -88,7 +88,7 @@ export function ShopBrowser({ products, initialMarket = "" }: { products: Produc
           </select>
         </label>
         <label className="flex items-end gap-2 pb-2 text-xs font-bold uppercase tracking-wide text-bianco/70">
-          <input type="checkbox" className="h-5 w-5 accent-[#d4a85c]" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} />
+          <input type="checkbox" className="h-5 w-5 accent-oro" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} />
           Solo disponibili
         </label>
       </form>

@@ -94,14 +94,14 @@ export function CookieBanner() {
           <div className="mt-3 flex gap-2">
             <button
               type="button"
-              className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-nero`}
+              className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-tinta`}
               onClick={() => scrivi("denied")}
             >
               Rifiuta
             </button>
             <button
               type="button"
-              className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-nero`}
+              className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-tinta`}
               onClick={() => scrivi("granted")}
             >
               Accetta
@@ -135,14 +135,14 @@ export function PreferenzeCookie() {
       <div className="mt-3 flex gap-2">
         <button
           type="button"
-          className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-nero`}
+          className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-tinta`}
           onClick={() => scrivi("denied")}
         >
           Rifiuta
         </button>
         <button
           type="button"
-          className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-nero`}
+          className={`${bottone} border-2 border-oro text-oro hover:bg-oro hover:text-tinta`}
           onClick={() => scrivi("granted")}
         >
           Accetta

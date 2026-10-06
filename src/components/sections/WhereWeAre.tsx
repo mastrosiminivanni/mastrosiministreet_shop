@@ -44,11 +44,11 @@ export function WhereWeAre() {
 
   return (
     <div>
-      <div className="rounded-tag bg-oro p-5 text-nero">
+      <div className="rounded-tag bg-oro p-5 text-tinta">
         <div className="flex flex-wrap items-center gap-2">
           <PlateBadge>Oggi</PlateBadge>
           {stop?.status && (
-            <span className="rounded-tag bg-nero px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-oro">
+            <span className="rounded-tag bg-tinta px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-oro">
               {statusLabel(stop.status, stop.hours?.start)}
             </span>
           )}
@@ -59,7 +59,7 @@ export function WhereWeAre() {
         {todayMarket && <p className="mt-1 font-semibold">{todayMarket.spot}</p>}
         {today && !todayMarket && <p className="mt-1 font-semibold">La tappa è su Instagram. Ti aspettiamo al furgone.</p>}
         {todayMarket && !chiuso && (
-          <a href={mapsUrl(todayMarket)} rel="noopener" className={clsx(btn, "mt-4 inline-block bg-nero text-oro")}>
+          <a href={mapsUrl(todayMarket)} rel="noopener" className={clsx(btn, "mt-4 inline-block bg-tinta text-oro")}>
             Portami al furgone
           </a>
         )}
@@ -94,7 +94,7 @@ export function WhereWeAre() {
                 >
                   <span className="flex items-center justify-between gap-2">
                     <span className="text-xs font-extrabold uppercase tracking-widest text-oro">{x.dayName}</span>
-                    {isToday && <span className="rounded-tag bg-oro px-2 py-0.5 text-[10px] font-extrabold uppercase text-nero">Oggi</span>}
+                    {isToday && <span className="rounded-tag bg-oro px-2 py-0.5 text-[10px] font-extrabold uppercase text-tinta">Oggi</span>}
                   </span>
                   <span className="titolo mt-1 block text-2xl">{x.town}</span>
                   <span className="mt-0.5 block text-sm text-bianco/75">{x.spot}</span>
@@ -112,7 +112,7 @@ export function WhereWeAre() {
             <strong>{m.dayName}, {m.town}</strong>: {m.spot}.{" "}
             <a href={mapsUrl(m)} rel="noopener" className="font-bold text-oro underline underline-offset-4">Apri in Google Maps</a>
           </p>
-          <p className="mt-1 text-xs text-bianco/50">Posizione indicativa: il punto esatto è quello delle storie su Instagram.</p>
+          <p className="mt-1 text-xs text-bianco/60">Posizione indicativa: il punto esatto è quello delle storie su Instagram.</p>
         </div>
       </div>
 
@@ -120,16 +120,16 @@ export function WhereWeAre() {
         <h2 id="salva" className="titolo text-2xl">Tieni il furgone con te</h2>
         <p className="mt-1 text-sm text-bianco/75">Salva il calendario, così sai sempre dove siamo.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <a href={asset("/calendario.ics")} download className={clsx(btn, "bg-oro text-nero hover:brightness-110")}>
+          <a href={asset("/calendario.ics")} download className={clsx(btn, "bg-oro text-tinta hover:brightness-110")}>
             Aggiungi al calendario
           </a>
-          <button type="button" onClick={downloadCalendarImage} className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-nero")}>
+          <button type="button" onClick={downloadCalendarImage} className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-tinta")}>
             Salva il calendario
           </button>
           <a
             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
             rel="noopener"
-            className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-nero")}
+            className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-tinta")}
           >
             Condividi su WhatsApp
           </a>

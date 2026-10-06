@@ -31,13 +31,13 @@ export function Hero() {
         <div className="mt-2 flex flex-col gap-3 sm:flex-row md:mt-0">
           <Link
             href="/shop"
-            className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
+            className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-tinta hover:brightness-110"
           >
             Guarda cosa c&apos;è nel furgone
           </Link>
           <Link
             href="/dove-siamo"
-            className="rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro hover:text-nero"
+            className="rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro hover:text-tinta"
           >
             Dove siamo oggi
           </Link>

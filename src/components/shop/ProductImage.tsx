@@ -21,8 +21,15 @@ export function ProductImage({
 }) {
   if (!src.startsWith("placeholder:")) {
     return (
-      <div className={clsx("relative aspect-[9/16] overflow-hidden bg-[#161616]", className)}>
-        <Image src={src.startsWith("/") ? asset(src) : src} alt={alt} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" priority={priority} />
+      <div className={clsx("relative aspect-[9/16] overflow-hidden bg-white/5", className)}>
+        <Image
+          src={src.startsWith("/") ? asset(src) : src}
+          alt={alt}
+          fill
+          sizes="(max-width: 640px) 50vw, 25vw"
+          className="object-cover"
+          priority={priority}
+        />
       </div>
     );
   }
@@ -32,17 +39,26 @@ export function ProductImage({
     <div
       role="img"
       aria-label={alt}
-      className={clsx("relative flex aspect-[9/16] items-center justify-center overflow-hidden bg-[#161616]", className)}
+      className={clsx(
+        "relative flex aspect-[9/16] items-center justify-center overflow-hidden bg-white/5",
+        className,
+      )}
       style={{
         backgroundImage: stripes
-          ? "repeating-linear-gradient(90deg,#1d1d1d 0 10px,#2a2a2a 10px 14px)"
+          ? "repeating-linear-gradient(90deg,color-mix(in srgb,var(--bianco) 6%,transparent) 0 10px,color-mix(in srgb,var(--bianco) 14%,transparent) 10px 14px)"
           : checks
             ? "repeating-linear-gradient(90deg,#d4a85c22 0 14px,transparent 14px 28px),repeating-linear-gradient(0deg,#d4a85c22 0 14px,transparent 14px 28px)"
             : undefined,
       }}
     >
       <svg viewBox="0 0 100 100" className="w-2/3 text-oro/80" aria-hidden="true">
-        <path d="M50 14 v10 M50 24 L12 52 h76 Z" fill="none" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" />
+        <path
+          d="M50 14 v10 M50 24 L12 52 h76 Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
         <path d="M30 58 h40 v30 h-40 z" fill="currentColor" opacity="0.35" />
       </svg>
       {showTag && (

@@ -6,6 +6,21 @@
   --oro: #d4a85c;
   --crema: #f0ebe1;
   --bianco: #ffffff;
+  /* colore del contenuto che sta sopra l'oro (testo dei pulsanti, chip) */
+  --tinta: #0c0c0c;
+  /* inchiostro fisso, per la "targa" color crema */
+  --inchiostro: #0c0c0c;
+  --map-filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6);
+}
+
+/* Tema chiaro: sfondo e testo si scambiano; l'oro diventa più scuro per restare leggibile (testo e riempimenti > 4.5:1). */
+:root[data-theme="light"] {
+  --nero: #f4f4f2;
+  --bianco: #141414;
+  --oro: #8a6414;
+  --tinta: #ffffff;
+  --color-white: #141414;
+  --map-filter: none;
 }
 
 @theme inline {
@@ -13,6 +28,8 @@
   --color-oro: var(--oro);
   --color-crema: var(--crema);
   --color-bianco: var(--bianco);
+  --color-tinta: var(--tinta);
+  --color-inchiostro: var(--inchiostro);
   --font-sans: var(--font-poppins), system-ui, sans-serif;
   --radius-tag: 4px;
 }
@@ -20,6 +37,9 @@
 html {
   background: var(--nero);
   color-scheme: dark;
+}
+html[data-theme="light"] {
+  color-scheme: light;
 }
 
 body {
@@ -69,9 +89,9 @@ body {
   }
 }
 
-/* Mappa Leaflet in tema scuro (filtro sulle tile OSM) */
-.mappa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6); }
-.mappa .leaflet-container { background: #0c0c0c; font-family: var(--font-poppins), sans-serif; }
-.mappa .leaflet-popup-content-wrapper, .mappa .leaflet-popup-tip { background: #0c0c0c; color: #fff; border: 1px solid #d4a85c; border-radius: 4px; }
-.mappa a { color: #d4a85c; }
+/* Mappa Leaflet: nel tema scuro le tile OSM sono invertite, nel chiaro restano normali */
+.mappa .leaflet-tile-pane { filter: var(--map-filter); }
+.mappa .leaflet-container { background: var(--nero); font-family: var(--font-poppins), sans-serif; }
+.mappa .leaflet-popup-content-wrapper, .mappa .leaflet-popup-tip { background: var(--nero); color: var(--bianco); border: 1px solid var(--oro); border-radius: 4px; }
+.mappa a { color: var(--oro); }
 .pin-furgone { background: none; border: 0; }

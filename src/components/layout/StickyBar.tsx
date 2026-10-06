@@ -21,7 +21,7 @@ export function StickyBar() {
       <div className="mx-auto flex max-w-5xl gap-2 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <Link
           href="/dove-siamo"
-          className="flex-[3] truncate rounded-tag bg-oro px-2 py-3 text-center text-xs font-extrabold uppercase text-nero"
+          className="flex-[3] truncate rounded-tag bg-oro px-2 py-3 text-center text-xs font-extrabold uppercase text-tinta"
         >
           <MapPin
             weight="fill"

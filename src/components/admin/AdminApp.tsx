@@ -132,7 +132,7 @@ export function AdminApp() {
           placeholder="Password"
           className="min-h-12 w-full rounded-tag border border-white/25 bg-nero px-3 text-base"
         />
-        <button type="submit" className={`${btn} w-full bg-oro text-nero`}>
+        <button type="submit" className={`${btn} w-full bg-oro text-tinta`}>
           Entra
         </button>
         <button

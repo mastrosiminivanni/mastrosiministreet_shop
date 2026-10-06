@@ -8,7 +8,13 @@ test("home: titolo, mercato di oggi e furgone (3D o foto)", async ({ page }) => 
   await expect(page.locator("h1")).toContainText("MASTROSIMINI", { ignoreCase: true });
   await expect(page.getByRole("link", { name: /Oggi:/i }).first()).toBeVisible();
   // il furgone c'è come scena 3D oppure come foto di riserva
-  await expect.poll(async () => (await page.locator("canvas").count()) + (await page.locator('img[alt^="Il furgone"]').count())).toBeGreaterThan(0);
+  await expect
+    .poll(
+      async () =>
+        (await page.locator("canvas").count()) +
+        (await page.locator('img[alt^="Il furgone"]').count()),
+    )
+    .toBeGreaterThan(0);
 });
 
 test("aperti alle 10, chiusi dopo le 13 ma il paese resta", async ({ page }) => {
@@ -38,8 +44,10 @@ test("shop → scheda prodotto: si contatta solo su Instagram", async ({ page })
   await page.goto("/shop");
   await page.locator("main ul li a").first().click();
   await expect(page).toHaveURL(/\/shop\/.+/);
-  const ig = page.getByRole("link", { name: /Scrivici su Instagram/i });
-  await expect(ig).toHaveAttribute("href", /ig\.me\/m\/mastrosiministreet_shop/);
+  const ig = page.getByRole("link", { name: "Scrivici su Instagram" });
+  await expect(ig.first()).toBeVisible();
+  for (const link of await ig.all())
+    await expect(link).toHaveAttribute("href", /ig\.me\/m\/mastrosiministreet_shop/);
   await expect(page.getByText(/compra ora|carrello/i)).toHaveCount(0);
 });
 
@@ -67,7 +75,10 @@ test("pagine di contatto e informative si aprono", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Domande frequenti" })).toBeVisible();
   await page.getByText("Come compro?").click();
   await expect(page.getByText(/Dal sito non si acquista/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "profilo Vinted", exact: true })).toHaveAttribute("href", /vinted\.it\/member\//);
+  await expect(page.getByRole("link", { name: "profilo Vinted", exact: true })).toHaveAttribute(
+    "href",
+    /vinted\.it\/member\//,
+  );
 });
 
 test("la sezione Look non esiste più e non compare 'vintage'", async ({ page }) => {
@@ -82,13 +93,30 @@ test("la sezione Look non esiste più e non compare 'vintage'", async ({ page })
 });
 
 test.describe("accessibilità (nessuna violazione grave)", () => {
-  for (const path of ["/", "/shop", "/dove-siamo", "/chi-siamo", "/contatti", "/legal/privacy", "/legal/cookie", "/legal/note-legali"]) {
+  for (const path of [
+    "/",
+    "/shop",
+    "/dove-siamo",
+    "/chi-siamo",
+    "/contatti",
+    "/legal/privacy",
+    "/legal/cookie",
+    "/legal/note-legali",
+  ]) {
     test(path, async ({ page }) => {
       await page.goto(path);
       await page.waitForTimeout(1500);
       const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
       const gravi = r.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
-      expect(gravi.map((v) => `${v.id}: ${v.nodes.slice(0, 2).map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
+      expect(
+        gravi.map(
+          (v) =>
+            `${v.id}: ${v.nodes
+              .slice(0, 2)
+              .map((n) => n.target.join(" "))
+              .join(" | ")}`,
+        ),
+      ).toEqual([]);
     });
   }
 });

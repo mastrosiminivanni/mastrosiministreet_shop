@@ -17,7 +17,7 @@ export async function ProductActions({ product }: { product: Product }) {
       <a
         href={INSTAGRAM_DM_URL}
         rel="noopener"
-        className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
+        className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-tinta hover:brightness-110"
       >
         {CTA_INSTAGRAM}
       </a>

@@ -2,9 +2,10 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows } from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { PMREMGenerator } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { iscriviTema, leggiTema, type Tema } from "@/lib/theme";
 import { isLowPower } from "@/lib/webgl";
 
 /** Strada nera con linea tratteggiata oro. */
@@ -62,6 +63,7 @@ export function SceneCanvas({
   camera?: [number, number, number];
 }) {
   const low = isLowPower();
+  const tema = useSyncExternalStore<Tema>(iscriviTema, leggiTema, () => "dark");
   // La scena si ferma quando esce dallo schermo: risparmia batteria e lascia il telefono libero per il resto della pagina.
   const box = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
@@ -85,7 +87,7 @@ export function SceneCanvas({
         scene={{ environmentIntensity: 0.9 }}
         aria-hidden="true"
       >
-        <color attach="background" args={["#0c0c0c"]} />
+        <color attach="background" args={[tema === "light" ? "#f4f4f2" : "#0c0c0c"]} />
         <hemisphereLight args={["#ffffff", "#1a1208", 0.5]} />
         <directionalLight position={[4, 6, 5]} intensity={2.4} color="#fff3e0" castShadow={!low} />
         <directionalLight position={[-5, 3, -4]} intensity={1.6} color="#d4a85c" />

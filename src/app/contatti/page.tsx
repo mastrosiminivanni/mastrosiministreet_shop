@@ -86,14 +86,14 @@ export default async function ContattiPage() {
         <a
           href={INSTAGRAM_DM_URL}
           rel="noopener"
-          className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
+          className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-tinta hover:brightness-110"
         >
           {CTA_INSTAGRAM}
         </a>
         <a
           href={INSTAGRAM_URL}
           rel="noopener"
-          className="rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro hover:text-nero"
+          className="rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro hover:text-tinta"
         >
           @mastrosiministreet_shop
         </a>

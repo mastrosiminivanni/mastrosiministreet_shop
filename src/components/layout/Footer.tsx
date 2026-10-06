@@ -52,7 +52,7 @@ export async function Footer() {
           {dato(AZIENDA.sedeLegale) && <span className="block">{AZIENDA.sedeLegale}</span>}
         </p>
       )}
-      <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/50">
+      <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/60">
         Modello 3D del furgone: &quot;Mercedes-Benz Sprinter&quot; di{" "}
         <a
           href="https://sketchfab.com/3d-models/mercedes-benz-sprinter-152f62800be34652af0545487129ca2e"

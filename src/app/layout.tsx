@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { StickyBar } from "@/components/layout/StickyBar";
+import { SCRIPT_TEMA } from "@/lib/theme";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,9 +31,21 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: titolo,
     description: descrizione,
-    images: [{ url: "og.jpg", width: 1200, height: 630, alt: "Il furgone di Mastrosimini Street Shop, nero e oro" }],
+    images: [
+      {
+        url: "og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Il furgone di Mastrosimini Street Shop, nero e oro",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image", title: titolo, description: descrizione, images: ["og.jpg"] },
+  twitter: {
+    card: "summary_large_image",
+    title: titolo,
+    description: descrizione,
+    images: ["og.jpg"],
+  },
 };
 
 export const viewport: Viewport = {
@@ -43,14 +56,27 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${poppins.variable} h-full`}>
+    <html
+      lang="it"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${poppins.variable} h-full`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
+      </head>
       <body className="min-h-full flex flex-col">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-oro focus:p-3 focus:text-nero">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-oro focus:p-3 focus:text-tinta"
+        >
           Vai al contenuto
         </a>
         <JsonLd />
         <Header />
-        <div id="main" className="flex-1">{children}</div>
+        <div id="main" className="flex-1">
+          {children}
+        </div>
         <Footer />
         <StickyBar />
         <CookieBanner />
