@@ -1,9 +1,8 @@
 import {
   Mesh,
-  MeshPhysicalMaterial,
+  MeshStandardMaterial,
   SRGBColorSpace,
   TextureLoader,
-  type MeshStandardMaterial,
   type Object3D,
   type Texture,
 } from "three";
@@ -16,7 +15,7 @@ const LIVREE: Record<string, string> = {
   Livrea_sinistra: "lato-sinistro-colore",
   Livrea_retro: "retro-colore",
 };
-const VERNICE_CHIARA = "#cdc7b6";
+const VERNICE_CHIARA = "#ddd7c7"; // come lo sfondo delle texture della livrea: pannelli verniciati e pannelli con livrea hanno lo stesso colore
 
 let chiare: Promise<Record<string, Texture>> | null = null;
 function caricaChiare() {
@@ -35,22 +34,20 @@ function caricaChiare() {
 const èCarrozzeria = (m: { name: string }) => m.name === "Vernice" || m.name in LIVREE;
 
 /**
- * Materiale "gemello" lucido per il tema chiaro: vernice crema con trasparente sopra (come una vera carrozzeria) e le pennellate oro
- * che riflettono l'ambiente. L'originale non si tocca: tornando al tema scuro si rimette lui.
+ * Materiale "gemello" opaco per il tema chiaro: vernice crema e pennellate oro senza riflessi (niente lucido, niente metallo).
+ * L'originale non si tocca: tornando al tema scuro si rimette lui.
  */
 function gemelloChiaro(m: MeshStandardMaterial, texture: Record<string, Texture>) {
-  const esistente = m.userData.gemelloChiaro as MeshPhysicalMaterial | undefined;
+  const esistente = m.userData.gemelloChiaro as MeshStandardMaterial | undefined;
   if (esistente) return esistente;
-  const g = new MeshPhysicalMaterial({ name: m.name });
-  g.roughnessMap = m.roughnessMap;
-  g.metalnessMap = m.metalnessMap;
-  g.metalness = m.metalness;
-  g.clearcoat = 1;
-  g.clearcoatRoughness = 0.05;
-  g.ior = 2; // più riflettente della vernice base: i riflessi si vedono anche su un fondo chiaro
+  const g = new MeshStandardMaterial({
+    name: m.name,
+    roughness: 0.95,
+    metalness: 0,
+    envMapIntensity: 0.15,
+  });
   if (m.name === "Vernice") {
     g.color.set(VERNICE_CHIARA);
-    g.roughness = 0.25;
   } else {
     const t = texture[m.name];
     const originale = m.map as Texture;
@@ -60,14 +57,13 @@ function gemelloChiaro(m: MeshStandardMaterial, texture: Record<string, Texture>
     t.wrapT = originale.wrapT;
     t.anisotropy = originale.anisotropy;
     g.map = t;
-    g.roughness = 0.6; // si moltiplica per la ruvidità della mappa: un po' più liscio del nero opaco
   }
   m.userData.gemelloChiaro = g;
   return g;
 }
 
 /**
- * Furgone chiaro nel tema chiaro: carrozzeria crema lucida con le stesse pennellate oro. Le texture chiare si scaricano solo la prima volta
+ * Furgone chiaro nel tema chiaro: carrozzeria crema opaca con le stesse pennellate oro. Le texture chiare si scaricano solo la prima volta
  * che serve; i materiali sono condivisi tra le scene, quindi il cambio vale per tutte.
  */
 export async function applicaTemaFurgone(radice: Object3D, tema: Tema) {

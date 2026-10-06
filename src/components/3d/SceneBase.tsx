@@ -7,7 +7,6 @@ import { PMREMGenerator } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { iscriviTema, leggiTema, type Tema } from "@/lib/theme";
 import { isLowPower } from "@/lib/webgl";
-import { creaAmbienteChiaro } from "./ambienteChiaro";
 
 /** Strada con linea tratteggiata oro: asfalto scuro nel tema scuro, grigio chiaro nel tema chiaro. */
 export function Road({ length = 80 }: { length?: number }) {
@@ -38,15 +37,14 @@ export function Road({ length = 80 }: { length?: number }) {
 }
 
 /** Riflessi per i materiali metallici (oro, cromature) generati in codice: nessun file HDR da scaricare. */
-function StudioReflections({ chiaro }: { chiaro: boolean }) {
+function StudioReflections() {
   const gl = useThree((s) => s.gl);
   const env = useMemo(() => {
-    if (chiaro) return creaAmbienteChiaro(gl);
     const pmrem = new PMREMGenerator(gl);
     const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     pmrem.dispose();
     return tex;
-  }, [gl, chiaro]);
+  }, [gl]);
   useEffect(() => () => env.dispose(), [env]);
   return <primitive object={env} attach="environment" />;
 }
@@ -129,26 +127,26 @@ export function SceneCanvas({
         shadows={!low}
         camera={{ position: camera, fov: 38 }}
         gl={{ antialias: !low, powerPreference: "high-performance" }}
-        scene={{ environmentIntensity: tema === "light" ? 1.2 : 0.9 }}
+        scene={{ environmentIntensity: tema === "light" ? 0.3 : 0.9 }}
         aria-hidden="true"
       >
         {!senzaSfondo && (
           <color attach="background" args={[tema === "light" ? "#f4f4f2" : "#0c0c0c"]} />
         )}
-        <hemisphereLight args={["#ffffff", "#1a1208", tema === "light" ? 0.15 : 0.5]} />
+        <hemisphereLight args={["#ffffff", "#1a1208", tema === "light" ? 0.6 : 0.5]} />
         <directionalLight
           position={[4, 6, 5]}
-          intensity={tema === "light" ? 0.8 : 2.4}
+          intensity={tema === "light" ? 1.5 : 2.4}
           color="#fff3e0"
           castShadow={!low}
         />
         <directionalLight
           position={[-5, 3, -4]}
-          intensity={tema === "light" ? 1.2 : 1.6}
+          intensity={tema === "light" ? 0.9 : 1.6}
           color="#d4a85c"
         />
         <FitCamera base={camera[2]} />
-        <StudioReflections chiaro={tema === "light"} />
+        <StudioReflections />
         <Suspense fallback={null}>{children}</Suspense>
         {!low && (
           <ContactShadows position={[0, 0.01, 0]} opacity={0.6} scale={14} blur={2.2} far={3} />
