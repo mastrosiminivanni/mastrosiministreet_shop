@@ -8,7 +8,6 @@ const GIORNI = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
 /** Dati strutturati per Google: il negozio (furgone) con i giorni e gli orari dei mercati. Indirizzo ed email solo se veri. */
 export function JsonLd() {
   const email = dato(AZIENDA.email);
-  const telefono = dato(AZIENDA.telefono);
   const legalName = dato(AZIENDA.ragioneSociale);
   const vatID = dato(AZIENDA.partitaIva);
   const data = {
@@ -33,7 +32,6 @@ export function JsonLd() {
     ...(legalName && { legalName }),
     ...(vatID && { vatID: `IT${vatID}` }),
     ...(email && { email }),
-    ...(telefono && { telephone: telefono }),
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Dato } from "@/components/legal/Segnaposto";
 import { LegalPage } from "@/components/legal/LegalPage";
-import { AZIENDA, dato } from "@/data/azienda";
+import { AZIENDA } from "@/data/azienda";
 import { INSTAGRAM_URL } from "@/data/markets";
 
 export const metadata: Metadata = { title: "Note legali" };
@@ -36,25 +36,11 @@ export default function NoteLegali() {
           </dd>
         </div>
         <div>
-          <dt className="inline font-semibold">Iscrizione REA: </dt>
-          <dd className="inline">
-            <Dato v={AZIENDA.rea} />
-          </dd>
-        </div>
-        <div>
           <dt className="inline font-semibold">Email: </dt>
           <dd className="inline">
             <Dato v={AZIENDA.email} />
           </dd>
         </div>
-        {dato(AZIENDA.pec) && (
-          <div>
-            <dt className="inline font-semibold">PEC: </dt>
-            <dd className="inline">
-              <Dato v={AZIENDA.pec} />
-            </dd>
-          </div>
-        )}
       </dl>
 
       <h2>Cosa fa questo sito</h2>

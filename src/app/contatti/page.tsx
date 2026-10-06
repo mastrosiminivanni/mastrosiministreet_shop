@@ -76,7 +76,6 @@ const faq = (vinted: string) => [
 export default async function ContattiPage() {
   const FAQ = faq(await getVintedUrl());
   const email = dato(AZIENDA.email);
-  const tel = dato(AZIENDA.telefono);
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="titolo text-4xl sm:text-6xl">Scrivici</h1>
@@ -98,25 +97,12 @@ export default async function ContattiPage() {
           @mastrosiministreet_shop
         </a>
       </div>
-      {(email || tel) && (
+      {email && (
         <p className="mt-4 text-bianco/80">
-          {email && (
-            <>
-              Email:{" "}
-              <a className="text-oro underline" href={`mailto:${email}`}>
-                {email}
-              </a>
-            </>
-          )}
-          {email && tel && ", "}
-          {tel && (
-            <>
-              Telefono:{" "}
-              <a className="text-oro underline" href={`tel:${tel.replace(/\s/g, "")}`}>
-                {tel}
-              </a>
-            </>
-          )}
+          Email:{" "}
+          <a className="text-oro underline" href={`mailto:${email}`}>
+            {email}
+          </a>
         </p>
       )}
 
