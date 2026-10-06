@@ -4,10 +4,10 @@
  * strutturati per Google non viene usato. Sostituisci i valori qui e rigenera il sito: si aggiorna ovunque.
  */
 export const AZIENDA = {
-  ragioneSociale: "[RAGIONE SOCIALE]",
-  partitaIva: "[P.IVA]",
-  codiceFiscale: "[CODICE FISCALE]",
-  sedeLegale: "[INDIRIZZO SEDE LEGALE]",
+  ragioneSociale: "SPACE92 di Mastrosimini Gianfranco",
+  partitaIva: "05868730721",
+  codiceFiscale: "MSTGFR75M19C134G",
+  sedeLegale: "Via Putignano 92, 70013 Castellana Grotte (BA)",
   rea: "[NUMERO REA]",
   email: "[EMAIL DI CONTATTO]",
   pec: "[PEC]",

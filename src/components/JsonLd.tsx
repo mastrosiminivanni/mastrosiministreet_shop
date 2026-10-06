@@ -9,6 +9,8 @@ const GIORNI = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
 export function JsonLd() {
   const email = dato(AZIENDA.email);
   const telefono = dato(AZIENDA.telefono);
+  const legalName = dato(AZIENDA.ragioneSociale);
+  const vatID = dato(AZIENDA.partitaIva);
   const data = {
     "@context": "https://schema.org",
     "@type": "Store",
@@ -28,6 +30,8 @@ export function JsonLd() {
       opens: MARKET_HOURS.start,
       closes: MARKET_HOURS.end,
     })),
+    ...(legalName && { legalName }),
+    ...(vatID && { vatID: `IT${vatID}` }),
     ...(email && { email }),
     ...(telefono && { telephone: telefono }),
   };
