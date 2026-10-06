@@ -48,10 +48,10 @@ function daRiga(r: Riga): Product {
   };
 }
 
-/** GET con parsing JSON, senza la cache di Next. Ha un limite di tempo: una richiesta appesa non deve bloccare pagine o pubblicazione. */
+/** GET con parsing JSON, senza la cache di Next. Ha un limite di tempo (20 s, 3 tentativi): una richiesta appesa non deve bloccare pagine o pubblicazione. */
 function leggiJsonUnaVolta<T>(indirizzo: string, intestazioni: Record<string, string>): Promise<T> {
   return new Promise((ok, no) => {
-    const req = get(indirizzo, { headers: intestazioni, agent: false, timeout: 8000 }, (res) => {
+    const req = get(indirizzo, { headers: intestazioni, agent: false, timeout: 20000 }, (res) => {
       let testo = "";
       res.setEncoding("utf8");
       res.on("data", (pezzo) => (testo += pezzo));
@@ -71,11 +71,14 @@ function leggiJsonUnaVolta<T>(indirizzo: string, intestazioni: Record<string, st
 }
 
 async function leggiJson<T>(indirizzo: string, intestazioni: Record<string, string>): Promise<T> {
-  try {
-    return await leggiJsonUnaVolta<T>(indirizzo, intestazioni);
-  } catch {
-    return leggiJsonUnaVolta<T>(indirizzo, intestazioni); // un secondo tentativo, poi l'errore vero
+  for (let tentativo = 1; tentativo < 3; tentativo++) {
+    try {
+      return await leggiJsonUnaVolta<T>(indirizzo, intestazioni);
+    } catch {
+      // riprova: la rete può essere lenta a tratti
+    }
   }
+  return leggiJsonUnaVolta<T>(indirizzo, intestazioni); // ultimo tentativo: se fallisce, l'errore è vero
 }
 
 /**
