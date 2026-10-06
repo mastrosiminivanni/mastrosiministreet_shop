@@ -45,10 +45,20 @@ function useScelta(): Scelta | "ssr" {
   return useSyncExternalStore<Scelta | "ssr">(subscribe, leggi, () => "ssr");
 }
 
-/** Carica Microsoft Clarity solo dopo il consenso; se il consenso viene revocato lo spegne e cancella i cookie. */
-function Clarity({ scelta }: { scelta: Scelta | "ssr" }) {
+/**
+ * Carica Microsoft Clarity solo dopo il consenso; se il consenso viene revocato lo spegne e cancella i cookie.
+ * Nell'area riservata (/admin) non si carica mai, nemmeno con il consenso, e se era già attivo viene fermato.
+ */
+function Clarity({ scelta, inAdmin }: { scelta: Scelta | "ssr"; inAdmin: boolean }) {
   useEffect(() => {
     if (!CLARITY_ID) return;
+    if (inAdmin) {
+      if (window.clarity) {
+        window.clarity("consent", false);
+        window.clarity("stop");
+      }
+      return;
+    }
     if (scelta === "granted") {
       if (!window.clarity) {
         const c = function (...args: unknown[]) {
@@ -64,7 +74,7 @@ function Clarity({ scelta }: { scelta: Scelta | "ssr" }) {
     } else if (scelta === "denied" && window.clarity) {
       window.clarity("consent", false);
     }
-  }, [scelta]);
+  }, [scelta, inAdmin]);
   return null;
 }
 
@@ -77,7 +87,7 @@ export function CookieBanner() {
   if (!CLARITY_ID) return null;
   return (
     <>
-      <Clarity scelta={scelta} />
+      <Clarity scelta={scelta} inAdmin={inAdmin} />
       {scelta === null && !inAdmin && (
         <div
           role="dialog"
