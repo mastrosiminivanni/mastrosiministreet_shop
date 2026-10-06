@@ -9,7 +9,7 @@ export const AZIENDA = {
   codiceFiscale: "MSTGFR75M19C134G",
   sedeLegale: "Via Putignano 92, 70013 Castellana Grotte (BA)",
   rea: "[NUMERO REA]",
-  email: "[EMAIL DI CONTATTO]",
+  email: "mastrosiminivanni@gmail.com",
   pec: "[PEC]",
   telefono: "[TELEFONO]",
 } as const;
