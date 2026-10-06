@@ -39,4 +39,44 @@ test.describe("tema chiaro e scuro", () => {
       ).toEqual([]);
     });
   }
+
+  test("tema chiaro: immagine di partenza chiara e furgone chiaro (texture chiare solo qui)", async ({
+    page,
+  }) => {
+    const richieste: string[] = [];
+    page.on("request", (r) => richieste.push(r.url()));
+    await page.addInitScript(() => localStorage.setItem("ms-theme", "light"));
+    await page.goto("/");
+    await expect(page.locator("picture.solo-chiaro")).toBeVisible();
+    await expect(page.locator("picture.solo-scuro")).toBeHidden();
+    expect(await page.locator("picture.solo-chiaro img").getAttribute("src")).toMatch(
+      /poster-mobile-chiaro\.webp/,
+    );
+    await expect
+      .poll(() => richieste.filter((u) => /livrea-chiara/.test(u)).length, { timeout: 90000 })
+      .toBe(3);
+  });
+
+  test("tema scuro: nessuna texture chiara scaricata", async ({ page }) => {
+    const richieste: string[] = [];
+    page.on("request", (r) => richieste.push(r.url()));
+    await page.goto("/");
+    await expect(page.locator("picture.solo-scuro")).toHaveCSS("opacity", "0", { timeout: 90000 }); // il 3D è arrivato
+    await page.waitForTimeout(1500);
+    expect(richieste.filter((u) => /livrea-chiara/.test(u))).toEqual([]);
+  });
+
+  test("passando al chiaro a pagina aperta il furgone prende le texture chiare", async ({
+    page,
+  }) => {
+    const richieste: string[] = [];
+    page.on("request", (r) => richieste.push(r.url()));
+    await page.goto("/");
+    await expect(page.locator("picture.solo-scuro")).toHaveCSS("opacity", "0", { timeout: 90000 });
+    expect(richieste.filter((u) => /livrea-chiara/.test(u))).toEqual([]);
+    await page.getByRole("button", { name: "Passa al tema chiaro" }).click();
+    await expect
+      .poll(() => richieste.filter((u) => /livrea-chiara/.test(u)).length, { timeout: 30000 })
+      .toBe(3);
+  });
 });

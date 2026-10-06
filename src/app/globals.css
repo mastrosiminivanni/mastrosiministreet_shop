@@ -10,6 +10,8 @@
   --tinta: #0c0c0c;
   /* inchiostro fisso, per la "targa" color crema */
   --inchiostro: #0c0c0c;
+  --strada-fondo: #161616;
+  --strada-bordo: #2a2a2a;
   --map-filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6);
 }
 
@@ -20,6 +22,8 @@
   --oro: #8a6414;
   --tinta: #ffffff;
   --color-white: #141414;
+  --strada-fondo: #d9d6ce;
+  --strada-bordo: #bdb9ae;
   --map-filter: none;
 }
 
@@ -63,13 +67,18 @@ body {
   outline-offset: 3px;
 }
 
+/* Immagini di partenza del furgone: una per tema */
+.solo-chiaro { display: none; }
+:root[data-theme="light"] .solo-chiaro { display: block; }
+:root[data-theme="light"] .solo-scuro { display: none; }
+
 /* Separatore a strada: linea tratteggiata oro */
 .strada {
   height: 14px;
   background:
     repeating-linear-gradient(90deg, var(--oro) 0 28px, transparent 28px 52px) center / 100% 3px no-repeat,
-    #161616;
-  border-block: 1px solid #2a2a2a;
+    var(--strada-fondo);
+  border-block: 1px solid var(--strada-bordo);
 }
 
 /* Animazione "stampa" del tondo prezzo */

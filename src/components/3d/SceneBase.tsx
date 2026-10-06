@@ -8,14 +8,19 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { iscriviTema, leggiTema, type Tema } from "@/lib/theme";
 import { isLowPower } from "@/lib/webgl";
 
-/** Strada nera con linea tratteggiata oro. */
+/** Strada con linea tratteggiata oro: asfalto scuro nel tema scuro, grigio chiaro nel tema chiaro. */
 export function Road({ length = 80 }: { length?: number }) {
   const dashes = Math.floor(length / 2.4);
+  const chiaro = useSyncExternalStore<Tema>(iscriviTema, leggiTema, () => "dark") === "light";
   return (
     <group position={[0, 0, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.001, 0]} receiveShadow>
         <planeGeometry args={[length, 7]} />
-        <meshStandardMaterial color="#121212" roughness={1} envMapIntensity={0.05} />
+        <meshStandardMaterial
+          color={chiaro ? "#cfccc4" : "#121212"}
+          roughness={1}
+          envMapIntensity={0.05}
+        />
       </mesh>
       {Array.from({ length: dashes }).map((_, i) => (
         <mesh
@@ -24,7 +29,7 @@ export function Road({ length = 80 }: { length?: number }) {
           position={[-length / 2 + i * 2.4 + 1, 0.004, 1.9]}
         >
           <planeGeometry args={[1.2, 0.09]} />
-          <meshBasicMaterial color="#d4a85c" />
+          <meshBasicMaterial color={chiaro ? "#8a6414" : "#d4a85c"} />
         </mesh>
       ))}
     </group>
@@ -86,15 +91,24 @@ export function SceneCanvas({
         shadows={!low}
         camera={{ position: camera, fov: 38 }}
         gl={{ antialias: !low, powerPreference: "high-performance" }}
-        scene={{ environmentIntensity: 0.9 }}
+        scene={{ environmentIntensity: tema === "light" ? 0.55 : 0.9 }}
         aria-hidden="true"
       >
         {!senzaSfondo && (
           <color attach="background" args={[tema === "light" ? "#f4f4f2" : "#0c0c0c"]} />
         )}
-        <hemisphereLight args={["#ffffff", "#1a1208", 0.5]} />
-        <directionalLight position={[4, 6, 5]} intensity={2.4} color="#fff3e0" castShadow={!low} />
-        <directionalLight position={[-5, 3, -4]} intensity={1.6} color="#d4a85c" />
+        <hemisphereLight args={["#ffffff", "#1a1208", tema === "light" ? 0.3 : 0.5]} />
+        <directionalLight
+          position={[4, 6, 5]}
+          intensity={tema === "light" ? 1.6 : 2.4}
+          color="#fff3e0"
+          castShadow={!low}
+        />
+        <directionalLight
+          position={[-5, 3, -4]}
+          intensity={tema === "light" ? 1.1 : 1.6}
+          color="#d4a85c"
+        />
         <FitCamera base={camera[2]} />
         <StudioReflections />
         <Suspense fallback={null}>{children}</Suspense>

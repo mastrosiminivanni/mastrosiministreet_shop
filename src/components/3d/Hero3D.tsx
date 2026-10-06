@@ -12,22 +12,36 @@ const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 /** Quanto aspettare dopo il caricamento della pagina prima di far partire il 3D (il testo e i pulsanti sono già usabili). */
 const ATTESA_3D_MS = 3000;
 
-/** Immagine di partenza: uno scatto del furgone 3D vero (senza sfondo, vale per tema chiaro e scuro). */
-function Poster({ nascosto }: { nascosto: boolean }) {
+/**
+ * Immagine di partenza: uno scatto del furgone 3D vero, senza sfondo. Ce n'è una per tema (furgone nero / furgone chiaro):
+ * il CSS mostra quella giusta in base a `data-theme`, che la pagina imposta prima del primo disegno.
+ */
+function PosterTema({ chiaro, nascosto }: { chiaro: boolean; nascosto: boolean }) {
+  const suffisso = chiaro ? "-chiaro" : "";
   return (
     <picture
-      className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${nascosto ? "opacity-0" : "opacity-100"}`}
+      className={`${chiaro ? "solo-chiaro" : "solo-scuro"} pointer-events-none absolute inset-0 transition-opacity duration-500 ${nascosto ? "opacity-0" : "opacity-100"}`}
     >
-      <source media="(min-width: 768px)" srcSet={asset("/brand/poster-desktop.webp")} />
+      <source media="(min-width: 768px)" srcSet={asset(`/brand/poster-desktop${suffisso}.webp`)} />
       <img
-        src={asset("/brand/poster-mobile.webp")}
-        alt="Il furgone di Mastrosimini Street Shop: nero e oro"
+        src={asset(`/brand/poster-mobile${suffisso}.webp`)}
+        alt={chiaro ? "" : "Il furgone di Mastrosimini Street Shop: nero e oro"}
+        aria-hidden={chiaro ? true : undefined}
         width={780}
         height={600}
-        fetchPriority="high"
+        fetchPriority={chiaro ? "low" : "high"}
         className="h-full w-full object-contain md:object-cover"
       />
     </picture>
+  );
+}
+
+function Poster({ nascosto }: { nascosto: boolean }) {
+  return (
+    <>
+      <PosterTema chiaro={false} nascosto={nascosto} />
+      <PosterTema chiaro nascosto={nascosto} />
+    </>
   );
 }
 

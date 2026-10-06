@@ -3,6 +3,8 @@
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { asset } from "@/lib/asset";
+import { iscriviTema, leggiTema, type Tema } from "@/lib/theme";
+import { applicaTemaFurgone } from "./temaFurgone";
 import {
   CAP_TO_RIM,
   PHOTO_H,
@@ -11,7 +13,7 @@ import {
   TYRE_TO_RIM,
   type PhotoWheel,
 } from "@/data/van-photo";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import * as THREE from "three";
 
 const NERO = "#0c0c0c";
@@ -286,6 +288,12 @@ function GltfVan({ onReady }: { onReady?: () => void }) {
   useEffect(() => {
     onReady?.();
   }, [onReady]);
+
+  // tema chiaro: furgone crema con le pennellate oro (le texture chiare si scaricano solo quando servono)
+  const tema = useSyncExternalStore<Tema>(iscriviTema, leggiTema, () => "dark");
+  useEffect(() => {
+    void applicaTemaFurgone(model, tema);
+  }, [model, tema]);
 
   useFrame(() => {
     const g = ref.current;
