@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Hero3D } from "@/components/3d/Hero3D";
-import { PlateBadge } from "@/components/ui/PlateBadge";
 import { TodayPill } from "./TodayBanner";
 
 /**
@@ -12,9 +11,10 @@ export function Hero() {
     <section className="relative isolate overflow-hidden bg-nero">
       <div className="mx-auto flex max-w-5xl flex-col px-4 pb-6 pt-6 md:min-h-[88svh] md:justify-between md:pb-8 md:pt-8">
         <div>
-          <PlateBadge>Un mercato diverso ogni giorno</PlateBadge>
-          <div><TodayPill /></div>
-          <h1 className="titolo mt-4 text-[clamp(2.4rem,11vw,4.5rem)] lg:text-6xl">
+          <div>
+            <TodayPill />
+          </div>
+          <h1 className="titolo mt-3 text-[clamp(2.4rem,11vw,4.5rem)] lg:text-6xl">
             Mastrosimini
             <span className="block text-oro">Street Shop</span>
           </h1>

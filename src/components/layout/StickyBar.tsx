@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { INSTAGRAM_DM_URL } from "@/data/markets";
+import { MapPin } from "@phosphor-icons/react";
+import { CTA_INSTAGRAM, INSTAGRAM_DM_URL } from "@/data/markets";
 import { statusLabel, useTodayStop } from "@/components/sections/TodayBanner";
 
 /** Barra fissa in basso, solo su telefono: dove siamo oggi e contatto Instagram sempre a portata di pollice. */
@@ -12,7 +13,7 @@ export function StickyBar() {
   if (usePathname().startsWith("/admin")) return null;
   const label = stop
     ? stop.town
-      ? `${stop.town}${stop.status ? ` · ${statusLabel(stop.status, stop.hours?.start).toLowerCase()}` : ""}`
+      ? `${stop.town}${stop.status ? `, ${statusLabel(stop.status, stop.hours?.start).toLowerCase()}` : ""}`
       : "Domenica: tappa speciale"
     : "Dove siamo oggi";
   return (
@@ -22,14 +23,20 @@ export function StickyBar() {
           href="/dove-siamo"
           className="flex-[3] truncate rounded-tag bg-oro px-2 py-3 text-center text-xs font-extrabold uppercase text-nero"
         >
-          📍 {label}
+          <MapPin
+            weight="fill"
+            size={16}
+            aria-hidden="true"
+            className="mr-1 inline-block align-text-bottom"
+          />
+          {label}
         </Link>
         <a
           href={INSTAGRAM_DM_URL}
           rel="noopener"
-          className="flex-[2] rounded-tag border-2 border-oro px-2 py-3 text-center text-xs font-extrabold uppercase text-oro"
+          className="flex flex-[2] items-center justify-center rounded-tag border-2 border-oro px-2 py-3 text-center text-xs font-extrabold uppercase leading-tight text-oro"
         >
-          Scrivici su IG
+          {CTA_INSTAGRAM}
         </a>
       </div>
     </div>

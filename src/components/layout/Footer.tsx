@@ -48,8 +48,8 @@ export async function Footer() {
       {dato(AZIENDA.ragioneSociale) && (
         <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/60">
           © {new Date().getFullYear()} {AZIENDA.ragioneSociale}
-          {dato(AZIENDA.partitaIva) && ` · P.IVA ${AZIENDA.partitaIva}`}
-          {dato(AZIENDA.sedeLegale) && ` · ${AZIENDA.sedeLegale}`}
+          {dato(AZIENDA.partitaIva) && <span className="block">P.IVA {AZIENDA.partitaIva}</span>}
+          {dato(AZIENDA.sedeLegale) && <span className="block">{AZIENDA.sedeLegale}</span>}
         </p>
       )}
       <p className="mx-auto mt-6 max-w-6xl text-xs text-bianco/50">

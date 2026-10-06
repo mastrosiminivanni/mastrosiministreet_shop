@@ -1,4 +1,4 @@
-import { INSTAGRAM_DM_URL } from "@/data/markets";
+import { CTA_INSTAGRAM, INSTAGRAM_DM_URL } from "@/data/markets";
 import { getVintedUrl } from "@/lib/catalog";
 import { isSoldOut, type Product } from "@/data/products";
 
@@ -19,7 +19,7 @@ export async function ProductActions({ product }: { product: Product }) {
         rel="noopener"
         className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
       >
-        Contattaci su Instagram
+        {CTA_INSTAGRAM}
       </a>
       <p className="text-sm text-bianco/70">
         Scrivici in chat con il nome del capo: {product.title}.

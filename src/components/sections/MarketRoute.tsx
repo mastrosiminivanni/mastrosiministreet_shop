@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useRef, useState } from "react";
 import { MARKETS, SUNDAY_NOTE } from "@/data/markets";
-import { PlateBadge } from "@/components/ui/PlateBadge";
 import { useCan3D } from "@/lib/webgl";
 import { SceneBoundary } from "@/components/3d/SceneBoundary";
 import { WheelLoader } from "@/components/3d/WheelLoader";
@@ -19,9 +18,10 @@ function MarketCard({ i }: { i: number }) {
   const m = MARKETS[i];
   return (
     <div className="rounded-tag border-2 border-oro bg-nero/90 p-5">
-      <PlateBadge>{m.dayName}</PlateBadge>
-      <h3 className="titolo mt-3 text-3xl">{m.town}</h3>
-      <p className="mt-2 text-sm font-semibold text-oro">{m.spot}</p>
+      <h3 className="titolo text-3xl">{m.town}</h3>
+      <p className="mt-2 text-sm font-semibold text-oro">
+        {m.dayName}: {m.spot}
+      </p>
       <p className="text-sm text-bianco/70">{m.hours}</p>
       <Link
         href={`/shop?mercato=${m.slug}`}
@@ -62,12 +62,19 @@ function Journey3D() {
     <section ref={ref} className="relative" style={{ height: `${MARKETS.length * 70}svh` }}>
       {/* tre fasce che non si sovrappongono: titolo, strada con il furgone, scheda del paese */}
       <div className="sticky top-14 flex h-[calc(100svh-3.5rem-4rem)] flex-col overflow-hidden md:h-[calc(100svh-3.5rem)]">
-        <h2 className="titolo mx-auto w-full max-w-5xl px-4 pt-4 text-3xl sm:text-6xl">Il giro della settimana</h2>
+        <h2 className="titolo mx-auto w-full max-w-5xl px-4 pt-4 text-3xl sm:text-6xl">
+          Il giro della settimana
+        </h2>
         <div className="relative min-h-0 flex-1">
           <RouteScene progress={scrollYProgress} />
         </div>
         <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-4">
-          <motion.div key={stop} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="md:ml-auto md:max-w-sm">
+          <motion.div
+            key={stop}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:ml-auto md:max-w-sm"
+          >
             <MarketCard i={stop} />
           </motion.div>
         </div>

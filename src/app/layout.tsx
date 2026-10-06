@@ -15,13 +15,13 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const titolo = `${SITE_NAME} — ${SITE_TAGLINE.toLowerCase()}`;
+const titolo = `${SITE_NAME} - ${SITE_TAGLINE.toLowerCase()}`;
 const descrizione =
   "Abbigliamento uomo street e oversize, le ultime mode a prezzi da mercato: camicie 25€, felpe 30€, pantaloni 20€. Il furgone gira un mercato diverso ogni giorno: scopri dove siamo oggi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_URL}/`),
-  title: { default: titolo, template: `%s · ${SITE_NAME}` },
+  title: { default: titolo, template: `%s - ${SITE_NAME}` },
   description: descrizione,
   alternates: { canonical: "./" },
   openGraph: {

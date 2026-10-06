@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Dato } from "@/components/legal/Segnaposto";
-import { PlateBadge } from "@/components/ui/PlateBadge";
 import { AZIENDA, dato } from "@/data/azienda";
-import { INSTAGRAM_DM_URL, INSTAGRAM_URL, MARKET_HOURS, SUNDAY_NOTE } from "@/data/markets";
+import {
+  INSTAGRAM_DM_URL,
+  INSTAGRAM_URL,
+  MARKET_HOURS,
+  SUNDAY_NOTE,
+  CTA_INSTAGRAM,
+} from "@/data/markets";
 import { getVintedUrl } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -44,7 +49,7 @@ const faq = (vinted: string) => [
     d: "A che ora siete al mercato?",
     r: (
       <>
-        Dal lunedì al sabato dalle {MARKET_HOURS.label.replace(" – ", " alle ")}. {SUNDAY_NOTE}
+        Dal lunedì al sabato dalle {MARKET_HOURS.from} alle {MARKET_HOURS.to}. {SUNDAY_NOTE}
       </>
     ),
   },
@@ -74,8 +79,7 @@ export default async function ContattiPage() {
   const tel = dato(AZIENDA.telefono);
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <PlateBadge>Contatti</PlateBadge>
-      <h1 className="titolo mt-3 text-4xl sm:text-6xl">Scrivici</h1>
+      <h1 className="titolo text-4xl sm:text-6xl">Scrivici</h1>
       <p className="mt-3 text-lg">Il modo più veloce per parlare con noi è Instagram.</p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -84,7 +88,7 @@ export default async function ContattiPage() {
           rel="noopener"
           className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-nero hover:brightness-110"
         >
-          Contattaci su Instagram
+          {CTA_INSTAGRAM}
         </a>
         <a
           href={INSTAGRAM_URL}
@@ -104,7 +108,7 @@ export default async function ContattiPage() {
               </a>
             </>
           )}
-          {email && tel && " · "}
+          {email && tel && ", "}
           {tel && (
             <>
               Telefono:{" "}

@@ -45,7 +45,7 @@ export default function MarketMap({ selected, onSelect }: { selected: string; on
             title={`${m.dayName}: ${m.town}`}
           >
             <Popup>
-              <strong>{m.dayName} · {m.town}</strong>
+              <strong>{m.dayName}, {m.town}</strong>
               <br />
               {m.spot}
               <br />

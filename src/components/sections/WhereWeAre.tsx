@@ -109,7 +109,7 @@ export function WhereWeAre() {
         <div>
           <MarketMap selected={selected} onSelect={setPicked} />
           <p className="mt-2 text-sm text-bianco/75">
-            <strong>{m.dayName} · {m.town}</strong>: {m.spot}.{" "}
+            <strong>{m.dayName}, {m.town}</strong>: {m.spot}.{" "}
             <a href={mapsUrl(m)} rel="noopener" className="font-bold text-oro underline underline-offset-4">Apri in Google Maps</a>
           </p>
           <p className="mt-1 text-xs text-bianco/50">Posizione indicativa: il punto esatto è quello delle storie su Instagram.</p>

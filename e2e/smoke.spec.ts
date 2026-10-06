@@ -38,7 +38,7 @@ test("shop → scheda prodotto: si contatta solo su Instagram", async ({ page })
   await page.goto("/shop");
   await page.locator("main ul li a").first().click();
   await expect(page).toHaveURL(/\/shop\/.+/);
-  const ig = page.getByRole("link", { name: /Contattaci su Instagram/i });
+  const ig = page.getByRole("link", { name: /Scrivici su Instagram/i });
   await expect(ig).toHaveAttribute("href", /ig\.me\/m\/mastrosiministreet_shop/);
   await expect(page.getByText(/compra ora|carrello/i)).toHaveCount(0);
 });

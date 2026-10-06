@@ -69,8 +69,8 @@ export function ElencoCapi({
             <div className="min-w-0 flex-1">
               <p className="font-bold leading-tight">{c.title}</p>
               <p className="mt-1 text-sm text-bianco/75">
-                {c.price}€ · taglia {c.sizes.join(" / ")} · {c.stock}{" "}
-                {c.stock === 1 ? "pezzo" : "pezzi"} · {c.images.length} foto
+                {c.price}€, taglia {c.sizes.join(" / ")}, {c.stock}{" "}
+                {c.stock === 1 ? "pezzo" : "pezzi"}, {c.images.length} foto
               </p>
               <span
                 className={clsx(

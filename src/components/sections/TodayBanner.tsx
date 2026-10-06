@@ -161,7 +161,7 @@ export function TodayPill() {
   const stop = useTodayStop();
   const label = stop
     ? stop.town
-      ? `Oggi: ${stop.town}${stop.status ? ` · ${statusLabel(stop.status, stop.hours?.start).toLowerCase()}` : ""}`
+      ? `Oggi: ${stop.town}${stop.status ? `, ${statusLabel(stop.status, stop.hours?.start).toLowerCase()}` : ""}`
       : "Domenica: tappa speciale"
     : "Dove siamo oggi";
   return (

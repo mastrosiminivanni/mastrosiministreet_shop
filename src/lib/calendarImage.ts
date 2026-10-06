@@ -24,7 +24,7 @@ export function downloadCalendarImage() {
   g.font = f(800, 118);
   g.fillText("DOVE SIAMO", W / 2, 290);
   g.font = f(500, 40);
-  g.fillText(`Ogni mercato dalle ${MARKET_HOURS.label.replace(" – ", " alle ")}`, W / 2, 360);
+  g.fillText(`Ogni mercato dalle ${MARKET_HOURS.from} alle ${MARKET_HOURS.to}`, W / 2, 360);
 
   g.textAlign = "left";
   MARKETS.forEach((m, i) => {

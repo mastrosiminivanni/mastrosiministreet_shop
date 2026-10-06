@@ -15,7 +15,7 @@ export type Market = {
 };
 
 /** Orario di tutti i mercati settimanali: dalle 7 alle 13. */
-export const MARKET_HOURS = { start: "07:00", end: "13:00", label: "7:00 – 13:00" } as const;
+export const MARKET_HOURS = { start: "07:00", end: "13:00", from: "7:00", to: "13:00", label: "7:00-13:00" } as const;
 
 export const MARKETS: Market[] = [
   { slug: "rutigliano", town: "Rutigliano", day: 1, dayName: "Lunedì", spot: "Via Dante (zona Via Paisiello)", lat: 41.0082, lng: 17.0095, precision: "approx", hours: MARKET_HOURS.label },
@@ -31,6 +31,8 @@ export const INSTAGRAM_URL = "https://www.instagram.com/mastrosiministreet_shop/
 /** Apre direttamente la chat (DM) con il profilo. */
 /** Profilo Vinted: un canale in più, non l'unico. Le taglie che mancano si caricano su richiesta. */
 export const VINTED_URL = "https://www.vinted.it/member/261904496-mastrosiminishop";
+/** Un solo testo per il pulsante che porta alla chat Instagram, ovunque nel sito. */
+export const CTA_INSTAGRAM = "Scrivici su Instagram";
 export const INSTAGRAM_DM_URL = "https://ig.me/m/mastrosiministreet_shop";
 
 /** Link che apre il punto esatto in Google Maps (indicazioni stradali). */

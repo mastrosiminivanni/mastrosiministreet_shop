@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Camera } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { preparaFoto } from "@/lib/admin/image";
 import type { AdminStore } from "@/lib/admin/store";
@@ -128,7 +129,8 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
           htmlFor="foto"
           className="mt-3 flex min-h-16 cursor-pointer items-center justify-center rounded-tag border-2 border-dashed border-oro px-4 text-center text-base font-extrabold uppercase text-oro hover:bg-oro/10 focus-within:outline focus-within:outline-2 focus-within:outline-oro"
         >
-          📷 Aggiungi foto
+          <Camera size={22} aria-hidden="true" className="mr-2 inline-block" />
+          Aggiungi foto
         </label>
         {(foto.length > 0 || inElaborazione > 0) && (
           <ul className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
