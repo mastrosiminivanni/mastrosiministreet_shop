@@ -8,8 +8,21 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3100",
     viewport: { width: 390, height: 844 },
+    colorScheme: "dark", // i test partono come un telefono in modalità scura; quelli sul tema la cambiano
     // Chromium senza scheda grafica: si usa il rendering software, sufficiente per verificare che la scena parta
-    launchOptions: { args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] },
+    launchOptions: {
+      args: [
+        "--use-gl=angle",
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+      ],
+    },
   },
-  webServer: { command: "npm run dev -- -p 3100", url: "http://localhost:3100", reuseExistingServer: true, timeout: 120_000 },
+  webServer: {
+    command: "npm run dev -- -p 3100",
+    url: "http://localhost:3100",
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
 });

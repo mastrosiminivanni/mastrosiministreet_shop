@@ -1,12 +1,13 @@
 "use client";
 
 import { Moon, Sun } from "@phosphor-icons/react";
-import { useSyncExternalStore } from "react";
-import { impostaTema, iscriviTema, leggiTema, type Tema } from "@/lib/theme";
+import { useEffect, useSyncExternalStore } from "react";
+import { impostaTema, iscriviTema, leggiTema, seguiTelefono, type Tema } from "@/lib/theme";
 
-/** Interruttore tema chiaro / scuro. Il tema scuro è quello di partenza. */
+/** Interruttore tema chiaro / scuro. Alla prima visita il tema è quello del telefono; il pulsante fissa la scelta. */
 export function ThemeToggle() {
   const tema = useSyncExternalStore<Tema>(iscriviTema, leggiTema, () => "dark");
+  useEffect(() => seguiTelefono(), []);
   const scuro = tema === "dark";
   return (
     <button

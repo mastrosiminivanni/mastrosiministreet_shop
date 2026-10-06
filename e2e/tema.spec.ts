@@ -79,4 +79,56 @@ test.describe("tema chiaro e scuro", () => {
       .poll(() => richieste.filter((u) => /livrea-chiara/.test(u)).length, { timeout: 30000 })
       .toBe(3);
   });
+
+  test.describe("segue il telefono", () => {
+    test.describe("telefono in modalità chiara", () => {
+      test.use({ colorScheme: "light" });
+      test("senza nessuna scelta il sito parte chiaro", async ({ page }) => {
+        await page.goto("/");
+        await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+        await expect(page.locator("body")).toHaveCSS("background-color", "rgb(244, 244, 242)");
+        await expect(page.locator("picture.solo-chiaro")).toBeVisible();
+      });
+      test("la scelta fatta a mano vince sul telefono", async ({ page }) => {
+        await page.addInitScript(() => localStorage.setItem("ms-theme", "dark"));
+        await page.goto("/");
+        await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      });
+    });
+
+    test.describe("telefono in modalità scura", () => {
+      test.use({ colorScheme: "dark" });
+      test("senza nessuna scelta il sito parte scuro", async ({ page }) => {
+        await page.goto("/");
+        await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      });
+      test("la scelta fatta a mano vince sul telefono", async ({ page }) => {
+        await page.addInitScript(() => localStorage.setItem("ms-theme", "light"));
+        await page.goto("/");
+        await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+      });
+    });
+
+    test("se il telefono cambia mentre il sito è aperto, il sito lo segue (finché non hai scelto)", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.goto("/shop");
+      const html = page.locator("html");
+      await expect(html).toHaveAttribute("data-theme", "dark");
+      await expect(page.getByRole("button", { name: "Passa al tema chiaro" })).toBeVisible();
+      await page.waitForTimeout(1500); // il sito ha attivato l'ascolto del telefono
+      await page.emulateMedia({ colorScheme: "light" });
+      await expect(html).toHaveAttribute("data-theme", "light");
+      await page.emulateMedia({ colorScheme: "dark" });
+      await expect(html).toHaveAttribute("data-theme", "dark");
+
+      // dopo una scelta a mano il telefono non decide più
+      await page.getByRole("button", { name: "Passa al tema chiaro" }).click();
+      await expect(html).toHaveAttribute("data-theme", "light");
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.waitForTimeout(500);
+      await expect(html).toHaveAttribute("data-theme", "light");
+    });
+  });
 });
