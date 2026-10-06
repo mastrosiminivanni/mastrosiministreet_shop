@@ -3,8 +3,15 @@
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { asset } from "@/lib/asset";
-import { CAP_TO_RIM, PHOTO_H, PHOTO_W, PHOTO_WHEELS, TYRE_TO_RIM, type PhotoWheel } from "@/data/van-photo";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CAP_TO_RIM,
+  PHOTO_H,
+  PHOTO_W,
+  PHOTO_WHEELS,
+  TYRE_TO_RIM,
+  type PhotoWheel,
+} from "@/data/van-photo";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const NERO = "#0c0c0c";
@@ -165,7 +172,15 @@ const px = (x: number, y: number): [number, number] => [
 ];
 
 /** Cerchio che gira: disco ruotato nella texture, schiacciato dalla prospettiva del piano. */
-function PhotoWheelOverlay({ wheel, cap, angle }: { wheel: PhotoWheel; cap: THREE.Texture; angle: React.RefObject<number> }) {
+function PhotoWheelOverlay({
+  wheel,
+  cap,
+  angle,
+}: {
+  wheel: PhotoWheel;
+  cap: THREE.Texture;
+  angle: React.RefObject<number>;
+}) {
   const disc = useTexture(asset(wheel.texture));
   const ref = useRef<THREE.Mesh>(null);
   useFrame(() => {
@@ -218,7 +233,12 @@ export function VanBillboard() {
     } else {
       // da fermo completa il giro: il cerchio torna identico alla foto (luci comprese)
       const turn = Math.PI * 2;
-      angle.current = THREE.MathUtils.damp(angle.current, Math.round(angle.current / turn) * turn, 3, dt);
+      angle.current = THREE.MathUtils.damp(
+        angle.current,
+        Math.round(angle.current / turn) * turn,
+        3,
+        dt,
+      );
     }
   });
 
@@ -291,42 +311,10 @@ function GltfVan({ onReady }: { onReady?: () => void }) {
   );
 }
 
-/** Usa /models/van.glb se esiste; altrimenti la foto del furgone vero (cartellone). `procedural` forza il modello in codice. */
-export function Van({ procedural = false }: { procedural?: boolean }) {
-  // null = sto ancora controllando: non mostro nulla per evitare il cambio di furgone a metà animazione
-  const [hasModel, setHasModel] = useState<boolean | null>(null);
-  const [glbReady, setGlbReady] = useState(false);
-  const [late, setLate] = useState(false);
-  useEffect(() => {
-    let alive = true;
-    fetch(asset("/models/van.glb"), { method: "HEAD" })
-      .then((r) => alive && setHasModel(r.ok && !(r.headers.get("content-type") ?? "").includes("html")))
-      .catch(() => alive && setHasModel(false));
-    return () => {
-      alive = false;
-    };
-  }, []);
-  // Se il modello 3D non arriva (rete lenta, file bloccato da un'estensione o dalla rete) non si resta con la scena vuota:
-  // dopo qualche secondo compare la foto del furgone, e il 3D la sostituisce se arriva più tardi.
-  useEffect(() => {
-    if (hasModel !== true) return;
-    const t = setTimeout(() => setLate(true), 3500);
-    return () => clearTimeout(t);
-  }, [hasModel]);
+/** Avvisa la pagina che il furgone 3D è disegnato: l'immagine di partenza può sparire. */
+const annunciaFurgonePronto = () => window.dispatchEvent(new Event("ms-van-ready"));
 
-  if (hasModel === null) return null;
-  if (hasModel)
-    return (
-      <>
-        {late && !glbReady && (
-          <Suspense fallback={null}>
-            <VanBillboard />
-          </Suspense>
-        )}
-        <Suspense fallback={null}>
-          <GltfVan onReady={() => setGlbReady(true)} />
-        </Suspense>
-      </>
-    );
-  return procedural ? <ProceduralVan /> : <VanBillboard />;
+/** Il furgone 3D (/models/van.glb). Se il file non arriva, la pagina resta con l'immagine di partenza. */
+export function Van() {
+  return <GltfVan onReady={annunciaFurgonePronto} />;
 }

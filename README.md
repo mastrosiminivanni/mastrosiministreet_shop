@@ -37,8 +37,12 @@ La scelta si cambia da *Cookie* nel footer. Se in `src/data/site.ts` svuoti `CLA
 ## Furgone 3D
 
 Sprinter con la livrea Mastrosimini e ruote che girano, in `public/models/van.glb`. Si rigenera con gli script in `blender/`
-(istruzioni in `blender/README.md`). Se il file non si carica, il sito mostra la foto del furgone. Modello di partenza:
-"Mercedes-Benz Sprinter" di Savelliy 07, CC BY 4.0 (vedi `CREDITS.md`).
+(istruzioni in `blender/README.md`). Modello di partenza: "Mercedes-Benz Sprinter" di Savelliy 07, CC BY 4.0 (vedi `CREDITS.md`).
+
+Per la velocità, in home si vede subito un'immagine del furgone (`public/brand/poster-mobile.webp` e `poster-desktop.webp`) e il 3D parte
+circa 3 secondi dopo il caricamento (o al primo tocco/scorrimento). Senza 3D (browser vecchio, "riduci movimento", telefono lento) o se il
+modello non arriva, resta l'immagine. **Se cambi il modello o la livrea, rigenera le immagini**: avvia il sito (`npm run dev -- -p 3400`) e
+lancia `node scripts/genera-poster.mjs http://localhost:3400`.
 
 ## Pubblicare
 

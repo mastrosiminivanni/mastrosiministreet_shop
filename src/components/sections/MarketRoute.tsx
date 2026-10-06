@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MARKETS, SUNDAY_NOTE } from "@/data/markets";
 import { useCan3D } from "@/lib/webgl";
 import { SceneBoundary } from "@/components/3d/SceneBoundary";
@@ -55,6 +55,24 @@ function Journey3D() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [stop, setStop] = useState(0);
+  // la scena è molto in basso nella pagina: si prepara solo quando ci si avvicina, così non pesa sul caricamento
+  const [vicina, setVicina] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVicina(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "150px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   useMotionValueEvent(scrollYProgress, "change", (v) =>
     setStop(Math.min(MARKETS.length - 1, Math.round(v * (MARKETS.length - 1)))),
   );
@@ -66,7 +84,11 @@ function Journey3D() {
           Il giro della settimana
         </h2>
         <div className="relative min-h-0 flex-1">
-          <RouteScene progress={scrollYProgress} />
+          {vicina || !("IntersectionObserver" in window) ? (
+            <RouteScene progress={scrollYProgress} />
+          ) : (
+            <WheelLoader />
+          )}
         </div>
         <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-4">
           <motion.div

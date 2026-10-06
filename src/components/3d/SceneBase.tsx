@@ -63,6 +63,8 @@ export function SceneCanvas({
   camera?: [number, number, number];
 }) {
   const low = isLowPower();
+  // "?poster" serve solo a scripts/genera-poster.mjs: scena su sfondo trasparente per ricavare l'immagine di partenza
+  const senzaSfondo = typeof window !== "undefined" && window.location.search.includes("poster");
   const tema = useSyncExternalStore<Tema>(iscriviTema, leggiTema, () => "dark");
   // La scena si ferma quando esce dallo schermo: risparmia batteria e lascia il telefono libero per il resto della pagina.
   const box = useRef<HTMLDivElement>(null);
@@ -80,14 +82,16 @@ export function SceneCanvas({
     <div ref={box} className="h-full w-full">
       <Canvas
         frameloop={visible ? "always" : "never"}
-        dpr={[1, 1.75]}
+        dpr={low ? [1, 1.5] : [1, 1.75]}
         shadows={!low}
         camera={{ position: camera, fov: 38 }}
         gl={{ antialias: !low, powerPreference: "high-performance" }}
         scene={{ environmentIntensity: 0.9 }}
         aria-hidden="true"
       >
-        <color attach="background" args={[tema === "light" ? "#f4f4f2" : "#0c0c0c"]} />
+        {!senzaSfondo && (
+          <color attach="background" args={[tema === "light" ? "#f4f4f2" : "#0c0c0c"]} />
+        )}
         <hemisphereLight args={["#ffffff", "#1a1208", 0.5]} />
         <directionalLight position={[4, 6, 5]} intensity={2.4} color="#fff3e0" castShadow={!low} />
         <directionalLight position={[-5, 3, -4]} intensity={1.6} color="#d4a85c" />
