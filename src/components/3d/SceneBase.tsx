@@ -59,6 +59,15 @@ function FitCamera({ base }: { base: number }) {
   return null;
 }
 
+/** Dopo questo tempo senza tocchi, movimenti del mouse o scorrimenti la scena smette di ridisegnarsi (e riparte al primo gesto). */
+const RIPOSO_DOPO_MS = 2500;
+const GESTI = ["pointermove", "pointerdown", "touchstart", "wheel", "scroll", "keydown"] as const;
+
+// Il primo furgone disegnato: finché non c'è, il conto alla rovescia del riposo non parte (altrimenti la scena si fermerebbe vuota).
+let furgonePronto = false;
+if (typeof window !== "undefined")
+  window.addEventListener("ms-van-ready", () => (furgonePronto = true), { once: true });
+
 /** Canvas con le regole di performance del progetto + luci calde e rim-light oro. */
 export function SceneCanvas({
   children,
@@ -74,6 +83,33 @@ export function SceneCanvas({
   // La scena si ferma quando esce dallo schermo: risparmia batteria e lascia il telefono libero per il resto della pagina.
   const box = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // Scena a riposo: ferma da sola dopo qualche secondo di inattività. Un disegno continuo e infinito tiene il telefono occupato
+  // per sempre (batteria, e per i test di velocità il browser non è mai "libero").
+  const [attiva, setAttiva] = useState(true);
+  useEffect(() => {
+    let timer: number | undefined;
+    let pronto = furgonePronto;
+    const riposa = () => {
+      window.clearTimeout(timer);
+      if (pronto) timer = window.setTimeout(() => setAttiva(false), RIPOSO_DOPO_MS);
+    };
+    const sveglia = () => {
+      setAttiva(true);
+      riposa();
+    };
+    const appenaPronto = () => {
+      pronto = true;
+      riposa();
+    };
+    riposa();
+    window.addEventListener("ms-van-ready", appenaPronto);
+    for (const g of GESTI) window.addEventListener(g, sveglia, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("ms-van-ready", appenaPronto);
+      for (const g of GESTI) window.removeEventListener(g, sveglia);
+    };
+  }, []);
   useEffect(() => {
     const el = box.current;
     if (!el || !("IntersectionObserver" in window)) return;
@@ -86,7 +122,7 @@ export function SceneCanvas({
   return (
     <div ref={box} className="h-full w-full">
       <Canvas
-        frameloop={visible ? "always" : "never"}
+        frameloop={visible && attiva ? "always" : "never"}
         dpr={low ? [1, 1.5] : [1, 1.75]}
         shadows={!low}
         camera={{ position: camera, fov: 38 }}

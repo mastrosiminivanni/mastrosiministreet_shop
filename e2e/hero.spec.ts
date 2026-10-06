@@ -47,4 +47,40 @@ test.describe("furgone in home: immagine subito, 3D dopo", () => {
     await page.getByRole("heading", { name: "Il giro della settimana" }).scrollIntoViewIfNeeded();
     await expect(page.locator("canvas")).toHaveCount(2, { timeout: 60000 });
   });
+
+  test("a riposo la scena smette di ridisegnarsi e riparte al primo gesto", async ({ page }) => {
+    await page.addInitScript(() => {
+      const w = window as unknown as { __disegni: number };
+      w.__disegni = 0;
+      const proto = WebGL2RenderingContext.prototype as unknown as Record<
+        string,
+        (...a: unknown[]) => unknown
+      >;
+      for (const nome of [
+        "drawElements",
+        "drawArrays",
+        "drawElementsInstanced",
+        "drawArraysInstanced",
+      ]) {
+        const originale = proto[nome];
+        proto[nome] = function (this: unknown, ...a: unknown[]) {
+          w.__disegni++;
+          return originale.apply(this, a);
+        };
+      }
+    });
+    const disegni = () =>
+      page.evaluate(() => (window as unknown as { __disegni: number }).__disegni);
+    await page.goto("/");
+    await expect(page.locator("picture.solo-scuro")).toHaveCSS("opacity", "0", { timeout: 90000 }); // il 3D è arrivato
+    await page.waitForTimeout(5000); // 2,5 s di riposo + margine
+    const fermo = await disegni();
+    expect(fermo).toBeGreaterThan(0);
+    await page.waitForTimeout(1500);
+    expect(await disegni()).toBe(fermo); // nessun disegno mentre è a riposo
+    await page.mouse.move(120, 140);
+    await page.mouse.move(200, 220);
+    await page.waitForTimeout(600);
+    expect(await disegni()).toBeGreaterThan(fermo); // il gesto l'ha svegliata
+  });
 });

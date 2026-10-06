@@ -10,7 +10,7 @@ import { SceneBoundary } from "./SceneBoundary";
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 /** Quanto aspettare dopo il caricamento della pagina prima di far partire il 3D (il testo e i pulsanti sono già usabili). */
-const ATTESA_3D_MS = 3000;
+const ATTESA_3D_MS = Number(process.env.NEXT_PUBLIC_ATTESA_3D_MS ?? 3000); // modificabile solo per le prove di velocità
 
 /**
  * Immagine di partenza: uno scatto del furgone 3D vero, senza sfondo. Ce n'è una per tema (furgone nero / furgone chiaro):
