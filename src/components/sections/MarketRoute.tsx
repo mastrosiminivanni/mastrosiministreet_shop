@@ -1,37 +1,32 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { MARKETS, SUNDAY_NOTE } from "@/data/markets";
 import { useCan3D } from "@/lib/webgl";
 import { SceneBoundary } from "@/components/3d/SceneBoundary";
 import { WheelLoader } from "@/components/3d/WheelLoader";
+import { ALTEZZA_GIRO, MarketCard, TitoloGiro } from "./MarketCard";
 
-const RouteScene = dynamic(() => import("@/components/3d/RouteScene"), {
-  ssr: false,
-  loading: () => <WheelLoader />,
-});
-
-function MarketCard({ i }: { i: number }) {
-  const m = MARKETS[i];
+/** Segnaposto leggero con le stesse misure della sezione animata. */
+function SegnapostoGiro() {
   return (
-    <div className="rounded-tag border-2 border-oro bg-nero/90 p-5">
-      <h3 className="titolo text-3xl">{m.town}</h3>
-      <p className="mt-2 text-sm font-semibold text-oro">
-        {m.dayName}: {m.spot}
-      </p>
-      <p className="text-sm text-bianco/70">{m.hours}</p>
-      <Link
-        href={`/shop?mercato=${m.slug}`}
-        className="mt-4 inline-block text-sm font-extrabold uppercase tracking-wide text-oro underline underline-offset-4"
-      >
-        Cosa trovi a {m.town} →
-      </Link>
-    </div>
+    <section className="relative" style={{ height: ALTEZZA_GIRO }}>
+      <div className="sticky top-14 flex h-[calc(100svh-3.5rem-4rem)] flex-col overflow-hidden md:h-[calc(100svh-3.5rem)]">
+        <TitoloGiro />
+        <div className="relative min-h-0 flex-1">
+          <WheelLoader />
+        </div>
+      </div>
+    </section>
   );
 }
+
+// framer-motion e la scena 3D stanno in questo pezzo, scaricato solo quando ci si avvicina alla sezione
+const Journey3D = dynamic(() => import("./Journey3D"), {
+  ssr: false,
+  loading: () => <SegnapostoGiro />,
+});
 
 /** Alternativa non 3D (e per tastiera/screen reader): elenco dei 6 mercati. */
 function MarketList() {
@@ -50,17 +45,13 @@ function MarketList() {
   );
 }
 
-/** Storytelling a scroll: il furgone "si ferma" a ogni mercato e si apre il pannello del paese. */
-function Journey3D() {
+/** Il giro animato parte solo quando ci si avvicina: finché si è in alto nella pagina non pesa sul caricamento. */
+function GiroQuandoVicino() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const [stop, setStop] = useState(0);
-  // la scena è molto in basso nella pagina: si prepara solo quando ci si avvicina, così non pesa sul caricamento
   const [vicina, setVicina] = useState(false);
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (!("IntersectionObserver" in window)) return;
+    if (!el || !("IntersectionObserver" in window)) return;
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -73,36 +64,7 @@ function Journey3D() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  useMotionValueEvent(scrollYProgress, "change", (v) =>
-    setStop(Math.min(MARKETS.length - 1, Math.round(v * (MARKETS.length - 1)))),
-  );
-  return (
-    <section ref={ref} className="relative" style={{ height: `${MARKETS.length * 70}svh` }}>
-      {/* tre fasce che non si sovrappongono: titolo, strada con il furgone, scheda del paese */}
-      <div className="sticky top-14 flex h-[calc(100svh-3.5rem-4rem)] flex-col overflow-hidden md:h-[calc(100svh-3.5rem)]">
-        <h2 className="titolo mx-auto w-full max-w-5xl px-4 pt-4 text-3xl sm:text-6xl">
-          Il giro della settimana
-        </h2>
-        <div className="relative min-h-0 flex-1">
-          {vicina || !("IntersectionObserver" in window) ? (
-            <RouteScene progress={scrollYProgress} />
-          ) : (
-            <WheelLoader />
-          )}
-        </div>
-        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-4">
-          <motion.div
-            key={stop}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:ml-auto md:max-w-sm"
-          >
-            <MarketCard i={stop} />
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
+  return <div ref={ref}>{vicina ? <Journey3D /> : <SegnapostoGiro />}</div>;
 }
 
 export function MarketRoute() {
@@ -110,7 +72,7 @@ export function MarketRoute() {
   if (!can3D) return <MarketList />;
   return (
     <SceneBoundary fallback={<MarketList />}>
-      <Journey3D />
+      <GiroQuandoVicino />
     </SceneBoundary>
   );
 }

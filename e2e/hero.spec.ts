@@ -12,6 +12,9 @@ test.describe("furgone in home: immagine subito, 3D dopo", () => {
       .poll(() => richieste.some((u) => /poster-(desktop|mobile)\.webp/.test(u)))
       .toBe(true);
     expect(richieste.some((u) => /furgone\.png/.test(u))).toBe(false);
+    await page.waitForTimeout(1500);
+    expect(richieste.some((u) => /poster-(mobile|desktop)-chiaro/.test(u))).toBe(false); // tema scuro: la versione chiara non si scarica
+    expect(richieste.some((u) => /logo-profilo\.png/.test(u))).toBe(false); // in testata c'è il logo leggero
   });
 
   test("il 3D non parte subito: prima del ritardo non si scarica il modello", async ({ page }) => {

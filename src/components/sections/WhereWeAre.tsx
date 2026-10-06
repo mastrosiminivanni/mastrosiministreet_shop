@@ -54,12 +54,22 @@ export function WhereWeAre() {
           )}
         </div>
         <p className="titolo mt-3 text-3xl sm:text-5xl" aria-live="polite">
-          {today ? (todayMarket ? `${chiuso ? "Eravamo" : "Siamo"} a ${todayMarket.town}` : "Domenica: tappa speciale") : "Dove siamo oggi"}
+          {today
+            ? todayMarket
+              ? `${chiuso ? "Eravamo" : "Siamo"} a ${todayMarket.town}`
+              : "Domenica: tappa speciale"
+            : "Dove siamo oggi"}
         </p>
         {todayMarket && <p className="mt-1 font-semibold">{todayMarket.spot}</p>}
-        {today && !todayMarket && <p className="mt-1 font-semibold">La tappa è su Instagram. Ti aspettiamo al furgone.</p>}
+        {today && !todayMarket && (
+          <p className="mt-1 font-semibold">La tappa è su Instagram. Ti aspettiamo al furgone.</p>
+        )}
         {todayMarket && !chiuso && (
-          <a href={mapsUrl(todayMarket)} rel="noopener" className={clsx(btn, "mt-4 inline-block bg-tinta text-oro")}>
+          <a
+            href={mapsUrl(todayMarket)}
+            rel="noopener"
+            className={clsx(btn, "mt-4 inline-block bg-tinta text-oro")}
+          >
             Portami al furgone
           </a>
         )}
@@ -93,8 +103,14 @@ export function WhereWeAre() {
                   )}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-oro">{x.dayName}</span>
-                    {isToday && <span className="rounded-tag bg-oro px-2 py-0.5 text-[10px] font-extrabold uppercase text-tinta">Oggi</span>}
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-oro">
+                      {x.dayName}
+                    </span>
+                    {isToday && (
+                      <span className="rounded-tag bg-oro px-2 py-0.5 text-[10px] font-extrabold uppercase text-tinta">
+                        Oggi
+                      </span>
+                    )}
                   </span>
                   <span className="titolo mt-1 block text-2xl">{x.town}</span>
                   <span className="mt-0.5 block text-sm text-bianco/75">{x.spot}</span>
@@ -109,21 +125,44 @@ export function WhereWeAre() {
         <div>
           <MarketMap selected={selected} onSelect={setPicked} />
           <p className="mt-2 text-sm text-bianco/75">
-            <strong>{m.dayName}, {m.town}</strong>: {m.spot}.{" "}
-            <a href={mapsUrl(m)} rel="noopener" className="font-bold text-oro underline underline-offset-4">Apri in Google Maps</a>
+            <strong>
+              {m.dayName}, {m.town}
+            </strong>
+            : {m.spot}.{" "}
+            <a
+              href={mapsUrl(m)}
+              rel="noopener"
+              className="font-bold text-oro underline underline-offset-4"
+            >
+              Apri in Google Maps
+            </a>
           </p>
-          <p className="mt-1 text-xs text-bianco/60">Posizione indicativa: il punto esatto è quello delle storie su Instagram.</p>
+          <p className="mt-1 text-xs text-bianco/60">
+            Posizione indicativa: il punto esatto è quello delle storie su Instagram.
+          </p>
         </div>
       </div>
 
       <section className="mt-10 rounded-tag border-2 border-oro p-5" aria-labelledby="salva">
-        <h2 id="salva" className="titolo text-2xl">Tieni il furgone con te</h2>
-        <p className="mt-1 text-sm text-bianco/75">Salva il calendario, così sai sempre dove siamo.</p>
+        <h2 id="salva" className="titolo text-2xl">
+          Tieni il furgone con te
+        </h2>
+        <p className="mt-1 text-sm text-bianco/75">
+          Salva il calendario, così sai sempre dove siamo.
+        </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <a href={asset("/calendario.ics")} download className={clsx(btn, "bg-oro text-tinta hover:brightness-110")}>
+          <a
+            href={asset("/calendario.ics")}
+            download
+            className={clsx(btn, "bg-oro text-tinta hover:brightness-110")}
+          >
             Aggiungi al calendario
           </a>
-          <button type="button" onClick={downloadCalendarImage} className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-tinta")}>
+          <button
+            type="button"
+            onClick={downloadCalendarImage}
+            className={clsx(btn, "border-2 border-oro text-oro hover:bg-oro hover:text-tinta")}
+          >
             Salva il calendario
           </button>
           <a

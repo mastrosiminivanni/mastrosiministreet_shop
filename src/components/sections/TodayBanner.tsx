@@ -8,8 +8,10 @@ import { PlateBadge } from "@/components/ui/PlateBadge";
 import { marketForDate, nextMarket, statusAt, type Status } from "@/lib/market";
 import { useRomeNow } from "@/lib/useRomeNow";
 
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const dateLabel = (d: Date) => new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" }).format(d);
+const iso = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const dateLabel = (d: Date) =>
+  new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" }).format(d);
 const oraBreve = (hhmm: string) => hhmm.replace(/^0/, "").replace(":00", "");
 
 /** Cosa fa il furgone oggi e se in questo momento è aperto. Dopo le 13 il paese del giorno resta. */
@@ -22,7 +24,13 @@ export function useTodayStop() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const next = marketForDate(tomorrow) ?? nextMarket(tomorrow);
   // Orario: quello del mercato; per le tappe speciali solo se indicato (la domenica altrimenti non diciamo aperti/chiusi).
-  const hours = special ? (special.start && special.end ? { start: special.start, end: special.end } : null) : market ? MARKET_HOURS : null;
+  const hours = special
+    ? special.start && special.end
+      ? { start: special.start, end: special.end }
+      : null
+    : market
+      ? MARKET_HOURS
+      : null;
   const status: Status | null = hours ? statusAt(now, hours.start, hours.end) : null;
   return {
     today: now,
@@ -49,8 +57,15 @@ export function statusLabel(status: Status | null, startHhmm?: string) {
 export function LiveDot({ live = true }: { live?: boolean }) {
   return (
     <span className="relative flex h-3 w-3" aria-hidden="true">
-      {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tinta/60" />}
-      <span className={clsx("relative inline-flex h-3 w-3 rounded-full", live ? "bg-tinta" : "bg-tinta/40")} />
+      {live && (
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tinta/60" />
+      )}
+      <span
+        className={clsx(
+          "relative inline-flex h-3 w-3 rounded-full",
+          live ? "bg-tinta" : "bg-tinta/40",
+        )}
+      />
     </span>
   );
 }
@@ -74,7 +89,11 @@ export function TodayBanner() {
           <PlateBadge>{stop ? dateLabel(stop.today) : "Oggi"}</PlateBadge>
         </div>
 
-        <h2 id="oggi-titolo" className="titolo mt-5 text-[clamp(2.4rem,12.5vw,8.5rem)]" aria-live="polite">
+        <h2
+          id="oggi-titolo"
+          className="titolo mt-5 text-[clamp(2.4rem,12.5vw,8.5rem)]"
+          aria-live="polite"
+        >
           {stop ? (
             sundayFree ? (
               <>Domenica: tappa speciale</>
@@ -117,7 +136,11 @@ export function TodayBanner() {
             </a>
           )}
           {sundayFree && (
-            <a href={INSTAGRAM_URL} rel="noopener" className="rounded-tag bg-tinta px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:brightness-125">
+            <a
+              href={INSTAGRAM_URL}
+              rel="noopener"
+              className="rounded-tag bg-tinta px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:brightness-125"
+            >
               Guarda la storia su Instagram
             </a>
           )}
@@ -125,7 +148,9 @@ export function TodayBanner() {
             href="/dove-siamo"
             className={clsx(
               "rounded-tag px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide",
-              chiuso ? "bg-tinta text-oro hover:brightness-125" : "border-2 border-tinta hover:bg-tinta hover:text-oro",
+              chiuso
+                ? "bg-tinta text-oro hover:brightness-125"
+                : "border-2 border-tinta hover:bg-tinta hover:text-oro",
             )}
           >
             {chiuso ? "Dove siamo domani" : "Tutta la settimana"}
@@ -133,7 +158,10 @@ export function TodayBanner() {
         </div>
 
         {/* La settimana in sei pillole: oggi è acceso */}
-        <ol className="mt-8 grid grid-cols-3 gap-2 sm:grid-cols-6" aria-label="Il giro della settimana">
+        <ol
+          className="mt-8 grid grid-cols-3 gap-2 sm:grid-cols-6"
+          aria-label="Il giro della settimana"
+        >
           {MARKETS.map((m, i) => (
             <li key={m.slug}>
               <Link
@@ -141,16 +169,22 @@ export function TodayBanner() {
                 aria-current={i === todayIdx ? "date" : undefined}
                 className={clsx(
                   "block rounded-tag border-2 px-2 py-2 text-center",
-                  i === todayIdx ? "border-tinta bg-tinta text-oro" : "border-tinta/40 hover:border-tinta",
+                  i === todayIdx
+                    ? "border-tinta bg-tinta text-oro"
+                    : "border-tinta/40 hover:border-tinta",
                 )}
               >
-                <span className="block text-[10px] font-extrabold uppercase tracking-widest">{m.dayName.slice(0, 3)}</span>
+                <span className="block text-[10px] font-extrabold uppercase tracking-widest">
+                  {m.dayName.slice(0, 3)}
+                </span>
                 <span className="block text-xs font-bold leading-tight sm:text-sm">{m.town}</span>
               </Link>
             </li>
           ))}
         </ol>
-        {stop && stop.next && <p className="mt-4 text-sm font-semibold">Domani: {stop.next.town}.</p>}
+        {stop && stop.next && (
+          <p className="mt-4 text-sm font-semibold">Domani: {stop.next.town}.</p>
+        )}
       </div>
     </section>
   );

@@ -14,7 +14,8 @@ const ATTESA_3D_MS = 3000;
 
 /**
  * Immagine di partenza: uno scatto del furgone 3D vero, senza sfondo. Ce n'è una per tema (furgone nero / furgone chiaro):
- * il CSS mostra quella giusta in base a `data-theme`, che la pagina imposta prima del primo disegno.
+ * il CSS mostra quella giusta in base a `data-theme`, che la pagina imposta prima del primo disegno. Quella chiara è "lazy": se è
+ * nascosta (tema scuro, il più comune) il browser non la scarica.
  */
 function PosterTema({ chiaro, nascosto }: { chiaro: boolean; nascosto: boolean }) {
   const suffisso = chiaro ? "-chiaro" : "";
@@ -30,6 +31,7 @@ function PosterTema({ chiaro, nascosto }: { chiaro: boolean; nascosto: boolean }
         width={780}
         height={600}
         fetchPriority={chiaro ? "low" : "high"}
+        loading={chiaro ? "lazy" : "eager"}
         className="h-full w-full object-contain md:object-cover"
       />
     </picture>

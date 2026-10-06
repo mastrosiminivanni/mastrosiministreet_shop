@@ -19,7 +19,7 @@ export function Header() {
           className="flex items-center gap-2"
         >
           <Image
-            src={asset("/brand/logo-profilo.png")}
+            src={asset("/brand/logo-96.webp")}
             alt=""
             width={40}
             height={40}
