@@ -130,5 +130,37 @@ test.describe("tema chiaro e scuro", () => {
       await page.waitForTimeout(500);
       await expect(html).toHaveAttribute("data-theme", "light");
     });
+
+    test("premendo il pulsante fino a rimettere il tema del telefono si torna ad automatico", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.goto("/shop");
+      const html = page.locator("html");
+      const salvato = () => page.evaluate(() => localStorage.getItem("ms-theme"));
+      await expect(page.getByRole("button", { name: "Passa al tema chiaro" })).toBeVisible();
+      await page.waitForTimeout(1500);
+      await page.getByRole("button", { name: "Passa al tema chiaro" }).click();
+      await expect(html).toHaveAttribute("data-theme", "light");
+      expect(await salvato()).toBe("light"); // scelta diversa dal telefono: si ricorda
+      await page.getByRole("button", { name: "Passa al tema scuro" }).click();
+      await expect(html).toHaveAttribute("data-theme", "dark");
+      expect(await salvato()).toBeNull(); // uguale al telefono: di nuovo automatico
+      await page.emulateMedia({ colorScheme: "light" });
+      await expect(html).toHaveAttribute("data-theme", "light"); // e il sito segue di nuovo il telefono
+    });
+
+    test("una scelta salvata uguale al telefono viene cancellata, così il sito torna a seguirlo", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.addInitScript(() => localStorage.setItem("ms-theme", "dark")); // vecchia scelta, uguale al telefono
+      await page.goto("/shop");
+      const html = page.locator("html");
+      await expect(html).toHaveAttribute("data-theme", "dark");
+      await expect.poll(() => page.evaluate(() => localStorage.getItem("ms-theme"))).toBeNull();
+      await page.emulateMedia({ colorScheme: "light" });
+      await expect(html).toHaveAttribute("data-theme", "light");
+    });
   });
 });

@@ -23,6 +23,10 @@ function sceltaSalvata(): Tema | null {
   }
 }
 
+function temaDelTelefono(): Tema {
+  return window.matchMedia(MEDIA_CHIARO).matches ? "light" : "dark";
+}
+
 function applica(t: Tema) {
   document.documentElement.dataset.theme = t;
   document
@@ -31,10 +35,14 @@ function applica(t: Tema) {
   window.dispatchEvent(new Event(EVENTO));
 }
 
-/** Cambia tema con il pulsante e ricorda la scelta sul dispositivo. */
+/**
+ * Cambia tema con il pulsante. Se si sceglie un tema diverso da quello del telefono la scelta si ricorda sul dispositivo;
+ * se si sceglie lo stesso del telefono la scelta si cancella e il sito torna ad "automatico" (segue il telefono).
+ */
 export function impostaTema(t: Tema) {
   try {
-    localStorage.setItem(CHIAVE, t);
+    if (t === temaDelTelefono()) localStorage.removeItem(CHIAVE);
+    else localStorage.setItem(CHIAVE, t);
   } catch {
     // modalità privata o memoria bloccata: il tema vale solo per questa visita
   }
@@ -46,10 +54,18 @@ export function impostaTema(t: Tema) {
  * (per esempio quando scatta la modalità scura serale). Ritorna la funzione che smette di ascoltare.
  */
 export function seguiTelefono() {
+  // Una scelta salvata uguale al telefono non serve a nulla e impedirebbe al sito di seguirlo quando cambia: si cancella.
+  if (sceltaSalvata() === temaDelTelefono()) {
+    try {
+      localStorage.removeItem(CHIAVE);
+    } catch {
+      // memoria bloccata: niente da cancellare
+    }
+  }
   const mq = window.matchMedia(MEDIA_CHIARO);
   const cambia = () => {
     if (sceltaSalvata()) return;
-    const t: Tema = mq.matches ? "light" : "dark";
+    const t = temaDelTelefono();
     if (t !== leggiTema()) applica(t);
   };
   mq.addEventListener("change", cambia);
