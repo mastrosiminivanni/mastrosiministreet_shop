@@ -3,7 +3,7 @@
 Sito di **Mastrosimini Street Shop**: il mercato ambulante di abbigliamento uomo con il furgone che gira un paese diverso ogni giorno.
 Instagram: [@mastrosiministreet_shop](https://www.instagram.com/mastrosiministreet_shop/).
 
-Sito live: https://mastrosiminivanni.github.io/mastrosiministreet_shop/
+Sito live: https://mastrosiminishop.it/ (GitHub Pages con dominio proprio; il vecchio indirizzo github.io rimanda lì)
 
 Non è un negozio online: si compra al furgone o scrivendo su Instagram. Il sito mostra i capi, i prezzi e dove siamo oggi.
 
@@ -50,8 +50,7 @@ lancia `node scripts/genera-poster.mjs http://localhost:3400`.
   da `src/app/llms.txt/route.ts` e `src/app/catalogo.json/route.ts`.
 - Strumenti WebMCP (`src/lib/agent-tools.ts`, registrati da `src/components/WebMcp.tsx`): `get_todays_market`, `get_weekly_markets`,
   `search_products`, `get_how_to_buy`. Sono di sola lettura e funzionano nei browser che supportano WebMCP (in Chrome: `chrome://flags/#enable-webmcp-testing`).
-- Lighthouse (categoria "Agentic Browsing") cerca `llms.txt` **alla radice del dominio**: su GitHub Pages sotto `/mastrosiministreet_shop/` non è
-  alla radice. Con un dominio proprio (Aruba) il file sarà trovato da solo.
+- Lighthouse (categoria "Agentic Browsing") cerca `llms.txt` **alla radice del dominio**: con il dominio proprio (mastrosiminishop.it) è alla radice e viene trovato da solo.
 
 ## Pubblicare
 

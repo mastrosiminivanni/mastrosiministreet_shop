@@ -3,7 +3,7 @@ export const SITE_NAME = "Mastrosimini Street Shop";
 export const SITE_TAGLINE = "Un mercato diverso ogni giorno";
 
 /** Indirizzo pubblico del sito (serve per anteprime social, sitemap e dati per Google). Con un dominio tuo si cambia qui. */
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mastrosiminivanni.github.io/mastrosiministreet_shop";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mastrosiminishop.it";
 
 /**
  * ID del progetto Microsoft Clarity (si trova in Clarity → Settings → Overview).

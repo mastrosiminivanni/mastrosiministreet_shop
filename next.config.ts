@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
-// Su GitHub Pages il sito vive sotto /<nome-repo>/ e dev'essere un sito statico (vedi scripts/deploy-pages.sh).
-// In locale e su Vercel non cambia nulla.
+// Su GitHub Pages il sito dev'essere statico. Con il dominio proprio (mastrosiminishop.it) vive alla radice: nessun percorso davanti.
+// BASE_PATH serve solo per tornare temporaneamente all'indirizzo github.io (es. BASE_PATH=/mastrosiministreet_shop).
 const isPages = process.env.GITHUB_PAGES === "1";
-const basePath = isPages ? "/mastrosiministreet_shop" : "";
+const basePath = isPages ? (process.env.BASE_PATH ?? "") : "";
 
 const nextConfig: NextConfig = {
   ...(isPages ? { output: "export" as const, trailingSlash: true, basePath } : {}),

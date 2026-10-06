@@ -16,8 +16,8 @@ Supabase è l'archivio dove stanno i capi, le foto e il login del pannello (`/ad
    ```
    Aggiungi una riga per ogni persona che deve usare il pannello (per esempio tuo padre).
 5. **Indirizzi di ritorno del link email** (serve solo se usi "link via email"). Menu **Authentication → URL Configuration**:
-   - *Site URL*: `https://mastrosiminivanni.github.io/mastrosiministreet_shop/`
-   - *Redirect URLs*, aggiungi: `https://mastrosiminivanni.github.io/mastrosiministreet_shop/admin/` e `http://localhost:3000/admin/`
+   - *Site URL*: `https://mastrosiminishop.it/`
+   - *Redirect URLs*, aggiungi: `https://mastrosiminishop.it/admin/` e `http://localhost:3000/admin/`
 6. **Passami i due valori pubblici.** Pulsante **Connect** in alto: copia **Project URL** e la chiave **publishable**. Sono pensati per stare nel sito: puoi mandarmeli in chat.
    **Non mandare mai la chiave `service_role`.**
 
