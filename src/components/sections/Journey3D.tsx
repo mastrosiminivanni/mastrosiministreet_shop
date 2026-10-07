@@ -9,7 +9,7 @@ import { ALTEZZA_GIRO, MarketCard, TitoloGiro } from "./MarketCard";
 
 const RouteScene = dynamic(() => import("@/components/3d/RouteScene"), {
   ssr: false,
-  loading: () => <WheelLoader />,
+  loading: () => <WheelLoader label="Carico il giro…" />,
 });
 
 /** Storytelling a scroll: il furgone "si ferma" a ogni mercato e si apre il pannello del paese. Si carica solo vicino alla sezione. */

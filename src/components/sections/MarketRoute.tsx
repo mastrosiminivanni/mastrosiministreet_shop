@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { MARKETS, SUNDAY_NOTE } from "@/data/markets";
 import { useCan3D } from "@/lib/webgl";
 import { SceneBoundary } from "@/components/3d/SceneBoundary";
-import { WheelLoader } from "@/components/3d/WheelLoader";
 import { ALTEZZA_GIRO, MarketCard, TitoloGiro } from "./MarketCard";
 
 /** Segnaposto leggero con le stesse misure della sezione animata. */
@@ -15,7 +14,9 @@ function SegnapostoGiro() {
       <div className="sticky top-14 flex h-[calc(100svh-3.5rem-4rem)] flex-col overflow-hidden md:h-[calc(100svh-3.5rem)]">
         <TitoloGiro />
         <div className="relative min-h-0 flex-1">
-          <WheelLoader />
+          <p className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold uppercase tracking-widest text-oro">
+            Scorri per seguire il giro dei mercati
+          </p>
         </div>
       </div>
     </section>
