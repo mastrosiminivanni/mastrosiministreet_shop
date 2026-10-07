@@ -26,6 +26,8 @@ export const metadata: Metadata = {
   title: { default: titolo, template: `%s - ${SITE_NAME}` },
   description: descrizione,
   alternates: { canonical: "./" },
+  // verifica della proprietà del sito in Google Search Console (non è un segreto)
+  verification: { google: "-B4T-FXAKG18Z9eQBnlstT2aVRf6yHMPGX33HZp6300" },
   openGraph: {
     type: "website",
     locale: "it_IT",
