@@ -3,4 +3,4 @@ Allow: /
 Disallow: /diagnostica/
 Disallow: /admin/
 
-Sitemap: https://mastrosiminivanni.github.io/mastrosiministreet_shop/sitemap.xml
+Sitemap: https://mastrosiminishop.it/sitemap.xml
