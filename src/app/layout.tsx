@@ -66,6 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${poppins.variable} h-full`}
     >
       <head>
+        {/* finché GitHub non attiva "Enforce HTTPS": chi arriva in http va subito sulla versione sicura (quella canonica) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(location.protocol==="http:"&&location.hostname.endsWith("mastrosiminishop.it"))location.replace("https://mastrosiminishop.it"+location.pathname+location.search+location.hash)`,
+          }}
+        />
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
       </head>
       <body className="min-h-full flex flex-col">

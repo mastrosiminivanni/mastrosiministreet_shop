@@ -1,3 +1,4 @@
+import { descrizioneAuto } from "@/lib/seo-capo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -19,7 +20,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug((await params).slug);
   if (!p) return {};
-  const descrizione = p.description ?? `${p.title} a ${p.price}€. ${CATEGORY_LABEL[p.category]}, taglia ${p.sizes.join(" / ")}. Disponibile al furgone.`;
+  const auto = descrizioneAuto(p);
+  // la descrizione scritta a mano è corta: si completa con taglie, prezzo e dove trovarlo
+  const descrizione = p.description && p.description !== auto ? `${p.description} ${auto.slice(auto.indexOf(":") + 2)}` : auto;
   const foto = p.images.filter((i) => !i.startsWith("placeholder:"));
   return {
     title: `${p.title} a ${p.price}€`,
@@ -50,22 +53,43 @@ export default async function ProductPage({ params }: Props) {
           description: p.description ?? `${p.title}, taglia ${p.sizes.join(" / ")}.`,
           image: foto.map((f) => (f.startsWith("http") ? f : `${SITE_URL}${f}`)),
           sku: p.id,
-          brand: { "@type": "Brand", name: SITE_NAME },
           offers: {
             "@type": "Offer",
             priceCurrency: "EUR",
             price: p.price,
             itemCondition: "https://schema.org/NewCondition",
             availability: isSoldOut(p) ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+            url: `${SITE_URL}/shop/${p.slug}/`,
+            seller: { "@type": "Organization", name: SITE_NAME, url: `${SITE_URL}/` },
           },
         }
       : null;
+  const briciole = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Cosa c'è nel furgone", item: `${SITE_URL}/shop/` },
+      { "@type": "ListItem", position: 3, name: p.title },
+    ],
+  };
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(briciole) }} />
       <nav aria-label="Percorso" className="mb-4 text-sm text-bianco/70">
-        <Link href="/shop" className="hover:text-oro">← Torna al furgone</Link>
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link href="/" className="hover:text-oro">Home</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href="/shop/" className="hover:text-oro">Cosa c&apos;è nel furgone</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" className="text-bianco">{p.title}</li>
+        </ol>
       </nav>
       <div className="grid gap-8 md:grid-cols-2">
         <div className="relative mx-auto w-full max-w-sm md:max-w-none">

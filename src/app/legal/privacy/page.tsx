@@ -4,7 +4,10 @@ import { LegalPage } from "@/components/legal/LegalPage";
 import { AZIENDA } from "@/data/azienda";
 import { CLARITY_ID, GA_ID, HA_STATISTICHE } from "@/data/site";
 
-export const metadata: Metadata = { title: "Privacy" };
+export const metadata: Metadata = {
+  title: "Privacy",
+  description: "Informativa sulla privacy del sito di Mastrosimini Street Shop: quali dati trattiamo, perché e quali sono i tuoi diritti.",
+};
 
 export default function Privacy() {
   return (

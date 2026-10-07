@@ -4,7 +4,10 @@ import { LegalPage } from "@/components/legal/LegalPage";
 import { AZIENDA } from "@/data/azienda";
 import { INSTAGRAM_URL } from "@/data/markets";
 
-export const metadata: Metadata = { title: "Note legali" };
+export const metadata: Metadata = {
+  title: "Note legali",
+  description: "Note legali del sito di Mastrosimini Street Shop: titolare, dati aziendali, contenuti e immagini.",
+};
 
 export default function NoteLegali() {
   return (

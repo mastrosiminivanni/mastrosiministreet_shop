@@ -20,6 +20,7 @@ type Riga = {
   initial_stock: number | null;
   market_pickup: string[];
   created_at: string;
+  updated_at?: string;
 };
 
 const CATEGORIE: Category[] = ["camicia", "felpa", "pantaloni", "altro"];
@@ -46,6 +47,7 @@ function daRiga(r: Riga): Product {
     marketPickup: r.market_pickup ?? [],
     isExample: false,
     createdAt: r.created_at,
+    updatedAt: r.updated_at ?? r.created_at,
   };
 }
 

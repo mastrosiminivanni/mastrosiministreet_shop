@@ -13,6 +13,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pagine = ["", "/shop", "/dove-siamo", "/chi-siamo", "/contatti", "/legal/privacy", "/legal/cookie", "/legal/note-legali"];
   return [
     ...pagine.map((p) => ({ url: url(p), changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.6 })),
-    ...products.map((x) => ({ url: url(`/shop/${x.slug}`), changeFrequency: "daily" as const, priority: 0.8 })),
+    ...products.map((x) => ({
+      url: url(`/shop/${x.slug}`),
+      lastModified: x.updatedAt ?? x.createdAt,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
   ];
 }

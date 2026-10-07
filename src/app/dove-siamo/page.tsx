@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { MARKETS, MARKET_HOURS } from "@/data/markets";
 import { WhereWeAre } from "@/components/sections/WhereWeAre";
 
 export const metadata: Metadata = {
-  title: "Dove siamo",
-  description:
-    "Un mercato diverso ogni giorno: il calendario del furgone, la mappa e il punto esatto di ogni tappa. Salvalo sul telefono.",
+  title: "Dove siamo: i mercati della settimana",
+  description: `Dove trovare il furgone di Mastrosimini Street Shop: ${MARKETS.map((m) => `${m.dayName.toLowerCase()} ${m.town}`).join(", ")}, dalle ${MARKET_HOURS.from} alle ${MARKET_HOURS.to}. Calendario, mappa e indicazioni.`,
 };
 
 export default function DoveSiamoPage() {

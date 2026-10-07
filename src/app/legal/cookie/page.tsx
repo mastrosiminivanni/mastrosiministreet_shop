@@ -3,7 +3,10 @@ import { LegalPage } from "@/components/legal/LegalPage";
 import { PreferenzeCookie } from "@/components/CookieBanner";
 import { CLARITY_ID, GA_ID, HA_STATISTICHE } from "@/data/site";
 
-export const metadata: Metadata = { title: "Cookie" };
+export const metadata: Metadata = {
+  title: "Cookie",
+  description: "Quali cookie usa il sito di Mastrosimini Street Shop e come accettarli, rifiutarli o cambiare idea.",
+};
 
 export default function CookiePolicy() {
   return (

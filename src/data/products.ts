@@ -30,6 +30,8 @@ export type Product = {
   isExample: boolean;
   /** ISO date, per ordinare per novità. */
   createdAt: string;
+  /** ultima modifica (per la sitemap) */
+  updatedAt?: string;
 };
 
 export const CATEGORY_LABEL: Record<Category, string> = {
