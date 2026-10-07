@@ -44,6 +44,11 @@ export function ProductCard({ product }: { product: Product }) {
             {isLastPiece(product) ? "Ultimo pezzo" : product.stock === 1 ? "Pezzo unico" : "Pochi pezzi"}
           </span>
         )}
+        {product.images.length > 1 && (
+          <span className="rounded-tag bg-nero/85 px-2 py-0.5 text-[10px] font-semibold uppercase text-bianco/80">
+            {product.images.length} foto
+          </span>
+        )}
         {product.isExample && (
           <span className="rounded-tag bg-nero/85 px-2 py-0.5 text-[10px] font-semibold uppercase text-bianco/70">Esempio</span>
         )}
