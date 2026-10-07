@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const descrizione = p.description ?? `${p.title} a ${p.price}€. ${CATEGORY_LABEL[p.category]}, taglia ${p.sizes.join(" / ")}. Disponibile al furgone.`;
   const foto = p.images.filter((i) => !i.startsWith("placeholder:"));
   return {
-    title: p.title,
+    title: `${p.title} a ${p.price}€`,
     description: descrizione,
     openGraph: { title: p.title, description: descrizione, type: "website", ...(foto[0] && { images: [{ url: foto[0] }] }) },
   };

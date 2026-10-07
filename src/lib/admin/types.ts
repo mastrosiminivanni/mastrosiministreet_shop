@@ -16,6 +16,8 @@ export type AdminProduct = {
 };
 
 export type NuovoCapo = {
+  /** nome scritto da te (es. "Felpa zip bordeaux"); da qui nascono titolo, indirizzo e descrizione */
+  title: string;
   price: number;
   sizes: string[];
   stock: number;

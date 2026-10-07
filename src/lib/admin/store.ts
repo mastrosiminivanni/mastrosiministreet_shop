@@ -1,5 +1,6 @@
 import { BUCKET_FOTO, getSupabase, supabaseConfigurato } from "@/lib/supabase";
 import { VINTED_URL } from "@/data/markets";
+import { slugDa } from "@/lib/seo-capo";
 import { aDataUrl } from "./image";
 import type { AdminProduct, FotoPronta, ModificaCapo, NuovoCapo, Stato } from "./types";
 
@@ -32,6 +33,7 @@ const NOMI_CATEGORIA: Record<string, string> = {
 
 /** Titolo provvisorio finché il sistema non scrive quello vero. */
 export function titoloProvvisorio(c: NuovoCapo) {
+  if (c.title.trim()) return c.title.trim();
   const nome = (c.category && NOMI_CATEGORIA[c.category]) || "Capo nuovo";
   return c.sizes.length ? `${nome} taglia ${c.sizes.join("/")}` : nome;
 }
@@ -70,7 +72,7 @@ const storeProva: AdminStore = {
     const id = crypto.randomUUID();
     const nuovo: AdminProduct = {
       id,
-      slug: `capo-${codice()}`,
+      slug: `${slugDa(titoloProvvisorio(capo))}-${codice()}`,
       title: titoloProvvisorio(capo),
       description: null,
       category: capo.category,
@@ -92,7 +94,8 @@ const storeProva: AdminStore = {
     for (const v of mod.foto) images.push(v.tipo === "esistente" ? v.percorso : await aDataUrl(v.foto.thumb));
     const { foto: _foto, ...dati } = mod;
     void _foto;
-    scriviProva(leggiProva().map((p) => (p.id === capo.id ? { ...p, ...dati, images } : p)));
+    const slug = mod.title !== capo.title ? `${slugDa(mod.title)}-${codice()}` : capo.slug;
+    scriviProva(leggiProva().map((p) => (p.id === capo.id ? { ...p, ...dati, slug, images } : p)));
   },
   async elimina(capo) {
     scriviProva(leggiProva().filter((p) => p.id !== capo.id));
@@ -143,7 +146,7 @@ function storeSupabase(): AdminStore {
       }
       const riga = {
         id,
-        slug: `capo-${codice()}`,
+        slug: `${slugDa(titoloProvvisorio(capo))}-${codice()}`,
         title: titoloProvvisorio(capo),
         category: capo.category,
         price: capo.price,
@@ -184,6 +187,7 @@ function storeSupabase(): AdminStore {
       const { error } = await sb
         .from("products")
         .update({
+          ...(mod.title !== capo.title && { slug: `${slugDa(mod.title)}-${codice()}` }),
           title: mod.title,
           description: mod.description,
           category: mod.category,

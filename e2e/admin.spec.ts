@@ -20,7 +20,7 @@ test.describe("pannello admin (modalità prova)", () => {
     await expect(page.getByText("Modalità prova")).toBeVisible();
     const salva = page.getByRole("button", { name: "Salva come bozza" });
     await expect(salva).toBeDisabled();
-    await expect(page.getByText(/Manca: almeno una foto, la taglia, il prezzo/)).toBeVisible();
+    await expect(page.getByText(/Manca: almeno una foto, il nome, la taglia, il prezzo/)).toBeVisible();
 
     await page
       .locator("#foto")
@@ -28,6 +28,7 @@ test.describe("pannello admin (modalità prova)", () => {
     await expect(page.getByAltText("Foto 2")).toBeVisible();
     await expect(page.getByText("Copertina", { exact: true })).toBeVisible();
 
+    await page.locator("#nome").fill("Camicia a quadri blu");
     await page.getByRole("button", { name: "M", exact: true }).click();
     await page.getByRole("button", { name: "L", exact: true }).click();
     await page.locator("#altra-taglia").fill("46");
@@ -44,7 +45,7 @@ test.describe("pannello admin (modalità prova)", () => {
     await salva.click();
     await expect(page.getByText("Capo salvato in bozza")).toBeVisible();
 
-    const capo = page.locator("ul li").filter({ hasText: "Camicia taglia M/L/46" });
+    const capo = page.locator("ul li").filter({ hasText: "Camicia a quadri blu" });
     await expect(capo).toContainText("25€");
     await expect(capo).toContainText("2 pezzi");
     await expect(capo).toContainText("2 foto");
@@ -57,12 +58,12 @@ test.describe("pannello admin (modalità prova)", () => {
 
     // resta dopo il ricaricamento (modalità prova = memoria del browser)
     await page.reload();
-    await expect(page.locator("ul li").filter({ hasText: "Camicia taglia M/L/46" })).toBeVisible();
+    await expect(page.locator("ul li").filter({ hasText: "Camicia a quadri blu" })).toBeVisible();
 
     page.once("dialog", (d) => d.accept());
     await page
       .locator("ul li")
-      .filter({ hasText: "Camicia taglia M/L/46" })
+      .filter({ hasText: "Camicia a quadri blu" })
       .getByRole("button", { name: "Elimina" })
       .click();
     await expect(page.getByText("Nessun capo ancora")).toBeVisible();
@@ -106,10 +107,11 @@ test.describe("pannello admin (modalità prova)", () => {
   test("modifica un capo già pubblicato: nome, prezzo, taglia, foto", async ({ page }) => {
     await page.goto("/admin?prova=1");
     await page.locator("#foto").setInputFiles([await foto("a.jpg", "#a33"), await foto("b.jpg", "#3a3")]);
+    await page.locator("#nome").fill("Capo nuovo di prova");
     await page.getByRole("button", { name: "M", exact: true }).click();
     await page.getByRole("button", { name: "30€" }).click();
     await page.getByRole("button", { name: "Salva come bozza" }).click();
-    const capo = page.locator("ul li").filter({ hasText: "Capo nuovo taglia M" });
+    const capo = page.locator("ul li").filter({ hasText: "Capo nuovo di prova" });
     await capo.getByRole("button", { name: "Pubblica" }).click();
     await expect(capo).toContainText("In vendita");
 

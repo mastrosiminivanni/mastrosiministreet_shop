@@ -30,6 +30,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
   const [inElaborazione, setInElaborazione] = useState(0);
   const [taglie, setTaglie] = useState<string[]>([]);
   const [altra, setAltra] = useState("");
+  const [nome, setNome] = useState("");
   const [prezzo, setPrezzo] = useState("");
   const [pezzi, setPezzi] = useState(1);
   const [categoria, setCategoria] = useState("");
@@ -72,6 +73,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
   const prezzoNum = Number(prezzo);
   const mancano = [
     foto.length === 0 && "almeno una foto",
+    !nome.trim() && "il nome",
     taglie.length === 0 && "la taglia",
     !(prezzoNum > 0) && "il prezzo",
   ].filter(Boolean) as string[];
@@ -83,7 +85,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
     setStato({ tipo: "info", testo: "Salvo…" });
     try {
       await store.crea(
-        { price: Math.round(prezzoNum), sizes: taglie, stock: pezzi, category: categoria || null },
+        { title: nome.trim(), price: Math.round(prezzoNum), sizes: taglie, stock: pezzi, category: categoria || null },
         foto,
         (fatte, totale) =>
           setStato({ tipo: "info", testo: `Carico le foto: ${fatte} di ${totale}…` }),
@@ -91,6 +93,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
       foto.forEach((f) => URL.revokeObjectURL(f.preview));
       setFoto([]);
       setTaglie([]);
+      setNome("");
       setPrezzo("");
       setPezzi(1);
       setCategoria("");
@@ -179,10 +182,32 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
         )}
       </section>
 
+      {/* NOME */}
+      <section aria-labelledby="t-nome">
+        <h2 id="t-nome" className="text-lg font-extrabold uppercase">
+          2. Nome
+        </h2>
+        <p className="mt-1 text-sm text-bianco/70">
+          Cos&apos;è e di che colore, in poche parole (es. &quot;Felpa zip bordeaux&quot;). Da qui il sistema crea titolo,
+          indirizzo e descrizione per Google.
+        </p>
+        <label className="sr-only" htmlFor="nome">
+          Nome del capo
+        </label>
+        <input
+          id="nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          maxLength={80}
+          placeholder="Es. Jeans blu sfumato"
+          className="mt-3 min-h-12 w-full rounded-tag border border-white/25 bg-nero px-3 text-base"
+        />
+      </section>
+
       {/* TAGLIA */}
       <section aria-labelledby="t-taglia">
         <h2 id="t-taglia" className="text-lg font-extrabold uppercase">
-          2. Taglia
+          3. Taglia
         </h2>
         <p className="mt-1 text-sm text-bianco/70">Tocca tutte quelle disponibili.</p>
         <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Taglie">
@@ -223,7 +248,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
       {/* PREZZO */}
       <section aria-labelledby="t-prezzo">
         <h2 id="t-prezzo" className="text-lg font-extrabold uppercase">
-          3. Prezzo
+          4. Prezzo
         </h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {PREZZI_VELOCI.map((p) => (

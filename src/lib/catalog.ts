@@ -2,6 +2,7 @@ import { get } from "node:https";
 import { cache } from "react";
 import { VINTED_URL } from "@/data/markets";
 import { SAMPLE_PRODUCTS, type Category, type Product } from "@/data/products";
+import { descrizioneAuto } from "@/lib/seo-capo";
 import { BUCKET_FOTO, SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigurato } from "@/lib/supabase";
 
 /** Una riga della tabella "products" di Supabase. */
@@ -31,7 +32,7 @@ function daRiga(r: Riga): Product {
     id: r.id,
     slug: r.slug,
     title: r.title,
-    description: r.description ?? undefined,
+    description: r.description?.trim() || descrizioneAuto({ title: r.title, price: r.price, sizes: r.sizes }),
     category: (CATEGORIE as string[]).includes(r.category ?? "")
       ? (r.category as Category)
       : "altro",
