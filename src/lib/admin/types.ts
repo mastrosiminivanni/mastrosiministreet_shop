@@ -30,3 +30,17 @@ export type FotoPronta = {
   /** indirizzo locale per l'anteprima */
   preview: string;
 };
+
+/** Una foto nel modulo di modifica: già caricata (percorso) oppure nuova da caricare. */
+export type VoceFoto = { tipo: "esistente"; percorso: string } | { tipo: "nuova"; foto: FotoPronta };
+
+export type ModificaCapo = {
+  title: string;
+  description: string | null;
+  category: string | null;
+  price: number;
+  sizes: string[];
+  stock: number;
+  /** foto nell'ordine finale; la prima è la copertina */
+  foto: VoceFoto[];
+};

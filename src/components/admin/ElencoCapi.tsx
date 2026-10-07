@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useState } from "react";
+import { ModificaCapoForm } from "./ModificaCapoForm";
 import type { AdminStore } from "@/lib/admin/store";
 import type { AdminProduct, Stato } from "@/lib/admin/types";
 
@@ -25,6 +26,7 @@ export function ElencoCapi({
 }) {
   const [occupato, setOccupato] = useState<string | null>(null);
   const [errore, setErrore] = useState("");
+  const [inModifica, setInModifica] = useState<string | null>(null);
 
   async function esegui(id: string, fn: () => Promise<void>) {
     setOccupato(id);
@@ -128,6 +130,15 @@ export function ElencoCapi({
                 <button
                   type="button"
                   disabled={occupato === c.id}
+                  onClick={() => setInModifica(inModifica === c.id ? null : c.id)}
+                  aria-expanded={inModifica === c.id}
+                  className={clsx(azione, "border-white/30")}
+                >
+                  Modifica
+                </button>
+                <button
+                  type="button"
+                  disabled={occupato === c.id}
                   onClick={() =>
                     window.confirm(`Eliminare "${c.title}" e le sue foto? Non si può annullare.`) &&
                     esegui(c.id, () => store.elimina(c))
@@ -137,6 +148,17 @@ export function ElencoCapi({
                   Elimina
                 </button>
               </div>
+              {inModifica === c.id && (
+                <ModificaCapoForm
+                  store={store}
+                  capo={c}
+                  onAnnulla={() => setInModifica(null)}
+                  onFatto={() => {
+                    setInModifica(null);
+                    onCambio();
+                  }}
+                />
+              )}
             </div>
           </li>
         ))}

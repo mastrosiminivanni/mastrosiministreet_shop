@@ -1,7 +1,7 @@
 import { BUCKET_FOTO, getSupabase, supabaseConfigurato } from "@/lib/supabase";
 import { VINTED_URL } from "@/data/markets";
 import { aDataUrl } from "./image";
-import type { AdminProduct, FotoPronta, NuovoCapo, Stato } from "./types";
+import type { AdminProduct, FotoPronta, ModificaCapo, NuovoCapo, Stato } from "./types";
 
 /** Cosa sa fare il pannello: salvare, elencare, cambiare stato, cancellare. Due versioni: Supabase vera e "prova" nel browser. */
 export interface AdminStore {
@@ -13,6 +13,8 @@ export interface AdminStore {
     avanzamento?: (fatte: number, totale: number) => void,
   ): Promise<AdminProduct>;
   cambiaStato(id: string, stato: Stato): Promise<void>;
+  /** cambia i dati di un capo già salvato (anche se è in vendita), con foto tolte, aggiunte o riordinate */
+  modifica(capo: AdminProduct, mod: ModificaCapo): Promise<void>;
   elimina(capo: AdminProduct): Promise<void>;
   /** link al profilo Vinted (impostazione del sito) */
   leggiVinted(): Promise<string>;
@@ -85,6 +87,13 @@ const storeProva: AdminStore = {
   async cambiaStato(id, stato) {
     scriviProva(leggiProva().map((p) => (p.id === id ? { ...p, status: stato } : p)));
   },
+  async modifica(capo, mod) {
+    const images: string[] = [];
+    for (const v of mod.foto) images.push(v.tipo === "esistente" ? v.percorso : await aDataUrl(v.foto.thumb));
+    const { foto: _foto, ...dati } = mod;
+    void _foto;
+    scriviProva(leggiProva().map((p) => (p.id === capo.id ? { ...p, ...dati, images } : p)));
+  },
   async elimina(capo) {
     scriviProva(leggiProva().filter((p) => p.id !== capo.id));
   },
@@ -151,6 +160,44 @@ function storeSupabase(): AdminStore {
     async cambiaStato(id, stato) {
       const { error } = await sb.from("products").update({ status: stato }).eq("id", id);
       if (error) throw new Error(error.message);
+    },
+    async modifica(capo, mod) {
+      const images: string[] = [];
+      for (const v of mod.foto) {
+        if (v.tipo === "esistente") {
+          images.push(v.percorso);
+          continue;
+        }
+        const base = `${capo.id}/${codice()}${codice()}.${v.foto.ext}`;
+        const tipo = v.foto.ext === "webp" ? "image/webp" : "image/jpeg";
+        for (const [path, blob] of [
+          [base, v.foto.full],
+          [conSuffissoPiccolo(base), v.foto.thumb],
+        ] as const) {
+          const { error } = await sb.storage
+            .from(BUCKET_FOTO)
+            .upload(path, blob, { contentType: tipo, cacheControl: "31536000" });
+          if (error) throw new Error(`Caricamento foto: ${error.message}`);
+        }
+        images.push(base);
+      }
+      const { error } = await sb
+        .from("products")
+        .update({
+          title: mod.title,
+          description: mod.description,
+          category: mod.category,
+          price: mod.price,
+          sizes: mod.sizes,
+          stock: mod.stock,
+          images,
+        })
+        .eq("id", capo.id);
+      if (error) throw new Error(error.message);
+      // solo dopo il salvataggio si cancellano le foto tolte
+      const tolte = capo.images.filter((p) => !images.includes(p));
+      const file = tolte.flatMap((p) => [p, conSuffissoPiccolo(p)]);
+      if (file.length) await sb.storage.from(BUCKET_FOTO).remove(file);
     },
     async elimina(capo) {
       const file = capo.images.flatMap((p) => [p, conSuffissoPiccolo(p)]);

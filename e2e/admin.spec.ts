@@ -102,4 +102,33 @@ test.describe("pannello admin (modalità prova)", () => {
       ),
     ).toEqual([]);
   });
+
+  test("modifica un capo già pubblicato: nome, prezzo, taglia, foto", async ({ page }) => {
+    await page.goto("/admin?prova=1");
+    await page.locator("#foto").setInputFiles([await foto("a.jpg", "#a33"), await foto("b.jpg", "#3a3")]);
+    await page.getByRole("button", { name: "M", exact: true }).click();
+    await page.getByRole("button", { name: "30€" }).click();
+    await page.getByRole("button", { name: "Salva come bozza" }).click();
+    const capo = page.locator("ul li").filter({ hasText: "Capo nuovo taglia M" });
+    await capo.getByRole("button", { name: "Pubblica" }).click();
+    await expect(capo).toContainText("In vendita");
+
+    await capo.getByRole("button", { name: "Modifica" }).click();
+    await capo.getByLabel("Nome").fill("Felpa zip bordeaux");
+    await capo.getByLabel("Prezzo (€)").fill("40");
+    await capo.getByRole("button", { name: "L", exact: true }).click();
+    await capo.getByRole("button", { name: "Togli la foto 2" }).click();
+    await capo.locator('input[type="file"]').setInputFiles([await foto("c.jpg", "#33a")]);
+    await expect(capo.getByAltText("Foto 2")).toBeVisible();
+    await capo.getByRole("button", { name: "Metti la foto 2 in copertina" }).click();
+    await capo.getByRole("button", { name: "Salva modifiche" }).click();
+
+    const dopo = page.locator("ul li").filter({ hasText: "Felpa zip bordeaux" });
+    await expect(dopo).toContainText("40€");
+    await expect(dopo).toContainText("taglia M / L");
+    await expect(dopo).toContainText("2 foto");
+    await expect(dopo).toContainText("In vendita");
+    await page.reload();
+    await expect(page.locator("ul li").filter({ hasText: "Felpa zip bordeaux" })).toBeVisible();
+  });
 });
