@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Dato } from "@/components/legal/Segnaposto";
 import { LegalPage } from "@/components/legal/LegalPage";
 import { AZIENDA } from "@/data/azienda";
-import { CLARITY_ID } from "@/data/site";
+import { CLARITY_ID, GA_ID, HA_STATISTICHE } from "@/data/site";
 
 export const metadata: Metadata = { title: "Privacy" };
 
@@ -34,6 +34,13 @@ export default function Privacy() {
             riproduzione delle sessioni) per aiutarci a migliorarlo. Se rifiuti, non viene caricato.
           </li>
         )}
+        {GA_ID && (
+          <li>
+            <strong>Statistiche d&apos;uso (Google Analytics), solo con il tuo consenso.</strong>{" "}
+            Misura in forma aggregata le visite e le pagine viste. Non usiamo i dati per la
+            pubblicità. Se rifiuti, non viene caricato.
+          </li>
+        )}
         <li>
           <strong>Mappe.</strong> La pagina &quot;Dove siamo&quot; carica le mappe da OpenStreetMap:
           il tuo browser contatta i loro server e quindi il tuo indirizzo IP è visibile a loro.
@@ -58,7 +65,7 @@ export default function Privacy() {
       <h2>Perché e su quale base</h2>
       <ul>
         <li>Far funzionare e proteggere il sito: legittimo interesse (art. 6.1.f GDPR).</li>
-        {CLARITY_ID && (
+        {HA_STATISTICHE && (
           <li>
             Statistiche d&apos;uso: il tuo consenso (art. 6.1.a), che puoi revocare in ogni momento.
           </li>
@@ -75,14 +82,14 @@ export default function Privacy() {
       <h2>Per quanto tempo</h2>
       <p>
         I dati di navigazione restano per il tempo tecnico stabilito dal servizio di hosting. I
-        messaggi su Instagram, finché serve a rispondere. Per Clarity valgono i tempi indicati
-        nell&apos;informativa di Microsoft.
+        messaggi su Instagram, finché serve a rispondere. Per Clarity e Google Analytics valgono i
+        tempi indicati nelle informative di Microsoft e Google.
       </p>
 
       <h2>Con chi li condividiamo</h2>
       <p>
         Con i fornitori che rendono possibile il sito: l&apos;hosting (GitHub),{" "}
-        {CLARITY_ID ? "Microsoft per le statistiche, " : ""}OpenStreetMap per le mappe, Supabase per
+        {CLARITY_ID ? "Microsoft per le statistiche, " : ""}{GA_ID ? "Google per le statistiche, " : ""}OpenStreetMap per le mappe, Supabase per
         l&apos;archivio delle foto dei capi e per l&apos;accesso all&apos;area riservata, e Meta per
         Instagram. Alcuni hanno sede negli Stati Uniti e trattano i dati con le garanzie previste
         dalla normativa (per esempio il Data Privacy Framework UE-USA). Non vendiamo dati a nessuno.

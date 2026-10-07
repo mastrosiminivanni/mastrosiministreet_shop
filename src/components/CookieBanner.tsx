@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
-import { CLARITY_ID } from "@/data/site";
+import { CLARITY_ID, GA_ID, HA_STATISTICHE } from "@/data/site";
 
 type Scelta = "granted" | "denied" | null;
 const KEY = "ms-consent";
@@ -12,6 +12,8 @@ const EVENTO = "ms-consent-change";
 declare global {
   interface Window {
     clarity?: ((...args: unknown[]) => void) & { q?: unknown[] };
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -78,16 +80,55 @@ function Clarity({ scelta, inAdmin }: { scelta: Scelta | "ssr"; inAdmin: boolean
   return null;
 }
 
+/**
+ * Carica Google Analytics solo dopo il consenso. Prima della scelta (e se rifiuti) lo spazio di memoria resta "denied".
+ * Se il consenso viene revocato torna "denied" e smette di misurare. Mai nell'area /admin.
+ */
+function Analytics({ scelta, inAdmin }: { scelta: Scelta | "ssr"; inAdmin: boolean }) {
+  useEffect(() => {
+    if (!GA_ID) return;
+    if (inAdmin) {
+      if (window.gtag) window.gtag("consent", "update", { analytics_storage: "denied" });
+      return;
+    }
+    if (scelta === "granted") {
+      if (!window.gtag) {
+        window.dataLayer = window.dataLayer ?? [];
+        window.gtag = function (...args: unknown[]) {
+          window.dataLayer!.push(args);
+        };
+        window.gtag("consent", "default", {
+          analytics_storage: "denied",
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+        });
+        window.gtag("js", new Date());
+        window.gtag("config", GA_ID, { allow_google_signals: false });
+        const s = document.createElement("script");
+        s.async = true;
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        document.head.appendChild(s);
+      }
+      window.gtag("consent", "update", { analytics_storage: "granted" });
+    } else if (scelta === "denied" && window.gtag) {
+      window.gtag("consent", "update", { analytics_storage: "denied" });
+    }
+  }, [scelta, inAdmin]);
+  return null;
+}
+
 const bottone = "flex-1 rounded-tag px-4 py-3 text-sm font-extrabold uppercase tracking-wide";
 
 /** Banner cookie: compare solo se c'è uno strumento di statistiche e finché non hai scelto. Accetta e Rifiuta sono alla pari. */
 export function CookieBanner() {
   const scelta = useScelta();
   const inAdmin = usePathname().startsWith("/admin");
-  if (!CLARITY_ID) return null;
+  if (!HA_STATISTICHE) return null;
   return (
     <>
       <Clarity scelta={scelta} inAdmin={inAdmin} />
+      <Analytics scelta={scelta} inAdmin={inAdmin} />
       {scelta === null && !inAdmin && (
         <div
           role="dialog"
@@ -95,7 +136,7 @@ export function CookieBanner() {
           className="fixed inset-x-3 bottom-[4.75rem] z-50 rounded-tag border-2 border-oro bg-nero p-4 shadow-2xl md:inset-x-auto md:bottom-4 md:right-4 md:max-w-sm"
         >
           <p className="text-sm">
-            Usiamo Microsoft Clarity per capire come viene usato il sito, in modo anonimo. Puoi
+            Usiamo Microsoft Clarity e Google Analytics per capire come viene usato il sito, in modo anonimo. Puoi
             accettare o rifiutare: il sito funziona uguale.{" "}
             <Link href="/legal/cookie/" className="text-oro underline">
               Dettagli
@@ -126,7 +167,7 @@ export function CookieBanner() {
 /** Nella pagina Cookie: mostra la scelta attuale e permette di cambiarla. */
 export function PreferenzeCookie() {
   const scelta = useScelta();
-  if (!CLARITY_ID)
+  if (!HA_STATISTICHE)
     return (
       <p className="font-semibold">
         Non c&apos;è nulla da impostare: il sito non usa cookie di statistica.
