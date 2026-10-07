@@ -11,10 +11,10 @@ export function MarketCard({ i }: { i: number }) {
       </p>
       <p className="text-sm text-bianco/70">{m.hours}</p>
       <Link
-        href={`/shop?mercato=${m.slug}`}
+        href="/shop/"
         className="mt-4 inline-block text-sm font-extrabold uppercase tracking-wide text-oro underline underline-offset-4"
       >
-        Cosa trovi a {m.town} →
+        Guarda i capi →
       </Link>
     </div>
   );

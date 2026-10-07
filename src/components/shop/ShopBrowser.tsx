@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { CATEGORY_LABEL, isSoldOut, type Category, type Product } from "@/data/products";
-import { MARKETS } from "@/data/markets";
 import { ProductCard } from "./ProductCard";
 
 type Sort = "novita" | "prezzo-asc" | "prezzo-desc";
@@ -10,12 +9,11 @@ type Sort = "novita" | "prezzo-asc" | "prezzo-desc";
 const selectCls =
   "w-full rounded-tag border border-white/20 bg-nero px-3 py-2 text-sm font-semibold text-bianco";
 
-/** Catalogo con filtri (categoria, taglia, prezzo, mercato) e ordinamento. */
-export function ShopBrowser({ products, initialMarket = "" }: { products: Product[]; initialMarket?: string }) {
+/** Catalogo con filtri (categoria, taglia, prezzo) e ordinamento. */
+export function ShopBrowser({ products }: { products: Product[] }) {
   const [category, setCategory] = useState<Category | "">("");
   const [size, setSize] = useState("");
   const [maxPrice, setMaxPrice] = useState(0);
-  const [market, setMarket] = useState(initialMarket);
   const [sort, setSort] = useState<Sort>("novita");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
 
@@ -27,7 +25,6 @@ export function ShopBrowser({ products, initialMarket = "" }: { products: Produc
         (!category || p.category === category) &&
         (!size || p.sizes.includes(size)) &&
         (!maxPrice || p.price <= maxPrice) &&
-        (!market || p.marketPickup.includes(market)) &&
         (!onlyAvailable || !isSoldOut(p)),
     );
     out.sort((a, b) => {
@@ -38,11 +35,11 @@ export function ShopBrowser({ products, initialMarket = "" }: { products: Produc
       return b.createdAt.localeCompare(a.createdAt);
     });
     return out;
-  }, [products, category, size, maxPrice, market, sort, onlyAvailable]);
+  }, [products, category, size, maxPrice, sort, onlyAvailable]);
 
   return (
     <div>
-      <form className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" onSubmit={(e) => e.preventDefault()} aria-label="Filtri">
+      <form className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" onSubmit={(e) => e.preventDefault()} aria-label="Filtri">
         <label className="text-xs font-bold uppercase tracking-wide text-bianco/70">
           Categoria
           <select className={selectCls} value={category} onChange={(e) => setCategory(e.target.value as Category | "")}>
@@ -68,15 +65,7 @@ export function ShopBrowser({ products, initialMarket = "" }: { products: Produc
             <option value={20}>Fino a 20€</option>
             <option value={25}>Fino a 25€</option>
             <option value={30}>Fino a 30€</option>
-          </select>
-        </label>
-        <label className="text-xs font-bold uppercase tracking-wide text-bianco/70">
-          Disponibile a
-          <select className={selectCls} value={market} onChange={(e) => setMarket(e.target.value)}>
-            <option value="">Ovunque</option>
-            {MARKETS.map((m) => (
-              <option key={m.slug} value={m.slug}>{m.town}</option>
-            ))}
+            <option value={40}>Fino a 40€</option>
           </select>
         </label>
         <label className="text-xs font-bold uppercase tracking-wide text-bianco/70">
