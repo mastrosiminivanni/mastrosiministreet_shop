@@ -19,7 +19,7 @@ const poppins = Poppins({
 
 const titolo = `${SITE_NAME} - ${SITE_TAGLINE.toLowerCase()}`;
 const descrizione =
-  "Abbigliamento uomo street e oversize, le ultime mode a prezzi da mercato: camicie 25€, felpe 30€, pantaloni 20€. Il furgone gira un mercato diverso ogni giorno: scopri dove siamo oggi.";
+  "Mastrosimini Street Shop: abbigliamento uomo nuovo, street e oversize, dai 25€. Il furgone gira i mercati della Puglia (Rutigliano, Noci, Putignano, Polignano, Conversano, Castellana Grotte): scopri dove siamo oggi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_URL}/`),
