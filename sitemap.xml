@@ -1,48 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/</loc>
-<changefreq>weekly</changefreq>
-<priority>1</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/shop/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/dove-siamo/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/chi-siamo/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/contatti/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/legal/privacy/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/legal/cookie/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/legal/note-legali/</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://mastrosiminivanni.github.io/mastrosiministreet_shop/shop/capo-ezi0p/</loc>
-<changefreq>daily</changefreq>
-<priority>0.8</priority>
-</url>
+  <url><loc>https://mastrosiminishop.it/</loc><changefreq>weekly</changefreq><priority>1</priority></url>
+  <url><loc>https://mastrosiminishop.it/shop/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mastrosiminishop.it/dove-siamo/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mastrosiminishop.it/chi-siamo/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mastrosiminishop.it/contatti/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mastrosiminishop.it/legal/privacy/</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://mastrosiminishop.it/legal/cookie/</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://mastrosiminishop.it/legal/note-legali/</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://mastrosiminishop.it/shop/capo-ezi0p/</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>
