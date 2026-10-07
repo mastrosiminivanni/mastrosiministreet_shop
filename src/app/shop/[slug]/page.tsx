@@ -21,8 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug((await params).slug);
   if (!p) return {};
   const auto = descrizioneAuto(p);
+  const resto = auto.slice(auto.indexOf(":") + 2);
   // la descrizione scritta a mano è corta: si completa con taglie, prezzo e dove trovarlo
-  const descrizione = p.description && p.description !== auto ? `${p.description} ${auto.slice(auto.indexOf(":") + 2)}` : auto;
+  const descrizione = p.description && p.description !== auto ? `${p.description} ${resto.charAt(0).toUpperCase()}${resto.slice(1)}` : auto;
   const foto = p.images.filter((i) => !i.startsWith("placeholder:"));
   return {
     title: `${p.title} a ${p.price}€`,
