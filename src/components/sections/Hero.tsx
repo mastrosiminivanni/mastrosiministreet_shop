@@ -19,10 +19,10 @@ export function Hero() {
             <span className="block text-oro">Street Shop</span>
           </h1>
           <p className="mt-3 max-w-sm text-base font-medium text-bianco/90 md:mt-4">
-            Le ultime mode, street e oversize, a prezzi da mercato. Quando è andato, è andato.
+            Le ultime mode, street e oversize, a prezzi da mercato. Quando lo trovi, è tuo. Domani chissà.
           </p>
           <p className="mt-2 max-w-sm text-sm text-bianco/80">
-            Abbigliamento uomo nuovo, dai 25€. Lo trovi al furgone nei mercati della settimana o lo prenoti su Instagram.
+            Abbigliamento uomo nuovo, dai 25€. Passa al furgone nei mercati della settimana o prenotalo su Instagram.
           </p>
         </div>
 

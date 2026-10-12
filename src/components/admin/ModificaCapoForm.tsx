@@ -47,6 +47,7 @@ export function ModificaCapoForm({
   const [altra, setAltra] = useState("");
   const [pezzi, setPezzi] = useState(capo.stock);
   const [categoria, setCategoria] = useState(capo.category ?? "");
+  const [vinted, setVinted] = useState(capo.vinted_url ?? "");
   const [foto, setFoto] = useState<VoceFoto[]>(
     capo.images.map((percorso) => ({ tipo: "esistente", percorso })),
   );
@@ -110,6 +111,7 @@ export function ModificaCapoForm({
         title: titolo.trim(),
         description: descrizione.trim() || null,
         category: categoria || null,
+        vintedUrl: vinted.trim(),
         price: Math.round(prezzoNum),
         sizes: taglie,
         stock: pezzi,
@@ -245,6 +247,24 @@ export function ModificaCapoForm({
             ))}
           </select>
         </div>
+      </div>
+
+      <div>
+        <label htmlFor={`v-${capo.id}`} className={etichetta}>
+          Link di questo capo su Vinted (facoltativo)
+        </label>
+        <input
+          id={`v-${capo.id}`}
+          type="url"
+          inputMode="url"
+          value={vinted}
+          onChange={(e) => setVinted(e.target.value)}
+          placeholder="https://www.vinted.it/items/…"
+          className={campo}
+        />
+        <p className="mt-1 text-sm text-bianco/60">
+          Vuoto = il pulsante porta al nostro armadio su Vinted.
+        </p>
       </div>
 
       <div>

@@ -34,6 +34,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
   const [taglie, setTaglie] = useState<string[]>([]);
   const [altra, setAltra] = useState("");
   const [nome, setNome] = useState("");
+  const [vinted, setVinted] = useState("");
   const [prezzo, setPrezzo] = useState("");
   const [pezzi, setPezzi] = useState(1);
   const [categoria, setCategoria] = useState("");
@@ -88,7 +89,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
     setStato({ tipo: "info", testo: "Salvo…" });
     try {
       await store.crea(
-        { title: nome.trim(), price: Math.round(prezzoNum), sizes: taglie, stock: pezzi, category: categoria || null },
+        { title: nome.trim(), vintedUrl: vinted.trim() || undefined, price: Math.round(prezzoNum), sizes: taglie, stock: pezzi, category: categoria || null },
         foto,
         (fatte, totale) =>
           setStato({ tipo: "info", testo: `Carico le foto: ${fatte} di ${totale}…` }),
@@ -97,6 +98,7 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
       setFoto([]);
       setTaglie([]);
       setNome("");
+      setVinted("");
       setPrezzo("");
       setPezzi(1);
       setCategoria("");
@@ -328,6 +330,24 @@ export function NuovoCapoForm({ store, onSalvato }: { store: AdminStore; onSalva
               </option>
             ))}
           </select>
+        </div>
+        <div className="sm:col-span-2">
+          <label htmlFor="vinted-capo" className="text-sm font-bold uppercase text-bianco/70">
+            Link di questo capo su Vinted (facoltativo)
+          </label>
+          <input
+            id="vinted-capo"
+            type="url"
+            inputMode="url"
+            value={vinted}
+            onChange={(e) => setVinted(e.target.value)}
+            placeholder="https://www.vinted.it/items/…"
+            className="mt-2 min-h-12 w-full rounded-tag border border-white/25 bg-nero px-3 text-base"
+          />
+          <p className="mt-1 text-sm text-bianco/60">
+            Se lo metti, il pulsante &quot;Acquista su Vinted&quot; porta dritto a questo capo. Se lo lasci vuoto porta al
+            nostro armadio.
+          </p>
         </div>
       </section>
 

@@ -105,7 +105,7 @@ export default async function ProductPage({ params }: Props) {
           {p.isExample && <p className="mt-2 text-xs font-bold uppercase text-oro">Prodotto di esempio</p>}
           <LiveStato id={p.id} venduto={<p className="mt-3 font-semibold">Venduto</p>}>
             <p className="mt-3 font-semibold">
-              {isSoldOut(p) ? "Venduto" : isLastPiece(p) ? "Ultimo pezzo" : isUnique(p) ? "Pezzo unico: quando è andato, è andato." : `Disponibili: ${p.stock}`}
+              {isSoldOut(p) ? "Venduto" : isLastPiece(p) ? "Ultimo pezzo" : isUnique(p) ? "Pezzo unico: quando lo trovi, è tuo. Domani chissà." : `Disponibili: ${p.stock}`}
             </p>
           </LiveStato>
           <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -123,7 +123,7 @@ export default async function ProductPage({ params }: Props) {
               id={p.id}
               venduto={
                 <p className="rounded-tag border border-white/20 p-4 font-semibold">
-                  Venduto. Quando è andato, è andato. Guarda gli altri capi nel furgone.
+                  Venduto: ti è scappato! Guarda gli altri capi nel furgone.
                 </p>
               }
             >

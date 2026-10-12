@@ -33,6 +33,6 @@ test("la pagina del capo venduto non offre più i pulsanti per scrivere", async 
   const cat = await (await page.request.get("/catalogo.json")).json();
   const primo = cat.items[0];
   await page.goto(`/shop/${primo.url.split("/shop/")[1]}`);
-  await expect(page.getByText(/Venduto\. Quando è andato/)).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText(/Venduto: ti è scappato/)).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole("link", { name: "Scrivici su Instagram" })).toHaveCount(1); // solo quello fisso in basso
 });

@@ -30,6 +30,8 @@ export type Product = {
   isExample: boolean;
   /** ISO date, per ordinare per novità. */
   createdAt: string;
+  /** Link diretto al capo su Vinted (facoltativo). Se manca, il pulsante porta all'armadio generale. */
+  vintedUrl?: string;
   /** ultima modifica (per la sitemap) */
   updatedAt?: string;
 };

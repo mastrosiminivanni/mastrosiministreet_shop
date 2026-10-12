@@ -70,8 +70,8 @@ const faq = (vinted: string) => [
     d: "Come faccio a sapere se un capo è ancora disponibile?",
     r: (
       <>
-        Scrivici su Instagram con il nome del capo. Sono pezzi in quantità limitata: quando è
-        andato, è andato.
+        Scrivici su Instagram con il nome del capo. Sono pezzi in quantità limitata: quando lo
+        trovi, è tuo. Domani chissà.
       </>
     ),
   },

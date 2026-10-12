@@ -11,6 +11,8 @@ export type AdminProduct = {
   /** percorsi delle foto (la foto piccola ha il suffisso "-s" prima dell'estensione) */
   images: string[];
   stock: number;
+  /** link Vinted del capo (facoltativo) */
+  vinted_url?: string | null;
   status: Stato;
   created_at: string;
 };
@@ -22,6 +24,8 @@ export type NuovoCapo = {
   sizes: string[];
   stock: number;
   category: string | null;
+  /** link Vinted del capo (facoltativo) */
+  vintedUrl?: string;
 };
 
 /** Una foto già ridimensionata, pronta da caricare: versione grande e miniatura. */
@@ -43,6 +47,8 @@ export type ModificaCapo = {
   price: number;
   sizes: string[];
   stock: number;
+  /** link Vinted del capo; vuoto = nessun link */
+  vintedUrl?: string;
   /** foto nell'ordine finale; la prima è la copertina */
   foto: VoceFoto[];
 };

@@ -26,6 +26,7 @@ export async function GET() {
       example: p.isExample,
       url: `${SITE_URL}/shop/${p.slug}/`,
       image: p.images.find((i) => i.startsWith("http")) ?? null,
+      vinted_url: p.vintedUrl ?? null,
     })),
   };
   return new Response(JSON.stringify(corpo, null, 2), {

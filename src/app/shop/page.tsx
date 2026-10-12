@@ -15,12 +15,12 @@ export default async function ShopPage() {
     <main className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="titolo text-4xl sm:text-6xl">Cosa c&apos;è nel furgone</h1>
       <p className="mt-2 max-w-2xl text-bianco/80">
-        Felpe, jeans, pantaloni, maglie e camicie da uomo, tutti nuovi. Ogni capo è un pezzo unico: quando è
-        andato, è andato. Lo trovi al furgone nei{" "}
+        Felpe, jeans, pantaloni, maglie e camicie da uomo, tutti nuovi. Ogni capo è un pezzo unico: quando lo
+        trovi, è tuo. Domani chissà. Passa al furgone nei{" "}
         <Link href="/dove-siamo/" className="font-semibold text-oro underline underline-offset-4">
           mercati della settimana
         </Link>{" "}
-        oppure lo prenoti scrivendoci su Instagram.
+        oppure prenotalo scrivendoci su Instagram.
       </p>
       <div className="mt-6">
         <ShopBrowser products={products} />

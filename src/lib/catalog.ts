@@ -22,6 +22,7 @@ type Riga = {
   created_at: string;
   updated_at?: string;
   status?: string;
+  vinted_url?: string | null;
 };
 
 const CATEGORIE: Category[] = ["camicia", "felpa", "pantaloni", "jeans", "maglia", "cardigan", "altro"];
@@ -48,6 +49,7 @@ function daRiga(r: Riga): Product {
     initialStock: r.initial_stock ?? undefined,
     marketPickup: r.market_pickup ?? [],
     isExample: false,
+    vintedUrl: r.vinted_url?.trim() || undefined,
     createdAt: r.created_at,
     updatedAt: r.updated_at ?? r.created_at,
   };

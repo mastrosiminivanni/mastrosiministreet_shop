@@ -133,4 +133,28 @@ test.describe("pannello admin (modalità prova)", () => {
     await page.reload();
     await expect(page.locator("ul li").filter({ hasText: "Felpa zip bordeaux" })).toBeVisible();
   });
+
+  test("il link Vinted del capo è facoltativo, si controlla e si può cambiare", async ({ page }) => {
+    await page.goto("/admin?prova=1");
+    await page.locator("#foto").setInputFiles([await foto("a.jpg", "#a33")]);
+    await page.locator("#nome").fill("Felpa con link");
+    await page.getByRole("button", { name: "M", exact: true }).click();
+    await page.getByRole("button", { name: "25€" }).click();
+    // link sbagliato: errore chiaro e il capo non viene salvato
+    await page.locator("#vinted-capo").fill("https://sito-qualunque.it/x");
+    await page.getByRole("button", { name: "Salva come bozza" }).click();
+    await expect(page.getByText(/deve essere di Vinted/)).toBeVisible();
+    await expect(page.locator("ul li").filter({ hasText: "Felpa con link" })).toHaveCount(0);
+    // link giusto: salvato
+    await page.locator("#vinted-capo").fill("https://www.vinted.it/items/123-felpa");
+    await page.getByRole("button", { name: "Salva come bozza" }).click();
+    const capo = page.locator("ul li").filter({ hasText: "Felpa con link" });
+    await expect(capo).toContainText("Link Vinted del capo inserito");
+    // modifica: si toglie il link
+    await capo.getByRole("button", { name: "Modifica" }).click();
+    await expect(capo.getByLabel(/Link di questo capo su Vinted/)).toHaveValue("https://www.vinted.it/items/123-felpa");
+    await capo.getByLabel(/Link di questo capo su Vinted/).fill("");
+    await capo.getByRole("button", { name: "Salva modifiche" }).click();
+    await expect(capo).not.toContainText("Link Vinted del capo inserito");
+  });
 });

@@ -1,14 +1,15 @@
 import { CTA_INSTAGRAM, INSTAGRAM_DM_URL } from "@/data/markets";
 import { getVintedUrl } from "@/lib/catalog";
 import { isSoldOut, type Product } from "@/data/products";
+import { destinazioneVinted } from "@/lib/vinted";
 
 /** Per ora non si compra online: si scrive su Instagram. */
 export async function ProductActions({ product }: { product: Product }) {
-  const vinted = await getVintedUrl();
+  const vinted = destinazioneVinted(product, await getVintedUrl());
   if (isSoldOut(product)) {
     return (
       <p className="rounded-tag border border-white/20 p-4 font-semibold">
-        Venduto. Quando è andato, è andato. Guarda gli altri capi nel furgone.
+        Venduto: ti è scappato! Guarda gli altri capi nel furgone.
       </p>
     );
   }
@@ -25,15 +26,17 @@ export async function ProductActions({ product }: { product: Product }) {
         Scrivici in chat con il nome del capo: {product.title}.
       </p>
       <a
-        href={vinted}
+        href={vinted.href}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-2 rounded-tag border-2 border-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro/10"
       >
-        Guarda il nostro profilo Vinted
+        {vinted.etichetta}
       </a>
       <p className="text-sm text-bianco/70">
-        Non trovi la tua taglia? Scrivici su Instagram e la carichiamo noi su Vinted per te.
+        {vinted.diretto
+          ? "Si apre questo capo su Vinted. Non trovi la tua taglia? Scrivici su Instagram."
+          : "Non trovi la tua taglia? Scrivici su Instagram e la carichiamo noi su Vinted per te."}
       </p>
     </div>
   );

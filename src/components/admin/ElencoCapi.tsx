@@ -74,6 +74,9 @@ export function ElencoCapi({
                 {c.price}€, taglia {c.sizes.join(" / ")}, {c.stock}{" "}
                 {c.stock === 1 ? "pezzo" : "pezzi"}, {c.images.length} foto
               </p>
+              {c.vinted_url && (
+                <p className="mt-1 text-xs font-semibold text-oro">Link Vinted del capo inserito</p>
+              )}
               <span
                 className={clsx(
                   "mt-2 inline-block rounded-tag px-2 py-0.5 text-[11px] font-extrabold uppercase",

@@ -1,6 +1,7 @@
 import { BUCKET_FOTO, getSupabase, supabaseConfigurato } from "@/lib/supabase";
 import { VINTED_URL } from "@/data/markets";
 import { slugDa } from "@/lib/seo-capo";
+import { normalizzaVinted } from "@/lib/vinted";
 import { aDataUrl } from "./image";
 import type { AdminProduct, FotoPronta, ModificaCapo, NuovoCapo, Stato } from "./types";
 
@@ -41,6 +42,12 @@ export function titoloProvvisorio(c: NuovoCapo) {
   return c.sizes.length ? `${nome} taglia ${c.sizes.join("/")}` : nome;
 }
 
+/** Messaggio chiaro se l'archivio non ha ancora il campo del link Vinted. */
+const erroreArchivio = (messaggio: string) =>
+  /vinted_url/.test(messaggio)
+    ? "Per salvare il link Vinted serve un passaggio una volta sola su Supabase: esegui lo script supabase/vinted-link.sql (te lo spiego io)."
+    : messaggio;
+
 const codice = () => Math.random().toString(36).slice(2, 7);
 const conSuffissoPiccolo = (p: string) => p.replace(/(\.\w+)$/, "-s$1");
 
@@ -67,6 +74,7 @@ const storeProva: AdminStore = {
     return leggiProva();
   },
   async crea(capo, foto, avanzamento) {
+    normalizzaVinted(capo.vintedUrl);
     const images: string[] = [];
     for (let i = 0; i < foto.length; i++) {
       images.push(await aDataUrl(foto[i].thumb)); // in prova bastano le miniature
@@ -83,6 +91,7 @@ const storeProva: AdminStore = {
       sizes: capo.sizes,
       images,
       stock: capo.stock,
+      vinted_url: normalizzaVinted(capo.vintedUrl),
       status: "draft",
       created_at: new Date().toISOString(),
     };
@@ -93,12 +102,18 @@ const storeProva: AdminStore = {
     scriviProva(leggiProva().map((p) => (p.id === id ? { ...p, status: stato } : p)));
   },
   async modifica(capo, mod) {
+    normalizzaVinted(mod.vintedUrl);
     const images: string[] = [];
     for (const v of mod.foto) images.push(v.tipo === "esistente" ? v.percorso : await aDataUrl(v.foto.thumb));
     const { foto: _foto, ...dati } = mod;
     void _foto;
     const slug = mod.title !== capo.title ? `${slugDa(mod.title)}-${codice()}` : capo.slug;
-    scriviProva(leggiProva().map((p) => (p.id === capo.id ? { ...p, ...dati, slug, images } : p)));
+    const { vintedUrl, ...resto } = dati;
+    scriviProva(
+      leggiProva().map((p) =>
+        p.id === capo.id ? { ...p, ...resto, vinted_url: normalizzaVinted(vintedUrl), slug, images } : p,
+      ),
+    );
   },
   async elimina(capo) {
     scriviProva(leggiProva().filter((p) => p.id !== capo.id));
@@ -130,6 +145,7 @@ function storeSupabase(): AdminStore {
       return (data ?? []) as AdminProduct[];
     },
     async crea(capo, foto, avanzamento) {
+      const vinted = normalizzaVinted(capo.vintedUrl); // se il link è sbagliato ci si ferma prima di caricare le foto
       const id = crypto.randomUUID();
       const percorsi: string[] = [];
       for (let i = 0; i < foto.length; i++) {
@@ -158,9 +174,11 @@ function storeSupabase(): AdminStore {
         stock: capo.stock,
         initial_stock: capo.stock,
         status: "draft" as const,
+        // il campo si invia solo se c'è un link: così il pannello funziona anche prima dello script su Supabase
+        ...(vinted && { vinted_url: vinted }),
       };
       const { data, error } = await sb.from("products").insert(riga).select().single();
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(erroreArchivio(error.message));
       return data as AdminProduct;
     },
     async cambiaStato(id, stato) {
@@ -168,6 +186,7 @@ function storeSupabase(): AdminStore {
       if (error) throw new Error(error.message);
     },
     async modifica(capo, mod) {
+      const nuovoVinted = normalizzaVinted(mod.vintedUrl); // se il link è sbagliato ci si ferma prima di caricare le foto
       const images: string[] = [];
       for (const v of mod.foto) {
         if (v.tipo === "esistente") {
@@ -187,9 +206,11 @@ function storeSupabase(): AdminStore {
         }
         images.push(base);
       }
+      const vecchioVinted = capo.vinted_url?.trim() || null;
       const { error } = await sb
         .from("products")
         .update({
+          ...(nuovoVinted !== vecchioVinted && { vinted_url: nuovoVinted }),
           ...(mod.title !== capo.title && { slug: `${slugDa(mod.title)}-${codice()}` }),
           title: mod.title,
           description: mod.description,
@@ -200,7 +221,7 @@ function storeSupabase(): AdminStore {
           images,
         })
         .eq("id", capo.id);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(erroreArchivio(error.message));
       // solo dopo il salvataggio si cancellano le foto tolte
       const tolte = capo.images.filter((p) => !images.includes(p));
       const file = tolte.flatMap((p) => [p, conSuffissoPiccolo(p)]);
