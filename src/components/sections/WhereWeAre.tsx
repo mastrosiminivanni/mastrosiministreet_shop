@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import clsx from "clsx";
 import { PlateBadge } from "@/components/ui/PlateBadge";
 import { WheelLoader } from "@/components/3d/WheelLoader";
@@ -31,6 +31,8 @@ export function WhereWeAre() {
   const chiuso = stop?.status === "chiuso";
   const todayMarket = today ? marketForDate(today) : null;
   const [picked, setPicked] = useState("");
+  const mappa = useRef<HTMLDivElement>(null);
+  const elenco = useRef<HTMLOListElement>(null);
   const selected = picked || todayMarket?.slug || MARKETS[0].slug;
   const m = MARKETS.find((x) => x.slug === selected)!;
 
@@ -39,6 +41,23 @@ export function WhereWeAre() {
     ...MARKETS.map((x) => `${x.dayName}: ${x.town}`),
     SUNDAY_NOTE,
   ].join("\n");
+
+  /** Se la mappa non si vede (su telefono sta sotto l'elenco) la pagina scorre fin lì; a riposo dei movimenti resta ferma. */
+  const scorriA = (el: HTMLElement | null, soloSeNonVisibile: boolean) => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const visibile = r.top >= 56 && r.bottom <= window.innerHeight;
+    if (soloSeNonVisibile && visibile) return;
+    el.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
+  };
+  const scegli = (slug: string) => {
+    setPicked(slug);
+    // aspetta il disegno del paese scelto, poi scorre alla mappa
+    requestAnimationFrame(() => scorriA(mappa.current, true));
+  };
 
   const upcoming = today ? SPECIAL_STOPS.filter((s) => s.date >= toIso(today)) : [];
 
@@ -87,7 +106,7 @@ export function WhereWeAre() {
       )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <ol className="space-y-2" aria-label="Calendario settimanale">
+        <ol ref={elenco} className="scroll-mt-20 space-y-2" aria-label="Calendario settimanale">
           {MARKETS.map((x) => {
             const active = x.slug === selected;
             const isToday = x.slug === todayMarket?.slug;
@@ -95,7 +114,7 @@ export function WhereWeAre() {
               <li key={x.slug}>
                 <button
                   type="button"
-                  onClick={() => setPicked(x.slug)}
+                  onClick={() => scegli(x.slug)}
                   aria-pressed={active}
                   className={clsx(
                     "w-full rounded-tag border-2 p-3 text-left",
@@ -122,7 +141,7 @@ export function WhereWeAre() {
           <li className="px-1 pt-1 text-sm text-bianco/70">{SUNDAY_NOTE}</li>
         </ol>
 
-        <div>
+        <div ref={mappa} id="mappa" className="scroll-mt-20">
           <MarketMap selected={selected} onSelect={setPicked} />
           <p className="mt-2 text-sm text-bianco/75">
             <strong>
@@ -140,6 +159,13 @@ export function WhereWeAre() {
           <p className="mt-1 text-xs text-bianco/60">
             Posizione indicativa: il punto esatto è quello delle storie su Instagram.
           </p>
+          <button
+            type="button"
+            onClick={() => scorriA(elenco.current, false)}
+            className="mt-3 w-full rounded-tag border-2 border-oro px-4 py-3 text-sm font-extrabold uppercase tracking-wide text-oro hover:bg-oro hover:text-tinta lg:hidden"
+          >
+            ↑ Torna ai giorni
+          </button>
         </div>
       </div>
 
