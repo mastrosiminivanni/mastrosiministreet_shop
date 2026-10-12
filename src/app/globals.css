@@ -104,3 +104,8 @@ body {
 .mappa .leaflet-popup-content-wrapper, .mappa .leaflet-popup-tip { background: var(--nero); color: var(--bianco); border: 1px solid var(--oro); border-radius: 4px; }
 .mappa a { color: var(--oro); }
 .pin-furgone { background: none; border: 0; }
+
+/* Mentre l'annuncio della tappa è aperto, il banner dei cookie aspetta (compare appena lo si chiude) */
+html[data-annuncio="aperto"] [role="dialog"][aria-label="Cookie"] {
+  display: none;
+}
