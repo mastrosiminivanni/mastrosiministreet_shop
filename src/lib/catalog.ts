@@ -24,7 +24,7 @@ type Riga = {
   status?: string;
 };
 
-const CATEGORIE: Category[] = ["camicia", "felpa", "pantaloni", "altro"];
+const CATEGORIE: Category[] = ["camicia", "felpa", "pantaloni", "jeans", "maglia", "cardigan", "altro"];
 const urlFoto = (percorso: string) =>
   `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_FOTO}/${percorso}`;
 const piccola = (percorso: string) => percorso.replace(/(\.\w+)$/, "-s$1");

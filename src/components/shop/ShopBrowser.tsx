@@ -47,9 +47,11 @@ export function ShopBrowser({ products: staticiProdotti }: { products: Product[]
           Categoria
           <select className={selectCls} value={category} onChange={(e) => setCategory(e.target.value as Category | "")}>
             <option value="">Tutte</option>
-            {Object.entries(CATEGORY_LABEL).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
-            ))}
+            {(Object.keys(CATEGORY_LABEL) as Category[])
+              .filter((k) => products.some((x) => x.category === k))
+              .map((k) => (
+                <option key={k} value={k}>{CATEGORY_LABEL[k]}</option>
+              ))}
           </select>
         </label>
         <label className="text-xs font-bold uppercase tracking-wide text-bianco/70">

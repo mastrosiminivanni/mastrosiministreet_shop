@@ -15,7 +15,7 @@ export function GET() {
   const orario = `dalle ${MARKET_HOURS.from} alle ${MARKET_HOURS.to}`;
   const testo = `# ${SITE_NAME}
 
-> Mercato ambulante di abbigliamento uomo (camicie, felpe, pantaloni, street e oversize) a prezzi da mercato. Un furgone che gira un paese diverso ogni giorno, in Puglia, dal lunedì al sabato ${orario}. ${SUNDAY_NOTE} Azienda italiana di famiglia, da oltre 70 anni sui mercati.
+> Mercato ambulante di abbigliamento uomo nuovo (felpe, maglie, cardigan, jeans, pantaloni, camicie) a prezzi da mercato, dai 25€. Si prende al furgone o si prenota su Instagram; il sito non vende online. Un furgone che gira un paese diverso ogni giorno, in Puglia, dal lunedì al sabato ${orario}. ${SUNDAY_NOTE} Azienda italiana di famiglia, da oltre 70 anni sui mercati.
 
 Dal sito non si acquista: si compra al furgone, scrivendo su Instagram o dal profilo Vinted. Tutti i capi sono nuovi e in quantità limitata.
 

@@ -28,6 +28,9 @@ const NOMI_CATEGORIA: Record<string, string> = {
   camicia: "Camicia",
   felpa: "Felpa",
   pantaloni: "Pantaloni",
+  jeans: "Jeans",
+  maglia: "Maglia",
+  cardigan: "Cardigan",
   altro: "Capo",
 };
 

@@ -76,7 +76,7 @@ test.describe("finestra di annuncio della tappa speciale", () => {
     await page.clock.install({ time: new Date("2026-10-14T10:00:00+02:00") });
     await page.goto("/dove-siamo/");
     await page.clock.resume();
-    await expect(page.getByText(/Tappa speciale 2026-10-18: Putignano/)).toBeVisible();
+    await expect(page.getByText(/Tappa speciale domenica 18 ottobre: Putignano/)).toBeVisible();
     const ics = await (await request.get("/calendario.ics")).text();
     expect(ics).toContain("Putignano");
     expect(ics).toContain("20261018");

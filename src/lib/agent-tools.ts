@@ -134,7 +134,7 @@ export type CapoCatalogo = {
   url: string;
 };
 
-const CATEGORIE = ["camicia", "felpa", "pantaloni", "altro"] as const;
+const CATEGORIE = ["camicia", "felpa", "pantaloni", "jeans", "maglia", "cardigan", "altro"] as const;
 
 /** Filtra i capi del catalogo (già letto da /catalogo.json). Errori chiari: l'agente può correggere e riprovare. */
 export function cercaCapi(capi: CapoCatalogo[], args: Record<string, unknown>) {

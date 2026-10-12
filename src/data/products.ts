@@ -2,7 +2,7 @@
  * Catalogo prodotti. Oggi è un file tipizzato (seed di ESEMPIO); la forma di `Product`
  * è pensata per mappare 1:1 una tabella Supabase o un documento Sanity (vedi README).
  */
-export type Category = "camicia" | "felpa" | "pantaloni" | "altro";
+export type Category = "camicia" | "felpa" | "pantaloni" | "jeans" | "maglia" | "cardigan" | "altro";
 
 export type Product = {
   id: string;
@@ -38,6 +38,9 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   camicia: "Camicie",
   felpa: "Felpe",
   pantaloni: "Pantaloni",
+  jeans: "Jeans",
+  maglia: "Maglie",
+  cardigan: "Cardigan",
   altro: "Altro",
 };
 

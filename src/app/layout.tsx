@@ -19,7 +19,7 @@ const poppins = Poppins({
 
 const titolo = `${SITE_NAME} - ${SITE_TAGLINE.toLowerCase()}`;
 const descrizione =
-  "Mastrosimini Street Shop: abbigliamento uomo nuovo, street e oversize, dai 25€. Il furgone gira i mercati della Puglia (Rutigliano, Noci, Putignano, Polignano, Conversano, Castellana Grotte): scopri dove siamo oggi.";
+  "Mastrosimini Street Shop: abbigliamento uomo nuovo, street, dai 25€. Il furgone gira i mercati della Puglia (Rutigliano, Noci, Putignano, Polignano, Conversano, Castellana Grotte): scopri dove siamo oggi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_URL}/`),

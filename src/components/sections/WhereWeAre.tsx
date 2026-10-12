@@ -79,7 +79,7 @@ export function WhereWeAre() {
         <ul className="mt-4 space-y-2">
           {upcoming.map((s) => (
             <li key={s.date} className="rounded-tag border-2 border-oro p-3 text-sm font-semibold">
-              Tappa speciale {s.date}: {s.town}
+              Tappa speciale {dataLeggibile(s.date)}: {s.town}
               {s.spot ? `, ${s.spot}` : ""}
             </li>
           ))}
@@ -177,6 +177,11 @@ export function WhereWeAre() {
     </div>
   );
 }
+
+const dataLeggibile = (iso: string) => {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" }).format(new Date(y, m - 1, d));
+};
 
 function toIso(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

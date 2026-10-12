@@ -38,10 +38,11 @@ export default async function ProductPage({ params }: Props) {
   if (!p) notFound();
 
   // Abbinamenti: felpe/camicie suggeriscono pantaloni e viceversa.
-  const wantPants = p.category !== "pantaloni";
+  const èSotto = p.category === "pantaloni" || p.category === "jeans";
+  const wantPants = !èSotto;
   const tutti = await getProducts();
   const matches = tutti.filter(
-    (x) => x.slug !== p.slug && !isSoldOut(x) && (wantPants ? x.category === "pantaloni" : ["felpa", "camicia"].includes(x.category)),
+    (x) => x.slug !== p.slug && !isSoldOut(x) && (wantPants ? ["pantaloni", "jeans"].includes(x.category) : ["felpa", "camicia", "maglia", "cardigan"].includes(x.category)),
   ).slice(0, 4);
 
   // Dati strutturati "Prodotto" solo per i capi veri (con foto vere): niente dati finti per Google.

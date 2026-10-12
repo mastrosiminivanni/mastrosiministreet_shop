@@ -14,6 +14,9 @@ const CATEGORIE = [
   ["camicia", "Camicia"],
   ["felpa", "Felpa"],
   ["pantaloni", "Pantaloni"],
+  ["jeans", "Jeans"],
+  ["maglia", "Maglia"],
+  ["cardigan", "Cardigan"],
   ["altro", "Altro"],
 ] as const;
 

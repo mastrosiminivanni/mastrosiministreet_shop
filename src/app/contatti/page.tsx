@@ -34,6 +34,19 @@ const faq = (vinted: string) => [
     ),
   },
   {
+    d: "I capi sono nuovi o usati?",
+    r: <>Sono tutti capi nuovi, mai usati.</>,
+  },
+  {
+    d: "Spedite?",
+    r: (
+      <>
+        No, il sito non vende online e non spediamo. I capi si prendono al furgone nel mercato del giorno oppure si
+        prenotano su Instagram e si ritirano al furgone.
+      </>
+    ),
+  },
+  {
     d: "Dove siete oggi?",
     r: (
       <>
