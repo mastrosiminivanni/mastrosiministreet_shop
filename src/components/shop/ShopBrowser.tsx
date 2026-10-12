@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CATEGORY_LABEL, isSoldOut, type Category, type Product } from "@/data/products";
+import { conStatoLive, useCapiLive } from "@/lib/capiLive";
 import { ProductCard } from "./ProductCard";
 
 type Sort = "novita" | "prezzo-asc" | "prezzo-desc";
@@ -10,7 +11,9 @@ const selectCls =
   "w-full rounded-tag border border-white/20 bg-nero px-3 py-2 text-sm font-semibold text-bianco";
 
 /** Catalogo con filtri (categoria, taglia, prezzo) e ordinamento. */
-export function ShopBrowser({ products }: { products: Product[] }) {
+export function ShopBrowser({ products: staticiProdotti }: { products: Product[] }) {
+  const live = useCapiLive();
+  const products = useMemo(() => conStatoLive(staticiProdotti, live), [staticiProdotti, live]);
   const [category, setCategory] = useState<Category | "">("");
   const [size, setSize] = useState("");
   const [maxPrice, setMaxPrice] = useState(0);

@@ -21,6 +21,7 @@ type Riga = {
   market_pickup: string[];
   created_at: string;
   updated_at?: string;
+  status?: string;
 };
 
 const CATEGORIE: Category[] = ["camicia", "felpa", "pantaloni", "altro"];
@@ -42,7 +43,8 @@ function daRiga(r: Riga): Product {
     measurements: r.measurements ?? {},
     images: r.images.map(urlFoto),
     thumbs: r.images.map((p) => urlFoto(piccola(p))),
-    stock: r.stock,
+    // "venduto" nel pannello cambia solo lo stato: per il sito vuol dire zero pezzi
+    stock: r.status === "sold" ? 0 : r.stock,
     initialStock: r.initial_stock ?? undefined,
     marketPickup: r.market_pickup ?? [],
     isExample: false,

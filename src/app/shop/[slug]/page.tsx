@@ -1,3 +1,4 @@
+import { LiveStato } from "@/components/shop/LiveStato";
 import { descrizioneAuto } from "@/lib/seo-capo";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -101,9 +102,11 @@ export default async function ProductPage({ params }: Props) {
           <PlateBadge>{CATEGORY_LABEL[p.category]}</PlateBadge>
           <h1 className="titolo mt-3 text-3xl sm:text-5xl">{p.title}</h1>
           {p.isExample && <p className="mt-2 text-xs font-bold uppercase text-oro">Prodotto di esempio</p>}
-          <p className="mt-3 font-semibold">
-            {isSoldOut(p) ? "Venduto" : isLastPiece(p) ? "Ultimo pezzo" : isUnique(p) ? "Pezzo unico: quando è andato, è andato." : `Disponibili: ${p.stock}`}
-          </p>
+          <LiveStato id={p.id} venduto={<p className="mt-3 font-semibold">Venduto</p>}>
+            <p className="mt-3 font-semibold">
+              {isSoldOut(p) ? "Venduto" : isLastPiece(p) ? "Ultimo pezzo" : isUnique(p) ? "Pezzo unico: quando è andato, è andato." : `Disponibili: ${p.stock}`}
+            </p>
+          </LiveStato>
           <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <dt className="text-bianco/60">Taglia</dt>
             <dd className="font-semibold">{p.sizes.join(" / ")}</dd>
@@ -115,7 +118,16 @@ export default async function ProductPage({ params }: Props) {
             ))}
           </dl>
           <div className="mt-6">
-            <ProductActions product={p} />
+            <LiveStato
+              id={p.id}
+              venduto={
+                <p className="rounded-tag border border-white/20 p-4 font-semibold">
+                  Venduto. Quando è andato, è andato. Guarda gli altri capi nel furgone.
+                </p>
+              }
+            >
+              <ProductActions product={p} />
+            </LiveStato>
           </div>
         </div>
       </div>
