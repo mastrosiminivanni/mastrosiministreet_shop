@@ -18,10 +18,10 @@ export type Market = {
 export const MARKET_HOURS = { start: "07:00", end: "13:00", from: "7:00", to: "13:00", label: "7:00-13:00" } as const;
 
 export const MARKETS: Market[] = [
-  { slug: "rutigliano", town: "Rutigliano", day: 1, dayName: "Lunedì", spot: "Via Dante (zona Via Paisiello)", lat: 41.00812, lng: 17.01025, precision: "approx", hours: MARKET_HOURS.label },
-  { slug: "noci", town: "Noci", day: 2, dayName: "Martedì", spot: "Via Aldo Moro", lat: 40.7965, lng: 17.12219, precision: "approx", hours: MARKET_HOURS.label },
-  { slug: "putignano", town: "Putignano", day: 3, dayName: "Mercoledì", spot: "Via Rosata Romanazzi", lat: 40.84814, lng: 17.12242, precision: "approx", hours: MARKET_HOURS.label },
-  { slug: "polignano", town: "Polignano", day: 4, dayName: "Giovedì", spot: "Via Vito Cosimo Basile", lat: 40.98839, lng: 17.22669, precision: "approx", hours: MARKET_HOURS.label },
+  { slug: "rutigliano", town: "Rutigliano", day: 1, dayName: "Lunedì", spot: "Via Dante, 51", lat: 41.00812, lng: 17.01025, precision: "approx", hours: MARKET_HOURS.label },
+  { slug: "noci", town: "Noci", day: 2, dayName: "Martedì", spot: "Piazza Garibaldi", lat: 40.7965, lng: 17.12219, precision: "approx", hours: MARKET_HOURS.label },
+  { slug: "putignano", town: "Putignano", day: 3, dayName: "Mercoledì", spot: "Via Estramurale a Mezzogiorno", lat: 40.84814, lng: 17.12242, precision: "approx", hours: MARKET_HOURS.label },
+  { slug: "polignano", town: "Polignano", day: 4, dayName: "Giovedì", spot: "Via Vito Cosimo Basile (angolo Via Papa Giovanni Paolo II)", lat: 40.98839, lng: 17.22669, precision: "approx", hours: MARKET_HOURS.label },
   { slug: "conversano", town: "Conversano", day: 5, dayName: "Venerdì", spot: "Via Padre Michele Accolti Gil, vicino al campo sportivo", lat: 40.964, lng: 17.108, precision: "approx", hours: MARKET_HOURS.label },
   { slug: "castellana-grotte", town: "Castellana Grotte", day: 6, dayName: "Sabato", spot: "Piazza Garibaldi", lat: 40.885, lng: 17.16711, precision: "approx", hours: MARKET_HOURS.label },
 ];

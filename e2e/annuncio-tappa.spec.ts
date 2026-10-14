@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Tappa speciale in src/data/special-stops.ts: domenica 18 ottobre 2026, Putignano, 7-13, Via Rosata Romanazzi
+// Tappa speciale in src/data/special-stops.ts: domenica 18 ottobre 2026, Putignano, 7-13, Via Estramurale a Mezzogiorno
 async function apriIl(page: Page, quando: string, indirizzo = "/") {
   // il browser di test si dichiara "automatico" e l'annuncio non si apre: qui lo facciamo passare per una persona
   await page.addInitScript(() => Object.defineProperty(navigator, "webdriver", { get: () => false }));
@@ -16,7 +16,7 @@ test.describe("finestra di annuncio della tappa speciale", () => {
     await expect(finestra(page)).toBeVisible();
     await expect(finestra(page)).toContainText("Mancano 4 giorni");
     await expect(finestra(page)).toContainText(/domenica 18 ottobre:\s*siamo a Putignano/i);
-    await expect(finestra(page)).toContainText("Via Rosata Romanazzi, dalle 7 alle 13");
+    await expect(finestra(page)).toContainText("Via Estramurale a Mezzogiorno, dalle 7 alle 13");
     await expect(finestra(page).getByRole("link", { name: "Tutte le tappe" })).toHaveAttribute("href", /^\/dove-siamo\/?$/);
     await expect(finestra(page).getByRole("link", { name: "Scrivici su Instagram" })).toBeVisible();
   });
