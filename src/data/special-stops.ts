@@ -16,5 +16,5 @@ export type SpecialStop = {
 };
 
 export const SPECIAL_STOPS: SpecialStop[] = [
-  { date: "2026-10-18", town: "Putignano", spot: "Via Rosata Romanazzi", lat: 40.8486, lng: 17.1226, start: "07:00", end: "13:00" },
+  { date: "2026-10-18", town: "Putignano", spot: "Via Rosata Romanazzi", lat: 40.84814, lng: 17.12242, start: "07:00", end: "13:00" },
 ];
