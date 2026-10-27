@@ -1,4 +1,4 @@
-import { CTA_INSTAGRAM, INSTAGRAM_DM_URL } from "@/data/markets";
+import { TienitiDaParte } from "@/components/shop/TienitiDaParte";
 import { getVintedUrl } from "@/lib/catalog";
 import { isSoldOut, type Product } from "@/data/products";
 import { destinazioneVinted } from "@/lib/vinted";
@@ -15,16 +15,7 @@ export async function ProductActions({ product }: { product: Product }) {
   }
   return (
     <div className="flex flex-col gap-2">
-      <a
-        href={INSTAGRAM_DM_URL}
-        rel="noopener"
-        className="rounded-tag bg-oro px-6 py-4 text-center text-sm font-extrabold uppercase tracking-wide text-tinta hover:brightness-110"
-      >
-        {CTA_INSTAGRAM}
-      </a>
-      <p className="text-sm text-bianco/70">
-        Scrivici in chat con il nome del capo: {product.title}.
-      </p>
+      <TienitiDaParte nome={product.title} prezzo={product.price} />
       <a
         href={vinted.href}
         target="_blank"
