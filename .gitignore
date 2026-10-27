@@ -52,3 +52,7 @@ out/
 test-results/
 playwright-report/
 .lighthouse/
+
+# agente Vinted: rapporti giornalieri
+/agente-vinted/log/
+!/agente-vinted/.env.example
