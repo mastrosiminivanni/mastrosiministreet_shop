@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getProducts } from "@/lib/catalog";
+import { MARKETS } from "@/data/markets";
 import { SITE_URL } from "@/data/site";
 
 export const dynamic = "force-static";
@@ -13,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pagine = ["", "/shop", "/dove-siamo", "/chi-siamo", "/contatti", "/legal/privacy", "/legal/cookie", "/legal/note-legali"];
   return [
     ...pagine.map((p) => ({ url: url(p), changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.6 })),
+    ...MARKETS.map((m) => ({ url: url(`/dove-siamo/${m.slug}`), changeFrequency: "weekly" as const, priority: 0.8 })),
     ...products.map((x) => ({
       url: url(`/shop/${x.slug}`),
       lastModified: x.updatedAt ?? x.createdAt,

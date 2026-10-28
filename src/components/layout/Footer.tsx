@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AZIENDA, dato } from "@/data/azienda";
-import { INSTAGRAM_URL } from "@/data/markets";
+import { INSTAGRAM_URL, MARKETS, PROVINCIA, nomeComune } from "@/data/markets";
 import { getVintedUrl } from "@/lib/catalog";
 
 export async function Footer() {
@@ -11,6 +11,16 @@ export async function Footer() {
         <div>
           <p className="titolo text-lg text-bianco">Mastrosimini Street Shop</p>
           <p>Un mercato diverso ogni giorno.</p>
+          <p className="mt-3">Abbigliamento uomo ai mercati della {PROVINCIA.nome}:</p>
+          <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+            {MARKETS.map((m) => (
+              <li key={m.slug}>
+                <Link href={`/dove-siamo/${m.slug}/`} className="hover:text-oro">
+                  {nomeComune(m)}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
         <ul className="flex flex-wrap gap-x-5 gap-y-2">
           <li>

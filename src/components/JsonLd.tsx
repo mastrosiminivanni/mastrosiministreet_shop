@@ -1,7 +1,9 @@
 import { AZIENDA, dato } from "@/data/azienda";
-import { INSTAGRAM_URL, MARKETS, VINTED_URL } from "@/data/markets";
+import { INSTAGRAM_URL, MARKETS, PROVINCIA, VINTED_URL, nomeComune } from "@/data/markets";
 import { MARKET_HOURS } from "@/data/markets";
 import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/data/site";
+
+const CENTRO = MARKETS.find((m) => m.slug === "castellana-grotte")!;
 
 const GIORNI = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -27,11 +29,21 @@ export function JsonLd() {
     url: `${SITE_URL}/`,
     logo: `${SITE_URL}/brand/logo-profilo.png`,
     image: `${SITE_URL}/og.jpg`,
-    description: "Mercato ambulante di abbigliamento uomo: un furgone che gira un paese diverso ogni giorno.",
+    description: `Mercato ambulante di abbigliamento uomo nuovo: un furgone che gira un paese diverso ogni giorno in ${PROVINCIA.nome}.`,
+    address: { "@type": "PostalAddress", addressRegion: PROVINCIA.sigla, addressCountry: "IT" },
     sameAs: [INSTAGRAM_URL, VINTED_URL],
     priceRange: "€",
     currenciesAccepted: "EUR",
-    areaServed: MARKETS.map((m) => ({ "@type": "City", name: m.town })),
+    // la zona che serviamo: 50 km intorno a Castellana Grotte (arriva a Bari, Monopoli, Fasano, Martina Franca, Gioia del Colle)
+    areaServed: [
+      {
+        "@type": "GeoCircle",
+        geoMidpoint: { "@type": "GeoCoordinates", latitude: CENTRO.lat, longitude: CENTRO.lng },
+        geoRadius: 50000,
+      },
+      { "@type": "AdministrativeArea", name: "Città metropolitana di Bari" },
+      ...MARKETS.map((m) => ({ "@type": "City", name: nomeComune(m), url: `${SITE_URL}/dove-siamo/${m.slug}/` })),
+    ],
     openingHoursSpecification: MARKETS.map((m) => ({
       "@type": "OpeningHoursSpecification",
       dayOfWeek: GIORNI[m.day],

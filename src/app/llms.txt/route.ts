@@ -1,9 +1,11 @@
 import {
   INSTAGRAM_DM_URL,
   INSTAGRAM_URL,
+  MARKETS,
   MARKET_HOURS,
   SUNDAY_NOTE,
   VINTED_URL,
+  nomeComune,
 } from "@/data/markets";
 import { SITE_NAME, SITE_URL } from "@/data/site";
 
@@ -15,7 +17,7 @@ export function GET() {
   const orario = `dalle ${MARKET_HOURS.from} alle ${MARKET_HOURS.to}`;
   const testo = `# ${SITE_NAME}
 
-> Mercato ambulante di abbigliamento uomo nuovo (felpe, maglie, cardigan, jeans, pantaloni, camicie) a prezzi da mercato, dai 25€. Si prende al furgone o si prenota su Instagram; il sito non vende online. Un furgone che gira un paese diverso ogni giorno, in Puglia, dal lunedì al sabato ${orario}. ${SUNDAY_NOTE} Azienda italiana di famiglia, da oltre 70 anni sui mercati.
+> Mercato ambulante di abbigliamento uomo nuovo (felpe, maglie, cardigan, jeans, pantaloni, camicie) a prezzi da mercato, dai 25€. Si prende al furgone o si prenota su Instagram; il sito non vende online. Un furgone che gira un paese diverso ogni giorno in provincia di Bari (Puglia), dal lunedì al sabato ${orario}. ${SUNDAY_NOTE} Azienda italiana di famiglia, da oltre 70 anni sui mercati.
 
 Dal sito non si acquista: si compra al furgone, scrivendo su Instagram o dal profilo Vinted. Tutti i capi sono nuovi e in quantità limitata.
 
@@ -24,6 +26,7 @@ Dal sito non si acquista: si compra al furgone, scrivendo su Instagram o dal pro
 - [Home](${SITE_URL}/): dove siamo oggi e il giro della settimana
 - [Shop](${SITE_URL}/shop/): i capi in vendita, con prezzi, taglie e misure
 - [Dove siamo](${SITE_URL}/dove-siamo/): il paese di oggi, la mappa e il calendario dei mercati
+${MARKETS.map((m) => `- [Mercato di ${nomeComune(m)}](${SITE_URL}/dove-siamo/${m.slug}/): ogni ${m.dayName.toLowerCase()}, ${m.spot}`).join("\n")}
 - [Chi siamo](${SITE_URL}/chi-siamo/): la famiglia e la storia del banco
 - [Contatti e domande frequenti](${SITE_URL}/contatti/): come comprare, orari, taglie
 

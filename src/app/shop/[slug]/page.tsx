@@ -56,6 +56,19 @@ export default async function ProductPage({ params }: Props) {
           description: p.description ?? `${p.title}, taglia ${p.sizes.join(" / ")}.`,
           image: foto.map((f) => (f.startsWith("http") ? f : `${SITE_URL}${f}`)),
           sku: p.id,
+          url: `${SITE_URL}/shop/${p.slug}/`,
+          brand: { "@type": "Brand", name: SITE_NAME },
+          category: CATEGORY_LABEL[p.category],
+          size: p.sizes.join(" / "),
+          audience: { "@type": "PeopleAudience", suggestedGender: "male" },
+          ...(Object.keys(p.measurements).length > 0 && {
+            additionalProperty: Object.entries(p.measurements).map(([k, v]) => ({
+              "@type": "PropertyValue",
+              name: k,
+              value: v,
+              unitCode: "CMT",
+            })),
+          }),
           offers: {
             "@type": "Offer",
             priceCurrency: "EUR",
