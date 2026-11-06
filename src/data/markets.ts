@@ -41,8 +41,8 @@ const MERCATI_ABITUALI: Market[] = [
 type Spostamento = { slug: string; dal: string; al: string; spot: string; lat: number; lng: number };
 
 const SPOSTAMENTI: Spostamento[] = [
-  // Conversano spostato dal comune per 3 settimane (venerdì 30/10, 6/11 e 13/11)
-  { slug: "conversano", dal: "2026-10-28", al: "2026-11-13", spot: "Via Pietro Nenni, 33", lat: 40.9612248, lng: 17.1086004 },
+  // Conversano spostato dal comune per 2 settimane (venerdì 30/10 e 6/11); dal 13/11 si torna al posto abituale
+  { slug: "conversano", dal: "2026-10-28", al: "2026-11-06", spot: "Via Pietro Nenni, 33", lat: 40.9612248, lng: 17.1086004 },
 ];
 
 const oggiRoma = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date());
